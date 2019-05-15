@@ -27,7 +27,7 @@ x0_positions     = np.random.choice(np.arange(K), int(K * density), replace = Fa
 x0[x0_positions] = np.random.normal(0, 1, int(K * density))
 
 '''generate the noise'''
-sigma = 0.05; # noise standard deviation
+sigma = 0.05 # noise standard deviation
 v     = np.random.normal(0, sigma, N) # noise
 
 '''generate the noisy measurement'''
