@@ -11,6 +11,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import sys
 print(sys.path)
+from stela import stela_lasso
+import numpy.matlib as npml
 #os.path.join('')
 def settup_qd():
     import matplotlib.pyplot as plt 
@@ -125,10 +127,19 @@ x = np.arange(-10,10,0.1)
 y = np.arange(-10,10,0.1)
 xx,yy = np.meshgrid(x,y,sparse=False)
 z = alpine01(xx,yy)
-x0 = np.zeros(2)
-measurement = np.dot(z,x0)
-#makePlots(x,z)
+x0 = 3.6*np.ones(2)
 
+z_vec = z.reshape((40000,1), order="F")
+#a1 = np.transpose(npml.repmat(x,1,20))
+#a2 = np.reshape(np.repeat(y,20,axis=0),(400,1))
+a1 = np.reshape(np.repeat(x,200,axis=0),(40000,1))
+a2 = np.transpose(npml.repmat(y,1,200))
+A = np.hstack((a1,a2))
+measurement = np.reshape(z_vec,(40000,))# + np.random.normal(0,1,40000)
+mu = 0.001*np.linalg.norm(np.dot(np.reshape(z_vec,(40000,)), A),np.inf)
+print(mu)
+objval, x, error = stela_lasso(A, measurement, mu, 5000)
+print(x)
 plt = settup_qd()
 fig = plt.figure()
 ax = fig.add_subplot(111,projection='3d')
