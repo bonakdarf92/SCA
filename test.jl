@@ -12,7 +12,6 @@ using StatsBase
 using Distributions
 #@pyimport matplotlib.pyplot as plt
 
-
 function soft_threshholding(q,t,K)
     x = max.(q-t, zeros(K)) - max.(-q - t, zeros(K))
     return x

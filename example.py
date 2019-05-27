@@ -62,7 +62,8 @@ plt.xlabel("number of iterations")
 plt.ylabel("error")
 plt.yscale('log')
 plt.show()
-=======
+
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from stela import stela_lasso, soft_thresholding
@@ -126,4 +127,4 @@ plt.xlabel("number of iterations")
 plt.ylabel("error")
 plt.yscale('log')
 plt.show()
->>>>>>> a97d3f97a826f2dcacad0a3fb49d0da810ed581d
+"""
