@@ -1,20 +1,23 @@
 import cvxpy as cp
 import numpy as np
 import matplotlib.pyplot as plt
+import gurobipy
 
 
 # Problem data
-n = 15
-m = 10
-np.random.seed(200)
+n = 200
+m = 400
+np.random.seed(20)
 
 A = np.random.randn(n,m)
 b = np.random.randn(n)
+v = np.random.normal(0,0.05,n)
 gamma = cp.Parameter(nonneg=True)
 
 # Construct problem
 x = cp.Variable(m)
-error = cp.sum_squares(A*x - b)
+measure = A*x + v 
+error = cp.sum_squares(A*x - measure)
 obj = cp.Minimize(error + gamma * cp.norm(x,1))
 prob = cp.Problem(obj)
 
@@ -38,6 +41,7 @@ plt.rcParams.update({"pgf.texsystem":"pdflatex",
             r"\usepackage[T1]{fontenc}",
             r"\usepackage{cmbright}",]
         })
+print(cp.installed_solvers())
 
 plt.figure(figsize=(6,10))
 

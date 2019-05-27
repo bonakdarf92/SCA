@@ -1,3 +1,11 @@
+import numpy as np 
+import holoviews as hv 
+from holoviews import opts 
+
+hv.extension('matplotlib','bokeh')
+
+print("ok")
+
 import pickle
 import numpy as np
 import os
@@ -14,7 +22,7 @@ print(sys.path)
 from stela import stela_lasso
 import numpy.matlib as npml
 
-#os.path.join('')
+
 def settup_qd():
     import matplotlib.pyplot as plt 
     return plt
@@ -147,50 +155,3 @@ ax = fig.add_subplot(111,projection='3d')
 surf = ax.plot_surface(xx,yy,z,cmap=cm.coolwarm,linewidth=0,antialiased=False)
 
 plt.show()
-
-"""
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-
-surf = ax.plot_surface(x,y,z)
-plt.show()
-
-"""
-"""
-A = generateNumbers(10,k=10,kind='rand')
-x = np.linspace(-10,10)
-y0 = np.sin(x)
-y1 = np.tanh(x)
-y2 = np.abs(x)
-y3 = np.cosh(x)**2 + np.sin(x) 
-X = [x, x, x]
-Y = [y0, y1, y2]
-makePlots(X,Y)
-#makePlots(x, Y,saveIt=True,name=None)
-"""
-
-
-"""
-mf = 800
-fig, (ax0, ax1, ax2, ax3) = plt.subplots(nrows=4,ncols=1, figsize=(12, 6), dpi=130)
-ax0.set_prop_cycle(monochrome)
-ax0.set_ylabel('Schaltvorgänge')
-ax0.set_title('PPO, MLP, mit Prognose', loc='left', fontsize='x-small')
-ax1.set_prop_cycle(monochrome)
-ax1.set_title('PPO, MLP, ohne Prognose', loc='left', fontsize='x-small')
-ax2.set_prop_cycle(monochrome)
-ax2.set_title('PPO, LSTM, mit Prognose', loc='left', fontsize='x-small')
-ax3.set_prop_cycle(monochrome)
-ax3.set_title('TRPO, MLP, mit Prognose', loc='left', fontsize='x-small')
-ax0.plot(switch_clean_test1[:-50], markevery=mf)
-ax0.legend(['chP','Con Boil', 'Im Heat', 'Bat'],bbox_to_anchor=(0.3, 1.4), loc='upper left', ncol=4, fontsize='x-small', handlelength=3.0)
-ax1.plot(switch_clean_test2[:-50], markevery=mf)
-ax2.plot(switch_clean_test3[:-50], markevery=mf)
-ax3.plot(switch_clean_test4[:-50], markevery=mf)
-ax.set_xlabel('Anzahl der Episoden (1 Episode = 3 Tage')
-fig.subplots_adjust(hspace=0.7)
-plt.savefig(os.path.join(os.getcwd(), 'training_data\\new_runs\\comparison_switches.pgf'))
-"""
-
-print("ok")
-
