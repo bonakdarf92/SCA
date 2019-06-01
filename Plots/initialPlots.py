@@ -64,7 +64,7 @@ def settup_pgf():
 
 
 
-def makePlots(X, Y, legend=None, scale=None, saveIt=False,name=None):
+def makePlots(X, Y, legend=None, scale=None, grid=False, saveIt=False,name=None):
     if saveIt:
         plt = settup_pgf()
         k = np.shape(Y)
@@ -83,19 +83,30 @@ def makePlots(X, Y, legend=None, scale=None, saveIt=False,name=None):
         k = np.shape(Y)
         X_t = np.transpose(np.tile(X,(k[0],1)))
         Y_t = np.transpose(Y)
-        plt.plot(X_t, Y_t)
+        if scale=="logy":
+            plt.semilogy(X_t, Y_t)
+        elif scale=="logx":
+            plt.semilogx(X_t, Y_t)
+        elif scale=="loglog":
+            plt.loglog(X_t, Y_t)
+        
+        else:
+            plt.plot(X_t, Y_t)
+
+        if grid:
+            plt.grid(True)
         plt.show()
    
 def generateNumbers(n,k,kind=None,specs=None,seed=None):
     if k:
         if kind=='zeros':
-            return np.zeros(n,k)
+            return np.zeros((n,k))
         elif kind=='rand':
             if seed:
                 np.random.seed(seed)
             return np.random.randn(n,k)
         elif kind=='ones':
-            return np.ones(n,k)
+            return np.ones((n,k))
         elif kind=='gauss':
             if seed:
                 np.random.seed(seed)
@@ -131,7 +142,7 @@ def vectorType(x):
 def alpine01(x,y):
     return np.absolute(x * np.sin(x) + 0.1*x) + np.absolute(y*np.sin(y) + 0.1*y)
 
-
+"""
 x = np.arange(-10,10,0.1)
 y = np.arange(-10,10,0.1)
 xx,yy = np.meshgrid(x,y,sparse=False)
@@ -155,3 +166,4 @@ ax = fig.add_subplot(111,projection='3d')
 surf = ax.plot_surface(xx,yy,z,cmap=cm.coolwarm,linewidth=0,antialiased=False)
 
 plt.show()
+"""
