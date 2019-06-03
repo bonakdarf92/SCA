@@ -2,6 +2,7 @@ import numpy as np
 from scipy import sparse
 #from numba import njit, jit, cuda, float32
 import time
+#import datetime #from datetime import time 
 from Plots.initialPlots import makePlots
 
 """
@@ -64,13 +65,13 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
 
         A, b, mu, x0 = parameter(N, K, density)
         
-        t_start = time.time()
+        t_start = time.time_ns()
         mu_vec = mu * np.ones((K,1))
         x_g = np.zeros((K,1))
         residual_g = np.dot(A, x_g) - b
         Gradient_g = (np.dot(residual_g.T, A)).T 
         
-        time_g[s,0] = time.time() - t_start
+        time_g[s,0] = time.time_ns() - t_start
         #test = np.minimum(np.abs(x_g),theta_vec)
         #test2 = 0.5 * np.dot(mu_vec.T,test)
         #val_g[s,0] = 10.0 #float(test2) + float(test)    // TODO check why val_g[access] not working
@@ -82,7 +83,7 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
 
         for t in range(MaxIter_g-1):
             
-            t_start = time.time()
+            t_start = time.time_ns()
             c = 1
             alpha = 0.5
             beta = 2
@@ -110,7 +111,7 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
                 else:
                     c *= beta
                     
-            time_g[s,t+1] = time.time() - t_start                                      # commented out for @njit
+            time_g[s,t+1] = time.time_ns() - t_start                                      # commented out for @njit
             #error_g[s,t+1] = np.linalg.norm(x_g - x0) / np.linalg.norm(x0.toarray())   #sparse version
             error_g[s,t+1] = np.linalg.norm(x_g - x0) / np.linalg.norm(x0)
             if debug:
@@ -124,7 +125,7 @@ v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001, False)
 v1,e1,t1 = GIST_Algo(1000, 1600, 0.01, 1, 400, 0.001, False)
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
 makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
-makePlots(np.linspace(0,np.sum(t),400), v , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
+makePlots(np.linspace(0,np.sum(t),400), v , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=True)
 #makePlots(t[0][:],v,scale="logy",grid=True)
 #makePlots(np.linspace(0,np.sum(t1),400),v1,scale="logy",grid=True)
 #GIST_Algo(N,K,density,time_g,val_g,error_g,MaxIter_g)

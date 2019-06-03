@@ -76,39 +76,57 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
         saveIt  --  if set true it saves the plot in pgf format with a given optional Name
         name    --  if name is given the plot is saved with the name if not it uses a timestamp
     """
-    if saveIt:
-        plt = settup_pgf()
+    if saveIt:                                                      # tree for save flag
+        plt = settup_pgf()                                          # run setup routine for saving
         fig = plt.figure()
-        k = np.shape(Y)
-        X_t = np.transpose(np.tile(X,(k[0],1)))
+        dimX = np.shape(X)
+        dimY = np.shape(Y)
+        s = 0
+        if len(dimX) > 1 and len(dimY) > 2:
+            s = dimX[0]
+        if len(dimX) == 1 and len(dimY) == 2:
+            s = dimY[0]
+        X_t = np.transpose(X)
         Y_t = np.transpose(Y)
-        if axes:
-            if axes[0] == 's' and axes[1] == 'f':
+
+
+        if axes:                                                    # check axes flag
+            if axes[0] == 's' and axes[1] == 'f':                   # check default axes flag
                 plt.axes(xlabel="Time in s",ylabel="Objective funtion value f(x)")
             else:
                 plt.axes(xlabel=axes[0],ylable=axes[1])
-        if scale=="logy":
-            plt.semilogy(X_t, Y_t, label=legend)
-        elif scale=="logx":
-            plt.semilogx(X_t, Y_t, label=legend)
-        elif scale=="loglog":
-            plt.loglog(X_t, Y_t, label=legend)
-        if grid:
+
+        if s != 1:
+            for k in range(s):
+                if scale=="logy":                                   # check scale flag - log in y-axes
+                    plt.semilogy(X_t[:,k], Y_t[:,0,k], label=legend)
+                elif scale=="logx":                                 # check scale flag - log in x-axes
+                    plt.semilogx(X_t[:,k], Y_t[:,0,k], label=legend)
+                elif scale=="loglog":                               # check scale flag - log log in x/y-axes
+                    plt.loglog(X_t[:,k], Y_t[:,0,k], label=legend)
+        if s == 1:
+            for k in range(s):
+                if scale=="logy":                                   # check scale flag - log in y-axes
+                    plt.semilogy(X_t, Y_t, label=legend)
+                elif scale=="logx":                                 # check scale flag - log in x-axes
+                    plt.semilogx(X_t, Y_t, label=legend)
+                elif scale=="loglog":                               # check scale flag - log log in x/y-axes
+                    plt.loglog(X_t, Y_t, label=legend)
+        
+        if grid:                                                    # check grid flag
             plt.grid(True)
-        if legend:
+        if legend:                                                  # check if legend flag
             plt.legend()
-        if name:
+        if name:                                                    # check name flag
             plt.savefig(name)
-        else:
+        else:                                                       # if no name is given use timestamp for saving
             now = datetime.now()
             date_time = now.strftime("%Y_%m_%d-%H_%M_%S")
-            #plt.plot(X_t, Y_t, label=legend)
-            #plt.legend()
             plt.savefig(date_time)
 
     else:
-        plt = settup_qd()
-        fig = plt.figure()
+        plt1 = settup_qd()
+        fig = plt1.figure()
         # TODO check if this part is necessary 
         #k = np.shape(Y)
         #X_t = np.transpose(np.tile(X,(k[0],1)))
@@ -123,37 +141,37 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
         Y_t = np.transpose(Y)
         if axes:
             if axes[0] == 's' and axes[1] == 'f':
-                plt.axes(xlabel="Time in s",ylabel="Objective funtion value f(x)")
+                plt1.axes(xlabel="Time in s",ylabel="Objective funtion value f(x)")
             else:
-                plt.axes(xlabel=axes[0], ylabel=axes[1])
+                plt1.axes(xlabel=axes[0], ylabel=axes[1])
         
         if s != 1:
             for k in range(s):
                 if scale=="logy":
-                    plt.semilogy(X_t[:,k], Y_t[:,0,k], label=legend)
+                    plt1.semilogy(X_t[:,k], Y_t[:,0,k], label=legend)
                 elif scale=="logx":
-                    plt.semilogx(X_t[:,k], Y_t[:,0,k], label=legend)
+                    plt1.semilogx(X_t[:,k], Y_t[:,0,k], label=legend)
                 elif scale=="loglog":
-                    plt.loglog(X_t[:,k], Y_t[:,0,k], label=legend)
+                    plt1.loglog(X_t[:,k], Y_t[:,0,k], label=legend)
         
         elif s == 1:
             for k in range(s):
                 if scale=="logy":
-                    plt.semilogy(X_t, Y_t, label=legend)
+                    plt1.semilogy(X_t, Y_t, label=legend)
                 elif scale=="logx":
-                    plt.semilogx(X_t, Y_t, label=legend)
+                    plt1.semilogx(X_t, Y_t, label=legend)
                 elif scale=="loglog":
-                    plt.loglog(X_t, Y_t, label=legend)
+                    plt1.loglog(X_t, Y_t, label=legend)
             
         
         if grid:
-            plt.grid(True)
+            plt1.grid(True)
         else:
             fig.plot(X_t, Y_t, label=legend)
 
         if legend:
-            plt.legend()
-        plt.show()
+            plt1.legend()
+        plt1.show()
    
 def generateNumbers(n,k,kind=None,specs=None,seed=None):
     if k:
