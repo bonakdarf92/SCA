@@ -49,7 +49,7 @@ def parameter(N, K, density):
     b = np.dot(A,x0)   + np.sqrt(sigma2) * np.random.randn(N,1)
     #mu = 0.1 * np.max(np.abs(np.dot(A.T,b)))
     mu = 0.1 * np.max(np.abs(np.dot(A.T,b)))
-    return A, b, mu, x0#x_orig
+    return A, b, mu, x0 #x_orig
 
 """
 
@@ -60,45 +60,39 @@ def f(a, b) :
     #bal = bal.toarray()
     return bal, b, np.ones((10,1))#, np.ones(5),np.ones(10,1)
 """
-#@jit(nopython=True)
-#def GIST_Algo(N=200, K=400, density=0.01, Sample=1, MaxIter_g=400, theta=0.001,debug=False):
-#@jit(nopython=True)
-@jit('Tuple((f8[:,:],f8[:,:]))(i8,i8,f8,i8,i8,f8,b1)',nopython=True)
+
+# TODO add nopython mode
+@jit('Tuple((f8[:,:],f8[:,:],f8[:,:]))(i8,i8,f8,i8,i8,f8,b1)')   
 def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
     theta_vec = theta * np.ones((K,1))
-    #time_g = np.zeros((Sample, MaxIter_g))
+    time_g = np.zeros((Sample, MaxIter_g))
     val_g = np.zeros((Sample, MaxIter_g))
     error_g = np.zeros((Sample, MaxIter_g))
     for s in range(Sample):
-        #if debug:
-            #print("Sample {}".format(s))
-        #    pass
+        if debug:
+            print("Sample {}".format(s))
 
         A, b, mu, x0 = parameter(N, K, density)
-        #b = np.reshape(b,(b.size,1))
-        #x0 = np.reshape(x0,(x0.size,1))
         
-        #t_start = time.time()
+        t_start = time.time()
         mu_vec = mu * np.ones((K,1))
         x_g = np.zeros((K,1))
         residual_g = np.dot(A, x_g) - b
         Gradient_g = (np.dot(residual_g.T, A)).T 
         
-        #time_g[s,0] = time.time() - t_start
-        test = np.minimum(np.abs(x_g),theta_vec)
-        test2 = 0.5 * np.dot(mu_vec.T,test)
-        #print(type(test))
-        #print(type(test2))
-        val_g[0,1] = float(test2) + float(test)
-        #val_g[s,0] = 0.5 * np.dot(residual_g.T, residual_g) + np.dot(mu_vec.T, np.minimum(np.abs(x_g), theta_vec))
+        time_g[s,0] = time.time() - t_start
+        #test = np.minimum(np.abs(x_g),theta_vec)
+        #test2 = 0.5 * np.dot(mu_vec.T,test)
+        #val_g[s,0] = 10.0 #float(test2) + float(test)    // TODO check why val_g[access] not working
+        val_g[s,0] = 0.5 * np.dot(residual_g.T, residual_g) + np.dot(mu_vec.T, np.minimum(np.abs(x_g), theta_vec))
         #error_g[s,0] = np.linalg.norm(x_g - x0) / np.linalg.norm(x0.toarray())  #sparse version
         error_g[s,0] = np.linalg.norm(x_g - x0) / np.linalg.norm(x0)
-        #if debug:
-        #    print("Proximal MM Algorithmus: Iteration 0 mit Wert {}".format(val_g[s,1]))
+        if debug:
+            print("Proximal MM Algorithmus: Iteration 0 mit Wert {}".format(val_g[s,1]))
 
         for t in range(MaxIter_g-1):
             
-            #t_start = time.time()
+            t_start = time.time()
             c = 1
             alpha = 0.5
             beta = 2
@@ -113,8 +107,9 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
 
                 residual_new = np.dot(A, x_new) - b
                 val_g_new = 0.5 * np.dot(residual_new.T, residual_new) + np.dot(mu_vec.T, np.minimum(np.abs(x_new), theta_vec))
+                temp = (val_g[s,t] - (alpha * c / 2 * np.dot((x_new - x_g).T,(x_new - x_g))))
 
-                if val_g_new <= val_g[s,t] - alpha * c / 2 * np.dot((x_new - x_g).T,(x_new - x_g)):
+                if val_g_new <= temp:
                     
                     x_g = x_new
                     val_g[s,t+1] = val_g_new
@@ -125,17 +120,17 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
                 else:
                     c *= beta
                     
-            #time_g[s,t+1] = time.time() - t_start
+            time_g[s,t+1] = time.time() - t_start                                      # commented out for @njit
             #error_g[s,t+1] = np.linalg.norm(x_g - x0) / np.linalg.norm(x0.toarray())   #sparse version
             error_g[s,t+1] = np.linalg.norm(x_g - x0) / np.linalg.norm(x0)
-            #if debug:
-            #    print("Proximal MM Algorithmus: Iteration {} mit Wert {} und Zeit {}".format(t+1, val_g[s,t+1], time_g[s,t+1]))
-    return val_g, error_g#, time_g
+            if debug:
+                print("Proximal MM Algorithmus: Iteration {} mit Wert {} und Zeit {}".format(t+1, val_g[s,t+1], time_g[s,t+1]))
+    return val_g, error_g, time_g
             
 
 
 #a,b,c,d = parameter(100,200,0.01)
-v,e,t = GIST_Algo(2000, 4000, 0.01, 1, 400, 0.001, False)
+v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001,True)
 #v1,e1,t1 = GIST_Algo(2000, 4000, 0.01, 1, 400, 0.001, False)
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
 makePlots(np.linspace(0,2,400),v,scale="logy",grid=True)
