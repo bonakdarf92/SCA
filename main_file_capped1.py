@@ -120,10 +120,11 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
 
 
 #a,b,c,d = parameter(100,200,0.01)
-v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001, True)
-#v1,e1,t1 = GIST_Algo(2000, 4000, 0.01, 1, 400, 0.001, False)
+v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001, False)
+v1,e1,t1 = GIST_Algo(1000, 1600, 0.01, 1, 400, 0.001, False)
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
-makePlots(np.linspace(0,np.sum(t),400), v, axes=['s','f'] ,scale="logy", grid=True)
+#makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
+makePlots(np.linspace(0,np.sum(t),400), v , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
 #makePlots(t[0][:],v,scale="logy",grid=True)
 #makePlots(np.linspace(0,np.sum(t1),400),v1,scale="logy",grid=True)
 #GIST_Algo(N,K,density,time_g,val_g,error_g,MaxIter_g)
