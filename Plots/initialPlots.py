@@ -4,10 +4,7 @@ from holoviews import opts
 
 hv.extension('matplotlib','bokeh')
 
-print("ok")
-
 import pickle
-import numpy as np
 import os
 from cycler import cycler
 from matplotlib.colors import LinearSegmentedColormap
@@ -18,7 +15,6 @@ from datetime import datetime
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import sys
-print(sys.path)
 from stela import stela_lasso
 import numpy.matlib as npml
 
@@ -37,7 +33,7 @@ def settup_pgf():
             r"\usepackage[bitstream-charter]{mathdesign}",
          ]
     }
-
+    #mpl.rcParams.update(pgf_with_pdflatex)
     import matplotlib.pyplot as plt
 
     mpl.rcParams.update(pgf_with_pdflatex)
@@ -47,8 +43,8 @@ def settup_pgf():
     plt.rcParams['axes.formatter.use_locale'] = True  # use comma (True) or dot (False) separators in graphs
     plt.rcParams["legend.frameon"] = False
     plt.rcParams["legend.fancybox"] = False
-    plt.rcParams["legend.loc"] = 'lower right'
-    colors = [(0, 0, 0), (185/256, 15/256, 34/256)]  # PTW Colorscheme
+    plt.rcParams["legend.loc"] = 'upper right'
+    colors = [(0, 0, 0), (185/256, 15/256, 34/256)]  # NTS Colorscheme
     n_bins = 100  # Discretizes the interpolation into bins
     cmap_name = 'NTS-Purple'
 
@@ -64,38 +60,101 @@ def settup_pgf():
 
 
 
-def makePlots(X, Y, legend=None, scale=None, saveIt=False,name=None):
+def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=False, name=None):
+    """ This functions reunites and evaluates the inputs X, Y and **kwargs and automates the
+    tidious plt routines. Once defined they can be used again and again 
+
+    Arguments:
+        X (numpy) array: X-axes if one-dimensional or multiple axes if n-dimensional
+        Y (numpy) array: Y-axes if one-dimensional or multple function values if n-dimensional
+
+    optional:
+        legend  --  # TODO
+        scale   --  loglog, logx, logy or any additional scaled version possible
+        grid    --  if set true the grid is shown
+        axes    --  uses the array of strings to denote the axes of the plot
+        saveIt  --  if set true it saves the plot in pgf format with a given optional Name
+        name    --  if name is given the plot is saved with the name if not it uses a timestamp
+    """
     if saveIt:
         plt = settup_pgf()
+        fig = plt.figure()
         k = np.shape(Y)
         X_t = np.transpose(np.tile(X,(k[0],1)))
         Y_t = np.transpose(Y)
-        plt.plot(X_t, Y_t)
+        if axes:
+            if axes[0] == 's' and axes[1] == 'f':
+                plt.axes(xlabel="Time in s",ylabel="Objective funtion value f(x)")
+            else:
+                plt.axes(xlabel=axes[0],ylable=axes[1])
+        if scale=="logy":
+            plt.semilogy(X_t, Y_t, label=legend)
+        elif scale=="logx":
+            plt.semilogx(X_t, Y_t, label=legend)
+        elif scale=="loglog":
+            plt.loglog(X_t, Y_t, label=legend)
+        if grid:
+            plt.grid(True)
+        if legend:
+            plt.legend()
         if name:
             plt.savefig(name)
         else:
             now = datetime.now()
-            date_time = now.strftime("%Y_%m_%d-%H:%M:%S")
+            date_time = now.strftime("%Y_%m_%d-%H_%M_%S")
+            #plt.plot(X_t, Y_t, label=legend)
+            #plt.legend()
             plt.savefig(date_time)
+
+
+
     else:
-        #import matplotlib.pyplot as plt
         plt = settup_qd()
-        k = np.shape(Y)
-        X_t = np.transpose(np.tile(X,(k[0],1)))
+        fig = plt.figure()
+        # TODO check if this part is necessary 
+        #k = np.shape(Y)
+        #X_t = np.transpose(np.tile(X,(k[0],1)))
+        dimX = np.shape(X)
+        dimY = np.shape(Y)
+        
+        print("X: Reihen {} und Spalten {}".format(dimX[0], dimX[1]))
+        print("Y: Reihen {} und Spalten {}".format(dimY[0], dimY[2]))
+        X_t = np.transpose(X)
         Y_t = np.transpose(Y)
-        plt.plot(X_t, Y_t)
+        if axes:
+            if axes[0] == 's' and axes[1] == 'f':
+                plt.axes(xlabel="Time in s",ylabel="Objective funtion value f(x)")
+            else:
+                plt.axes(xlabel=axes[0], ylabel=axes[1])
+        #if rowsX != 1:
+        for k in range(dimX[0]):
+            if scale=="logy":
+                plt.semilogy(X_t[:,k], Y_t[:,0,k], label=legend)
+            elif scale=="logx":
+                plt.semilogx(X_t[:,k], Y_t[:,0,k], label=legend)
+            elif scale=="loglog":
+                plt.loglog(X_t[:,k], Y_t[:,0,k], label=legend)
+        
+        
+        if grid:
+            plt.grid(True)
+        else:
+            fig.plot(X_t, Y_t, label=legend)
+
+        if legend:
+            plt.legend()
         plt.show()
    
 def generateNumbers(n,k,kind=None,specs=None,seed=None):
     if k:
         if kind=='zeros':
-            return np.zeros(n,k)
+            return np.zeros((n,k))
         elif kind=='rand':
             if seed:
                 np.random.seed(seed)
             return np.random.randn(n,k)
         elif kind=='ones':
-            return np.ones(n,k)
+            return np.ones((n,k))
         elif kind=='gauss':
             if seed:
                 np.random.seed(seed)
@@ -131,7 +190,7 @@ def vectorType(x):
 def alpine01(x,y):
     return np.absolute(x * np.sin(x) + 0.1*x) + np.absolute(y*np.sin(y) + 0.1*y)
 
-
+"""
 x = np.arange(-10,10,0.1)
 y = np.arange(-10,10,0.1)
 xx,yy = np.meshgrid(x,y,sparse=False)
@@ -155,3 +214,4 @@ ax = fig.add_subplot(111,projection='3d')
 surf = ax.plot_surface(xx,yy,z,cmap=cm.coolwarm,linewidth=0,antialiased=False)
 
 plt.show()
+"""
