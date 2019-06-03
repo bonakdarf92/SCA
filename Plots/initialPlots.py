@@ -1,8 +1,8 @@
 import numpy as np 
-import holoviews as hv 
-from holoviews import opts 
+#import holoviews as hv 
+#from holoviews import opts 
 
-hv.extension('matplotlib','bokeh')
+#hv.extension('matplotlib','bokeh')
 
 import pickle
 import os
@@ -69,7 +69,7 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
         Y (numpy) array: Y-axes if one-dimensional or multple function values if n-dimensional
 
     optional:
-        legend  --  # TODO
+        legend  --  sets the labels for each stream 
         scale   --  loglog, logx, logy or any additional scaled version possible
         grid    --  if set true the grid is shown
         axes    --  uses the array of strings to denote the axes of the plot
@@ -106,8 +106,6 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
             #plt.legend()
             plt.savefig(date_time)
 
-
-
     else:
         plt = settup_qd()
         fig = plt.figure()
@@ -116,9 +114,11 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
         #X_t = np.transpose(np.tile(X,(k[0],1)))
         dimX = np.shape(X)
         dimY = np.shape(Y)
-        
-        print("X: Reihen {} und Spalten {}".format(dimX[0], dimX[1]))
-        print("Y: Reihen {} und Spalten {}".format(dimY[0], dimY[2]))
+        s = 0
+        if len(dimX) > 1 and len(dimY) > 2:
+            s = dimX[0]
+        if len(dimX) == 1 and len(dimY) == 2:
+            s = dimY[0]
         X_t = np.transpose(X)
         Y_t = np.transpose(Y)
         if axes:
@@ -126,15 +126,25 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
                 plt.axes(xlabel="Time in s",ylabel="Objective funtion value f(x)")
             else:
                 plt.axes(xlabel=axes[0], ylabel=axes[1])
-        #if rowsX != 1:
-        for k in range(dimX[0]):
-            if scale=="logy":
-                plt.semilogy(X_t[:,k], Y_t[:,0,k], label=legend)
-            elif scale=="logx":
-                plt.semilogx(X_t[:,k], Y_t[:,0,k], label=legend)
-            elif scale=="loglog":
-                plt.loglog(X_t[:,k], Y_t[:,0,k], label=legend)
         
+        if s != 1:
+            for k in range(s):
+                if scale=="logy":
+                    plt.semilogy(X_t[:,k], Y_t[:,0,k], label=legend)
+                elif scale=="logx":
+                    plt.semilogx(X_t[:,k], Y_t[:,0,k], label=legend)
+                elif scale=="loglog":
+                    plt.loglog(X_t[:,k], Y_t[:,0,k], label=legend)
+        
+        elif s == 1:
+            for k in range(s):
+                if scale=="logy":
+                    plt.semilogy(X_t, Y_t, label=legend)
+                elif scale=="logx":
+                    plt.semilogx(X_t, Y_t, label=legend)
+                elif scale=="loglog":
+                    plt.loglog(X_t, Y_t, label=legend)
+            
         
         if grid:
             plt.grid(True)

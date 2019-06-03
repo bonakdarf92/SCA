@@ -1,6 +1,6 @@
 import numpy as np 
 from scipy import sparse
-from numba import njit, jit, cuda, float32
+#from numba import njit, jit, cuda, float32
 import time
 from Plots.initialPlots import makePlots
 
@@ -123,7 +123,7 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
 v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001, False)
 v1,e1,t1 = GIST_Algo(1000, 1600, 0.01, 1, 400, 0.001, False)
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
-#makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
+makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
 makePlots(np.linspace(0,np.sum(t),400), v , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
 #makePlots(t[0][:],v,scale="logy",grid=True)
 #makePlots(np.linspace(0,np.sum(t1),400),v1,scale="logy",grid=True)
