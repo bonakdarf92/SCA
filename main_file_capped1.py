@@ -33,8 +33,8 @@ theta_vec = theta * np.ones((K,1))
 """
 
 
-#@jit('Tuple((f8[:,:], f8, f8[:,:]))(i8, i8, f8)',nopython=True)
-@jit('Tuple((f8[:,:], f8[:,:], f8, f8[:,:]))(i8,i8,f8)',nopython=True)
+
+#@jit('Tuple((f8[:,:], f8[:,:], f8, f8[:,:]))(i8,i8,f8)',nopython=True)
 def parameter(N, K, density):
     A = np.random.randn(N, K)
     x0 = np.zeros((K,1))
@@ -47,22 +47,12 @@ def parameter(N, K, density):
     for n in range(N):
         A[n,:] = A[n,:] / np.linalg.norm(A[n,:])
     b = np.dot(A,x0)   + np.sqrt(sigma2) * np.random.randn(N,1)
-    #mu = 0.1 * np.max(np.abs(np.dot(A.T,b)))
     mu = 0.1 * np.max(np.abs(np.dot(A.T,b)))
     return A, b, mu, x0 #x_orig
 
-"""
-
-import numba as nb 
-@nb.jit('Tuple((float64[:,:], float64[:,:],float64[:,:])) (float64[:], float64[:,:])',nopython=True)
-def f(a, b) :
-    bal = sparse.random(10,1).tocsr
-    #bal = bal.toarray()
-    return bal, b, np.ones((10,1))#, np.ones(5),np.ones(10,1)
-"""
 
 # TODO add nopython mode
-@jit('Tuple((f8[:,:],f8[:,:],f8[:,:]))(i8,i8,f8,i8,i8,f8,b1)')   
+#@jit('Tuple((f8[:,:],f8[:,:],f8[:,:]))(i8,i8,f8,i8,i8,f8,b1)')   
 def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
     theta_vec = theta * np.ones((K,1))
     time_g = np.zeros((Sample, MaxIter_g))
@@ -130,9 +120,10 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
 
 
 #a,b,c,d = parameter(100,200,0.01)
-v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001,True)
+v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001, True)
 #v1,e1,t1 = GIST_Algo(2000, 4000, 0.01, 1, 400, 0.001, False)
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
-makePlots(np.linspace(0,2,400),v,scale="logy",grid=True)
+makePlots(np.linspace(0,np.sum(t),400), v, axes=['s','f'] ,scale="logy", grid=True)
+#makePlots(t[0][:],v,scale="logy",grid=True)
 #makePlots(np.linspace(0,np.sum(t1),400),v1,scale="logy",grid=True)
 #GIST_Algo(N,K,density,time_g,val_g,error_g,MaxIter_g)

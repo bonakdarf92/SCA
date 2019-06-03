@@ -64,13 +64,31 @@ def settup_pgf():
 
 
 
-def makePlots(X, Y, legend=None, scale=None, grid=False, saveIt=False,name=None):
+def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=False, name=None):
+    """ This functions reunites and evaluates the inputs X, Y and **kwargs and automates the
+    tidious plt routines. Once defined they can be used again and again 
+
+    Arguments:
+        X (numpy) array: X-axes if one-dimensional or multiple axes if n-dimensional
+        Y (numpy) array: Y-axes if one-dimensional or multple function values if n-dimensional
+
+    optional:
+        legend  --  # TODO
+        scale   --  loglog, logx, logy or any additional scaled version possible
+        grid    --  if set true the grid is shown
+        axes    --  uses the array of strings to denote the axes of the plot
+        saveIt  --  if set true it saves the plot in pgf format with a given optional Name
+        name    --  if name is given the plot is saved with the name if not it uses a timestamp
+    """
     if saveIt:
         plt = settup_pgf()
         k = np.shape(Y)
         X_t = np.transpose(np.tile(X,(k[0],1)))
         Y_t = np.transpose(Y)
         plt.plot(X_t, Y_t)
+        if grid:
+            plt.grid(True)
+        
         if name:
             plt.savefig(name)
         else:
@@ -78,23 +96,29 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, saveIt=False,name=None)
             date_time = now.strftime("%Y_%m_%d-%H:%M:%S")
             plt.savefig(date_time)
     else:
-        #import matplotlib.pyplot as plt
         plt = settup_qd()
+        fig = plt.figure()
         k = np.shape(Y)
         X_t = np.transpose(np.tile(X,(k[0],1)))
         Y_t = np.transpose(Y)
+        if axes:
+            if axes[0] == 's' and axes[1] == 'f':
+                plt.axes(xlabel="Time in s",ylabel="Objective funtion value f(x)")
         if scale=="logy":
             plt.semilogy(X_t, Y_t)
         elif scale=="logx":
             plt.semilogx(X_t, Y_t)
         elif scale=="loglog":
             plt.loglog(X_t, Y_t)
-        
-        else:
-            plt.plot(X_t, Y_t)
-
         if grid:
             plt.grid(True)
+
+            
+            #axX.set_xlabel('Zeit')
+        else:
+            fig.plot(X_t, Y_t)
+
+        
         plt.show()
    
 def generateNumbers(n,k,kind=None,specs=None,seed=None):
