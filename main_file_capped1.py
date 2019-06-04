@@ -4,6 +4,14 @@ from scipy import sparse
 import time
 #import datetime #from datetime import time 
 from Plots.initialPlots import makePlots
+import holoviews as hv 
+from holoviews import opts 
+import holoviews.plotting.mpl
+
+
+hv.extension('matplotlib')
+
+
 
 """
 N = 200
@@ -124,8 +132,21 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
 v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001, False)
 v1,e1,t1 = GIST_Algo(1000, 1600, 0.01, 1, 400, 0.001, False)
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
-makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
-makePlots(np.linspace(0,np.sum(t),400), v , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=True)
+#plot = makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
+
+import bokeh as bkh 
+import bokeh.plotting
+from bokeh.layouts import column, row
+from bokeh.io import push_notebook,show, output_notebook, output_file, export_svgs
+from IPython.core.interactiveshell import InteractiveShell
+
+#plot.show()
+
+#hv.ipython.display(plot)
+
+
+
+#makePlots(np.linspace(0,np.sum(t),400), v , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=True)
 #makePlots(t[0][:],v,scale="logy",grid=True)
 #makePlots(np.linspace(0,np.sum(t1),400),v1,scale="logy",grid=True)
 #GIST_Algo(N,K,density,time_g,val_g,error_g,MaxIter_g)

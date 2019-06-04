@@ -1,8 +1,8 @@
 import numpy as np 
-#import holoviews as hv 
-#from holoviews import opts 
+import holoviews as hv 
+from holoviews import opts 
 
-#hv.extension('matplotlib','bokeh')
+hv.extension('matplotlib','bokeh')
 
 import pickle
 import os
@@ -15,13 +15,13 @@ from datetime import datetime
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import sys
-from stela import stela_lasso
+#from stela import stela_lasso
 import numpy.matlib as npml
 
 
 def settup_qd():
-    import matplotlib.pyplot as plt 
-    return plt
+    import matplotlib.pyplot as plt1 
+    return plt1
 
 def settup_pgf():
     mpl.use("pgf")
@@ -171,7 +171,8 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
 
         if legend:
             plt1.legend()
-        plt1.show()
+        #plt1.show()
+        return plt1
    
 def generateNumbers(n,k,kind=None,specs=None,seed=None):
     if k:
