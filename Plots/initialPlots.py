@@ -137,6 +137,8 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
             s = dimX[0]
         if len(dimX) == 1 and len(dimY) == 2:
             s = dimY[0]
+        if len(dimX) == 2 and len(dimY) == 2:
+            s = dimX[1]
         X_t = np.transpose(X)
         Y_t = np.transpose(Y)
         if axes:
@@ -148,11 +150,20 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
         if s != 1:
             for k in range(s):
                 if scale=="logy":
-                    plt1.semilogy(X_t[:,k], Y_t[:,0,k], label=legend)
+                    if len(legend) > 1:
+                        plt1.semilogy(X_t[k,:], Y_t[:,k], label=legend[k])
+                    else:
+                        plt1.semilogy(X_t[:,k], Y_t[:,0,k], label=legend[k])
                 elif scale=="logx":
-                    plt1.semilogx(X_t[:,k], Y_t[:,0,k], label=legend)
+                    if len(legend) > 1:
+                        plt1.semilogx(X_t[k,:], Y_t[:,k], label=legend[k])
+                    else:
+                        plt1.semilogx(X_t[:,k], Y_t[:,0,k], label=legend[k])
                 elif scale=="loglog":
-                    plt1.loglog(X_t[:,k], Y_t[:,0,k], label=legend)
+                    if len(legend) > 1:
+                        plt1.loglog(X_t[k,:], Y_t[:,k], label=legend[k])
+                    else:
+                        plt1.loglog(X_t[:,k], Y_t[:,0,k], label=legend[k])
         
         elif s == 1:
             for k in range(s):

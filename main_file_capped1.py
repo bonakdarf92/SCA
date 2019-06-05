@@ -7,6 +7,7 @@ from Plots.initialPlots import makePlots
 import holoviews as hv 
 from holoviews import opts 
 import holoviews.plotting.mpl
+import tqdm
 
 
 hv.extension('matplotlib')
@@ -56,8 +57,19 @@ def parameter(N, K, density):
     for n in range(N):
         A[n,:] = A[n,:] / np.linalg.norm(A[n,:])
     b = np.dot(A,x0)   + np.sqrt(sigma2) * np.random.randn(N,1)
+    #b = A * x_orig + np.sqrt(sigma2) * np.random.randn(N,1)
     mu = 0.1 * np.max(np.abs(np.dot(A.T,b)))
     return A, b, mu, x0 #x_orig
+
+
+def soft_thresholding(q, t, K):
+    '''
+    The soft-thresholding function returns the optimal x that minimizes
+        min_x 0.5 * x^2 - q * x + t * |x|
+    '''
+    x = np.maximum(q - t, np.zeros(K)) - np.maximum(-q - t, np.zeros(K));
+    return x
+
 
 
 # TODO add nopython mode
@@ -68,6 +80,7 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
     val_g = np.zeros((Sample, MaxIter_g))
     error_g = np.zeros((Sample, MaxIter_g))
     for s in range(Sample):
+    #for s in tqdm.trange(Sample):
         if debug:
             print("Sample {}".format(s))
 
@@ -89,7 +102,7 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
         if debug:
             print("Proximal MM Algorithmus: Iteration 0 mit Wert {}".format(val_g[s,1]))
 
-        for t in range(MaxIter_g-1):
+        for t in tqdm.trange(MaxIter_g-1):
             
             t_start = time.time_ns()
             c = 1
@@ -128,18 +141,55 @@ def GIST_Algo(N, K, density, Sample, MaxIter_g, theta, debug):
             
 
 
-#a,b,c,d = parameter(100,200,0.01)
-v,e,t = GIST_Algo(200, 400, 0.01, 1, 400, 0.001, False)
-v1,e1,t1 = GIST_Algo(1000, 1600, 0.01, 1, 400, 0.001, False)
+def MM_Algo(N, K, density, Sample, MaxIter_m, theta, debug):
+    theta_vec = theta * np.ones((K,1))
+    time_m = np.zeros((Sample, MaxIter_m))
+    val_m = np.zeros((Sample, MaxIter_m))
+    for s in range(Sample):
+        if debug:
+            print("Sample {}".format(s))
+        A, b, mu, x0 = parameter(N, K, density)
+
+    t_start = time.time_ns()
+    d_Ata = np.reshape(np.sum(np.multiply(A,A),axis=0),(K,1))
+    mu_vec = mu * np.ones((K,1))
+    mu_vec_norm = mu_vec / d_Ata
+    x_m = np.zeros((K,1))
+    residual_m = np.dot(A, x_m) - b
+    Gradient_m = (np.dot(residual_m.T, A)).T
+    time_m[s,0] = time.time_ns() - t_start
+    val_m[s,0] = 0.5 * np.dot(residual_m.T, residual_m) + np.dot(mu_vec.T, np.minimum(np.abs(x_m), theta_vec))
+    if debug:
+            print("Proximal MM Algorithmus: Iteration 0 mit Wert {}".format(val_m[s,1]))
+    for t in tqdm.trange(MaxIter_m-1):
+        t_start = time.time_ns()
+        xi_minus =  mu_vec*(x_m >= theta_vec)  - (x_m <= -theta_vec)
+        for k in range(200):
+            Bx = soft_thresholding(x_m - (Gradient_m - xi_minus)/d_Ata, mu_vec_norm, K)
+            x_diff = Bx - x_m
+            Ax_diff = np.dot(A, x_diff)
+            stepsize_numerator = -(np.dot(residual_m, Ax_diff) + np.dot(mu_vec, np.absolute(Bx) - np.absolute(x_m)))
+            stepsize_denominator = np.dot(Ax_diff, Ax_diff)
+            stepsize = np.maximum(np.minimum(stepsize_numerator / stepsize_denominator, 1), 0)
+
+            x_m = x_m + stepsize * x_diff
+            residual_m = residual_m + stepsize * Ax_diff
+            Gradient_m = (np.dot(residual_m.T, Ax_diff)).T
+        time_m[s,t+1] = time.time_ns() - t_start
+        val_m[s,t+1] = 0.5 * np.dot(residual_m.T, residual_m) + np.dot(mu_vec.T, np.minimum(np.abs(x_m), theta_vec))
+    
+    return val_m, time_m
+
+
+
+
+
+#v,e,t = GIST_Algo(200, 400, 0.01, 10, 400, 0.001, False)
+#v1,e1,t1 = GIST_Algo(10000, 16000, 0.01, 3, 400, 0.001, False)
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
-#plot = makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend="Daten", axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
-
-import bokeh as bkh 
-import bokeh.plotting
-from bokeh.layouts import column, row
-from bokeh.io import push_notebook,show, output_notebook, output_file, export_svgs
-from IPython.core.interactiveshell import InteractiveShell
-
+#plot = makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend=["Run 1","Run 2","Run 3"], axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
+#plot = makePlots((np.linspace(0,np.sum(t,1),400)), (v) , legend=["Run {}".format(k) for k in range(10)], axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
+v, t = MM_Algo(200, 400, 0.01, 1, 30, 0.001, False)
 #plot.show()
 
 #hv.ipython.display(plot)

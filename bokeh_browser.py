@@ -36,6 +36,7 @@ from bokeh.models import Button, ColumnDataSource
 from bokeh.models.widgets import Slider, TextInput, Select
 from bokeh.io import output_notebook, push_notebook, show, output_file, curdoc
 from bokeh.layouts import column, row
+from tqdm import tqdm
 
 # TODO backup für html files
 #output_file('gist.html')               

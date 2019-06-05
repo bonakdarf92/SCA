@@ -1,4 +1,7 @@
 {
-    "python.pythonPath": "/anaconda3/bin/python",
-    "python.jediEnabled": true
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.sideBar.location": "right",
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe",
+    "python.condaPath": "C:\\Anaconda3\\envs",
+    "terminal.integrated.shellArgs.windows": ["bal"]
 }
