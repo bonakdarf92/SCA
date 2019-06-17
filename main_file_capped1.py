@@ -189,7 +189,7 @@ def MM_Algo(N, K, density, Sample, MaxIter_m, theta, debug):
 #a,b,c = f(np.random.rand(5),np.random.rand(10,1))
 #plot = makePlots((np.linspace(0,np.sum(t),400), np.linspace(0, np.sum(t1), 400)), (v,v1) , legend=["Run 1","Run 2","Run 3"], axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
 #plot = makePlots((np.linspace(0,np.sum(t,1),400)), (v) , legend=["Run {}".format(k) for k in range(10)], axes=['s','f'] ,scale="logy", grid=True, saveIt=False)
-v, t = MM_Algo(200, 400, 0.01, 1, 30, 0.001, False)
+#v, t = MM_Algo(200, 400, 0.01, 1, 30, 0.001, False)
 #plot.show()
 
 #hv.ipython.display(plot)
