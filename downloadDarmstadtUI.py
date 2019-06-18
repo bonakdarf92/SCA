@@ -2,6 +2,7 @@ import csv
 from urllib import request
 import os
 import tqdm
+import math
 
 url1_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6%2F10%2F19+4%3A59+AM&to=6%2F10%2F19+4%3A59+AM"
 url2_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6%2F10%2F19+4%3A58+AM&to=6%2F10%2F19+4%3A58+AM"
@@ -59,8 +60,11 @@ def download_data(csv_url, dest_file, current_counter, directory):
         fx.write(line + "\n")
     fx.close()
 
-def name_file(k, liste):
-    pass
+def name_file(k):
+    hour,minute = divmod(k,60)
+    return "{}_{}".format(hour, minute)
+
+
 
 def make_dir(name):
     current_path = os.path.join(os.getcwd(),"Darmstadt_verkehr")
@@ -76,12 +80,26 @@ missing_files = []
 
 make_dir("{}_{}_{}_darmstadtUI".format(date['year'],date['month'],date['day']))
 #make_dir(os.path.)
+
+for k in range(1440):
+    print(name_file(k))
+
 """
+# TODO check for download errors and path saving
 for k in tqdm.trange(len(test)):
     url = test[k]
     print("Datei {} - aktueller Stand: {}".format(url,round(k/len(test),2)))
     #missing = download_data(url,str(k), k)
     #missing_files.append(missing)
+"""
+
+"""
+# TODO test
+if missing_files:
+    for miss in missing_files:
+        url = missing_files[miss]
+        print("Redownload missing file: {}", url)
+        download_data(url,)
 """
 #download_data(url1_link,str(3))
 print("ok")
