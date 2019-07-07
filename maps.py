@@ -37,7 +37,7 @@ ax.scatter(y,x,marker="*",color="red",label='hauptstraßen')
 plt.legend()
 #mng = plt.get_current_fig_manager()
 #mng.window.showMaximized()
-plt.savefig('darmstadtNetzwerk')
+plt.savefig('darmstadtNetzwerk.pdf')
 #G = ox.graph_from_point((37.79, -122.41), distance=750, network_type='all')
 #ox.plot_graph(G)
 

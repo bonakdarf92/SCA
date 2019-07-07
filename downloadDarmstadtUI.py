@@ -61,6 +61,14 @@ def download_data(csv_url, dest_file, current_counter, directory):
     fx.close()
 
 def name_file(k):
+    """[summary]
+    
+    Arguments:
+        k {[type]} -- [description]
+    
+    Returns:
+        [type] -- [description]
+    """
     hour,minute = divmod(k,60)
     return "{}_{}".format(hour, minute)
 
