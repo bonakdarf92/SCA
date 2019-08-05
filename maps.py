@@ -39,7 +39,11 @@ import osmnx as ox
 #plt.legend()
 #mng = plt.get_current_fig_manager()
 #mng.window.showMaximized()
+<<<<<<< HEAD
 #plt.show()
+=======
+plt.savefig('darmstadtNetzwerk.pdf')
+>>>>>>> 8a671ba87c78e996e84a08d666241a0921cc8c92
 #G = ox.graph_from_point((37.79, -122.41), distance=750, network_type='all')
 #ox.plot_graph(G)
 
