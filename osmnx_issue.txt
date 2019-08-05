@@ -1,0 +1,272 @@
+Hi,
+
+I succesfully used the osmnx framework in order to access the Network of Darmstadt in Germany on my Windows PC.
+Unfortunetaley the Problem which occurs is an IllegalArgumentException when running my code or even the sample code 
+```python
+import osmnx as ox
+G = ox.graph_from_place('Manhattan Island, New York City, New York, USA', network_type='drive')
+-->Shell is not a LinearRing
+IllegalArgumentException: geometries must not contain null elements
+[1]    22260 segmentation fault  python
+```
+This error is only at my MacBookPro (10.14.1) where as no error occur on WinPC (10).
+In both environments I use an Anaconda with Python 3.7.3 and osmnx 0.10
+
+#### List Mac Environment
+
+<details>
+
+| Name | Version |  Build | Channel |
+| ------ | ------- | ------ | -------- |
+| altair | 3.1.0 | py37_0 | conda-forge |
+| asn1crypto | 0.24.0 | py37_1003 | conda-forge |
+ | attrs |  19.1.0 |  py_0 | conda-forge |  
+ | boost-cpp |  1.70.0 |  hd59e818_0 | conda-forge |  
+ | branca | 0.3.1 | py_0 | conda-forge |  
+ | bzip2 |  1.0.6 |  h1de35cc_1002 | conda-forge |  
+ | ca-certificates |  2019.6.16 | hecc5488_0 | conda-forge |  
+ | cairo |  1.16.0 | h0ab9d94_1001 | conda-forge |  
+ | certifi |  2019.6.16 | py37_0 | conda-forge |  
+ | cffi | 1.12.3 |  py37hccf1714_0 | conda-forge |  
+ | cfitsio |  3.430 |  h50cca31_1002 | conda-forge |  
+ | chardet |  3.0.4 | pypi_0 | pypi |  
+ | click |  7.0 | pypi_0 | pypi |  
+ | click-plugins |  1.1.1 | py_0 | conda-forge |  
+ | cligj |  0.5.0 | pypi_0 | pypi |  
+ | cryptography | 2.7 | py37h212c5bf_0 | conda-forge |  
+ | curl | 7.64.1 |  h22ea746_0 | conda-forge |  
+ | cycler | 0.10.0 |  pypi_0 | pypi |  
+ | decorator |  4.4.0 | py_0 | conda-forge |  
+ | descartes |  1.1.0 | py_3 | conda-forge |  
+ | entrypoints |  0.3 |  py37_1000 | conda-forge |  
+ | expat |  2.2.5 |  h6de7cb9_1003 | conda-forge |  
+ | fiona |  1.8.6 | pypi_0 | pypi |  
+ | folium | 0.9.1 | py_0 | conda-forge |  
+ | fontconfig | 2.13.1 | h1027ab8_1000 | conda-forge |  
+ | freetype | 2.10.0 |  h24853df_0 | conda-forge |  
+ | freexl | 1.0.5 |  h1de35cc_1002 | conda-forge |  
+ | gdal | 2.4.1 | py37h39889d8_4 | conda-forge |  
+ | geographiclib |  1.49 |  py_0 | conda-forge |  
+ | geopandas |  0.5.0 | py_2 | conda-forge |  
+ | geopy |  1.20.0 |  py_0 | conda-forge |  
+ | geos | 3.7.1 |  h0a44026_1000 | conda-forge |  
+ | geotiff |  1.5.1 | h83de174_2 | conda-forge |  
+ | gettext |  0.19.8.1 | h46ab8bc_1002 | conda-forge |  
+ | giflib | 5.1.7 | h01d97ff_1 | conda-forge |  
+ | glib | 2.58.3 | h9d45998_1001 | conda-forge |  
+ | hdf4 | 4.2.13 | hf3c6af0_1002 | conda-forge |  
+ | hdf5 | 1.10.5 | nompi_h0cbb7df_1100 | conda-forge |  
+ | icu |  58.2 | h0a44026_1000 | conda-forge |  
+ | idna | 2.8 | pypi_0 | pypi |  
+ | jinja2 | 2.10.1 |  py_0 | conda-forge |  
+ | jpeg | 9c | h1de35cc_1001 | conda-forge |  
+ | json-c | 0.13.1 | h1de35cc_1001 | conda-forge |  
+ | jsonschema | 3.0.1 | py37_0 | conda-forge |  
+ | kealib | 1.4.10 | h6659575_1005 | conda-forge |  
+ | kiwisolver | 1.1.0 | py37h770b8ee_0 | conda-forge |  
+ | krb5 | 1.16.3 | hcfa6398_1001 | conda-forge |  
+ | libblas |  3.8.0 | 7_openblas | conda-forge |  
+ | libcblas | 3.8.0 | 7_openblas | conda-forge |  
+ | libcurl |  7.64.1 |  h16faf7d_0 | conda-forge |  
+ | libcxx | 8.0.0 |  2 | conda-forge |  
+ | libcxxabi |  8.0.0 |  2 | conda-forge |  
+ | libdap4 |  3.19.1 | hae55d67_1000 | conda-forge |  
+ | libedit |  3.1.20170329 | hcfe32e1_1001 | conda-forge |  
+ | libffi | 3.2.1 |  h6de7cb9_1006 | conda-forge |  
+ | libgdal |  2.4.1 | hbed8f18_4 | conda-forge |  
+ | libgfortran |  3.0.1 |  0 | conda-forge |  
+ | libiconv | 1.15 | h01d97ff_1005 | conda-forge |  
+ | libkml | 1.3.0 |  hed7d534_1010 | conda-forge |  
+ | liblapack |  3.8.0 | 7_openblas | conda-forge |  
+ | libnetcdf |  4.6.2 |  h1a02027_1002 | conda-forge |  
+ | libpng | 1.6.37 |  h2573ce8_0 | conda-forge |  
+ | libpq |  11.3 |  h56406e1_0 | conda-forge |  
+ | libspatialindex |  1.9.0 | h6de7cb9_1 | conda-forge |  
+ | libspatialite |  4.3.0a | he900ada_1028 | conda-forge |  
+ | libssh2 |  1.8.2 | hcdc9a53_2 | conda-forge |  
+ | libtiff |  4.0.10 | hd08fb8f_1003 | conda-forge |  
+ | libxml2 |  2.9.9 | hd80cff7_0 | conda-forge |  
+ | lz4-c |  1.8.3 |  h6de7cb9_1001 | conda-forge |  
+ | mapclassify |  2.0.1 | py_0 | conda-forge |  
+ | markupsafe | 1.1.1 | py37h1de35cc_0 | conda-forge |  
+ | matplotlib | 3.1.0 | py37_1 | conda-forge |  
+ | matplotlib-base |  3.1.0 | py37h3a684a6_1 | conda-forge |  
+ | munch |  2.3.2 | py_0 | conda-forge |  
+ | ncurses |  6.1 |  h0a44026_1002 | conda-forge |  
+ | networkx | 2.3 | py_0 | conda-forge |  
+ | numpy |  1.16.4 |  py37h6b0580a_0 | conda-forge |  
+ | openblas | 0.3.5 |  h436c29b_1001 | conda-forge |  
+ | openjpeg | 2.3.1 | hc1feee7_0 | conda-forge |  
+ | openssl |  1.1.1b |  h01d97ff_2 | conda-forge |  
+ | osmnx |  0.10 |  py_1 | conda-forge |  
+ | pandas | 0.24.2 |  py37h86efe34_0 | conda-forge |  
+ | pcre | 8.41 | h0a44026_1003 | conda-forge |  
+ | pip |  19.1.1 |  py37_0 | conda-forge |  
+ | pixman | 0.38.0 | h01d97ff_1003 | conda-forge |  
+ | poppler |  0.67.0 |  hb974355_6 | conda-forge |  
+ | poppler-data | 0.4.9 |  1 | conda-forge |  
+ | postgresql | 11.3 |  hf10c77c_0 | conda-forge |  
+ | proj4 |  6.1.0 | h2cc77ee_2 | conda-forge |  
+ | pycparser |  2.19 |  py37_1 | conda-forge |  
+ | pygsp |  0.5.1 | pypi_0 | pypi |  
+ | pyopenssl |  19.0.0 |  py37_0 | conda-forge |  
+ | pyparsing |  2.4.0 | py_0 | conda-forge |  
+ | pyproj | 2.2.0 | pypi_0 | pypi |  
+ | pyrsistent | 0.15.2 |  py37h01d97ff_0 | conda-forge |  
+ | pysocks |  1.7.0 | py37_0 | conda-forge |  
+ | python | 3.7.3 | h0d93f26_0 | conda-forge |  
+ | python-dateutil |  2.8.0 | py_0 | conda-forge |  
+ | pytz | 2019.1 |  py_0 | conda-forge |  
+ | pyunlocbox | 0.5.2 | py_0 | conda-forge |  
+ | readline | 7.0 |  hcfe32e1_1001 | conda-forge |  
+ | requests | 2.22.0 |  py37_0 | conda-forge |  
+ | rtree |  0.8.3 |  py37h666c49c_1002 | conda-forge |  
+ | scipy |  1.3.0 | py37hab3da7d_0 | conda-forge |  
+ | setuptools | 41.0.1 |  py37_0 | conda-forge |  
+ | shapely |  1.6.4 |  py37h79c6f3e_1005 | conda-forge |  
+ | six |  1.12.0 |  pypi_0 | pypi |  
+ | sqlite | 3.28.0 |  h9721f7c_0 | conda-forge |  
+ | tk | 8.6.9 |  h2573ce8_1002 | conda-forge |  
+ | toolz |  0.9.0 | py_1 | conda-forge |  
+ | tornado |  6.0.3 | py37h01d97ff_0 | conda-forge |  
+ | tzcode | 2019a |  h01d97ff_1002 | conda-forge |  
+ | urllib3 |  1.25.3 |  pypi_0 | pypi |  
+ | vincent |  0.4.4 | py_1 | conda-forge |  
+ | wheel |  0.33.4 |  py37_0 | conda-forge |  
+ | xerces-c | 3.2.2 |  h44e365a_1001 | conda-forge |  
+ | xz | 5.2.4 |  h1de35cc_1001 | conda-forge |  
+ | zlib | 1.2.11 | h1de35cc_1004 | conda-forge |  
+ | zstd | 1.4.0 | ha9f0a20_0 | conda-forge |  
+</details>
+
+#### List Win Environment
+<details>  
+
+| Name | Version |  Build | Channel |
+| ------ | ------- | ------ | -------- |
+| altair | 3.1.0 | py37_0 | conda-forge |
+| asn1crypto | 0.24.0 | py37_1003 | conda-forge |
+ | attrs |  19.1.0 |  py_0 | conda-forge |  
+ | boost-cpp |  1.70.0 |  hd59e818_0 | conda-forge |  
+ | branca | 0.3.1 | py_0 | conda-forge |  
+ | bzip2 |  1.0.6 |  h1de35cc_1002 | conda-forge |  
+ | ca-certificates |  2019.6.16 | hecc5488_0 | conda-forge |  
+ | cairo |  1.16.0 | h0ab9d94_1001 | conda-forge |  
+ | certifi |  2019.6.16 | py37_0 | conda-forge |  
+ | cffi | 1.12.3 |  py37hccf1714_0 | conda-forge |  
+ | cfitsio |  3.430 |  h50cca31_1002 | conda-forge |  
+ | chardet |  3.0.4 | pypi_0 | pypi |  
+ | click |  7.0 | pypi_0 | pypi |  
+ | click-plugins |  1.1.1 | py_0 | conda-forge |  
+ | cligj |  0.5.0 | pypi_0 | pypi |  
+ | cryptography | 2.7 | py37h212c5bf_0 | conda-forge |  
+ | curl | 7.64.1 |  h22ea746_0 | conda-forge |  
+ | cycler | 0.10.0 |  pypi_0 | pypi |  
+ | decorator |  4.4.0 | py_0 | conda-forge |  
+ | descartes |  1.1.0 | py_3 | conda-forge |  
+ | entrypoints |  0.3 |  py37_1000 | conda-forge |  
+ | expat |  2.2.5 |  h6de7cb9_1003 | conda-forge |  
+ | fiona |  1.8.6 | pypi_0 | pypi |  
+ | folium | 0.9.1 | py_0 | conda-forge |  
+ | fontconfig | 2.13.1 | h1027ab8_1000 | conda-forge |  
+ | freetype | 2.10.0 |  h24853df_0 | conda-forge |  
+ | freexl | 1.0.5 |  h1de35cc_1002 | conda-forge |  
+ | gdal | 2.4.1 | py37h39889d8_4 | conda-forge |  
+ | geographiclib |  1.49 |  py_0 | conda-forge |  
+ | geopandas |  0.5.0 | py_2 | conda-forge |  
+ | geopy |  1.20.0 |  py_0 | conda-forge |  
+ | geos | 3.7.1 |  h0a44026_1000 | conda-forge |  
+ | geotiff |  1.5.1 | h83de174_2 | conda-forge |  
+ | gettext |  0.19.8.1 | h46ab8bc_1002 | conda-forge |  
+ | giflib | 5.1.7 | h01d97ff_1 | conda-forge |  
+ | glib | 2.58.3 | h9d45998_1001 | conda-forge |  
+ | hdf4 | 4.2.13 | hf3c6af0_1002 | conda-forge |  
+ | hdf5 | 1.10.5 | nompi_h0cbb7df_1100 | conda-forge |  
+ | icu |  58.2 | h0a44026_1000 | conda-forge |  
+ | idna | 2.8 | pypi_0 | pypi |  
+ | jinja2 | 2.10.1 |  py_0 | conda-forge |  
+ | jpeg | 9c | h1de35cc_1001 | conda-forge |  
+ | json-c | 0.13.1 | h1de35cc_1001 | conda-forge |  
+ | jsonschema | 3.0.1 | py37_0 | conda-forge |  
+ | kealib | 1.4.10 | h6659575_1005 | conda-forge |  
+ | kiwisolver | 1.1.0 | py37h770b8ee_0 | conda-forge |  
+ | krb5 | 1.16.3 | hcfa6398_1001 | conda-forge |  
+ | libblas |  3.8.0 | 7_openblas | conda-forge |  
+ | libcblas | 3.8.0 | 7_openblas | conda-forge |  
+ | libcurl |  7.64.1 |  h16faf7d_0 | conda-forge |  
+ | libcxx | 8.0.0 |  2 | conda-forge |  
+ | libcxxabi |  8.0.0 |  2 | conda-forge |  
+ | libdap4 |  3.19.1 | hae55d67_1000 | conda-forge |  
+ | libedit |  3.1.20170329 | hcfe32e1_1001 | conda-forge |  
+ | libffi | 3.2.1 |  h6de7cb9_1006 | conda-forge |  
+ | libgdal |  2.4.1 | hbed8f18_4 | conda-forge |  
+ | libgfortran |  3.0.1 |  0 | conda-forge |  
+ | libiconv | 1.15 | h01d97ff_1005 | conda-forge |  
+ | libkml | 1.3.0 |  hed7d534_1010 | conda-forge |  
+ | liblapack |  3.8.0 | 7_openblas | conda-forge |  
+ | libnetcdf |  4.6.2 |  h1a02027_1002 | conda-forge |  
+ | libpng | 1.6.37 |  h2573ce8_0 | conda-forge |  
+ | libpq |  11.3 |  h56406e1_0 | conda-forge |  
+ | libspatialindex |  1.9.0 | h6de7cb9_1 | conda-forge |  
+ | libspatialite |  4.3.0a | he900ada_1028 | conda-forge |  
+ | libssh2 |  1.8.2 | hcdc9a53_2 | conda-forge |  
+ | libtiff |  4.0.10 | hd08fb8f_1003 | conda-forge |  
+ | libxml2 |  2.9.9 | hd80cff7_0 | conda-forge |  
+ | lz4-c |  1.8.3 |  h6de7cb9_1001 | conda-forge |  
+ | mapclassify |  2.0.1 | py_0 | conda-forge |  
+ | markupsafe | 1.1.1 | py37h1de35cc_0 | conda-forge |  
+ | matplotlib | 3.1.0 | py37_1 | conda-forge |  
+ | matplotlib-base |  3.1.0 | py37h3a684a6_1 | conda-forge |  
+ | munch |  2.3.2 | py_0 | conda-forge |  
+ | ncurses |  6.1 |  h0a44026_1002 | conda-forge |  
+ | networkx | 2.3 | py_0 | conda-forge |  
+ | numpy |  1.16.4 |  py37h6b0580a_0 | conda-forge |  
+ | openblas | 0.3.5 |  h436c29b_1001 | conda-forge |  
+ | openjpeg | 2.3.1 | hc1feee7_0 | conda-forge |  
+ | openssl |  1.1.1b |  h01d97ff_2 | conda-forge |  
+ | osmnx |  0.10 |  py_1 | conda-forge |  
+ | pandas | 0.24.2 |  py37h86efe34_0 | conda-forge |  
+ | pcre | 8.41 | h0a44026_1003 | conda-forge |  
+ | pip |  19.1.1 |  py37_0 | conda-forge |  
+ | pixman | 0.38.0 | h01d97ff_1003 | conda-forge |  
+ | poppler |  0.67.0 |  hb974355_6 | conda-forge |  
+ | poppler-data | 0.4.9 |  1 | conda-forge |  
+ | postgresql | 11.3 |  hf10c77c_0 | conda-forge |  
+ | proj4 |  6.1.0 | h2cc77ee_2 | conda-forge |  
+ | pycparser |  2.19 |  py37_1 | conda-forge |  
+ | pygsp |  0.5.1 | pypi_0 | pypi |  
+ | pyopenssl |  19.0.0 |  py37_0 | conda-forge |  
+ | pyparsing |  2.4.0 | py_0 | conda-forge |  
+ | pyproj | 2.2.0 | pypi_0 | pypi |  
+ | pyrsistent | 0.15.2 |  py37h01d97ff_0 | conda-forge |  
+ | pysocks |  1.7.0 | py37_0 | conda-forge |  
+ | python | 3.7.3 | h0d93f26_0 | conda-forge |  
+ | python-dateutil |  2.8.0 | py_0 | conda-forge |  
+ | pytz | 2019.1 |  py_0 | conda-forge |  
+ | pyunlocbox | 0.5.2 | py_0 | conda-forge |  
+ | readline | 7.0 |  hcfe32e1_1001 | conda-forge |  
+ | requests | 2.22.0 |  py37_0 | conda-forge |  
+ | rtree |  0.8.3 |  py37h666c49c_1002 | conda-forge |  
+ | scipy |  1.3.0 | py37hab3da7d_0 | conda-forge |  
+ | setuptools | 41.0.1 |  py37_0 | conda-forge |  
+ | shapely |  1.6.4 |  py37h79c6f3e_1005 | conda-forge |  
+ | six |  1.12.0 |  pypi_0 | pypi |  
+ | sqlite | 3.28.0 |  h9721f7c_0 | conda-forge |  
+ | tk | 8.6.9 |  h2573ce8_1002 | conda-forge |  
+ | toolz |  0.9.0 | py_1 | conda-forge |  
+ | tornado |  6.0.3 | py37h01d97ff_0 | conda-forge |  
+ | tzcode | 2019a |  h01d97ff_1002 | conda-forge |  
+ | urllib3 |  1.25.3 |  pypi_0 | pypi |  
+ | vincent |  0.4.4 | py_1 | conda-forge |  
+ | wheel |  0.33.4 |  py37_0 | conda-forge |  
+ | xerces-c | 3.2.2 |  h44e365a_1001 | conda-forge |  
+ | xz | 5.2.4 |  h1de35cc_1001 | conda-forge |  
+ | zlib | 1.2.11 | h1de35cc_1004 | conda-forge |  
+ | zstd | 1.4.0 | ha9f0a20_0 | conda-forge |  
+</details>
+
+
+```python
+# your code goes here
+```
+
