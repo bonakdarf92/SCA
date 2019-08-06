@@ -5,6 +5,8 @@ from matplotlib import gridspec
 import matplotlib.pyplot as plt 
 import matplotlib.cm as cm  
 import matplotlib.colors as colors 
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT
 import pygsp as ps 
 import pandas as pd 
 import geopandas as gpd 
@@ -22,6 +24,7 @@ class DarmstadtNetwork:
     Graph = nx.MultiGraph
     sparse_adj = None
     cityMap = None
+    figCityMap = None
     spy = None 
     settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#ff0000",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
 
@@ -35,15 +38,15 @@ class DarmstadtNetwork:
             try:
                 self.Graph = self.load_darmstadt(self.nameFile)
                 self.sparse_adj = self.extract_adjencecacy()
-                _, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
+                self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
             except FileNotFoundError:
                 print("Could not find file ... redownload")
                 self.Graph = self.download_darmstadt(self.geo, self.nameFile, self.locationFile, show=False)
                 self.sparse_adj = self.extract_adjencecacy()
-                _, self.cityMap = ox.plot_graph(**self.settings)
+                self.figCityMap, self.cityMap = ox.plot_graph(**self.settings)
                 
-                
-    def load_darmstadt(self,name,show=False):
+
+    def load_darmstadt(self,name=None,show=False):
         """
         This function loads a given graphml file and plots\n
         @param:\n
@@ -53,6 +56,8 @@ class DarmstadtNetwork:
         @return:\n
             osmnx multigraph network: File to be loaded 
         """
+        if name is None:
+            name = self.nameFile
         if Path("./{}.graphml".format(name)).is_file():
             print("Load Darmstadt from Graphml File ...")
             G = ox.load_graphml("{}.graphml".format(name),folder=".")
@@ -62,7 +67,7 @@ class DarmstadtNetwork:
             return G
         else:
             print("Graphml File doesn't exist!")
-            raise FileNotFoundError("Graphml File does not exist")
+            raise FileNotFoundError("Graphml File {} does not exist".format(name + ".graphml"))
 
     def download_darmstadt(self, geo, name, loc, show=True):
         """
@@ -348,6 +353,23 @@ dtown = DarmstadtNetwork()
 
 G = dtown.Graph #load_darmstadt(name)
 dtown.get_laplacian(show=True)
+print(dtown.nameFile)
+dtown.nameFile = "Farid"
+print(dtown.nameFile)
+#plt.plot(figure=dtown.figCityMap,axis=dtown.cityMap)
+#figu = dtown.figCityMap
+fige = plt.figure()
+newMan = fige.canvas.manager
+newMan.canvas.figure = dtown.figCityMap
+dtown.figCityMap.set_canvas(newMan.canvas)
+
+plt.show()
+
+dtown.figCityMap.show()
+
+
+
+#dtown.figCityMap.show()
 #plt.show()
 """
 xs, ys, ids = get_ids(G)
