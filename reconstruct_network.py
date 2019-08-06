@@ -66,6 +66,19 @@ def load_darmstadt(name,show=False):
 
 
 def print_stats(graph,type="basic",log=False):
+    """
+    This function print out the statistics of the graph
+    
+    @param:\n
+        graph {networkx Graph}: Graph for which statistics should be calculated\n
+    \n
+    @param:\n
+        type {str}:  setting which defines the level of output (default: {"basic"})\n
+        log {bool}:  if set true print out the statistics (default: {False})\n
+    \n
+    @return:\n
+        stats {str}: statistics of graph 
+    """
     if type=="basic":
         stats = ox.basic_stats(graph)
         for key,value in stats.items():
@@ -101,6 +114,19 @@ def print_stats(graph,type="basic",log=False):
 
 
 def extract_adjencecacy(graph,structure="sparse",direction="undirected"):
+    """
+    This function returns the adjancecy matrix of a graph\n
+    
+    @param:\n
+        graph {graph}:  graph containing the nodes and egdes either in numpy, scipy or networkx format\n
+    
+    @param:\n
+        structure {str}:  flag defining the kind of output graph (default: {"sparse"})\n
+        direction {str}:  flag defining type of graph (default: {"undirected"})\n
+    \n
+    @return:\n
+        [numpy/scipy graph]: type of output
+    """
     if direction=="undirected":
         graph_un = nx.to_undirected(graph)
         if structure=="sparse":
@@ -115,6 +141,19 @@ def extract_adjencecacy(graph,structure="sparse",direction="undirected"):
 
 
 def plot_matrix(matrix, figures=111, sparse=True):
+    """
+    This function plots a spy view of a graph/matrix\n
+    \n 
+    @param:\n
+        matrix {numpy/scipy matrix} -- input matrix in 2D, either numpy or scipy format\n
+    \n
+    @param:\n
+        figures {int}:   number of plots in a figure (default: {111})\n
+        sparse {bool}:   type of input matrix (default: {True})\n
+    \n
+    @return:\n
+        [axes]:     axes of plot
+    """
     if sparse:
         rows = matrix.tocoo().row
         cols = matrix.tocoo().col
@@ -136,18 +175,23 @@ def plot_matrix(matrix, figures=111, sparse=True):
 
 
 def plot_laplacian(graph, kind="laplacian",show=False):
+    """
+    This function plots the Laplacian of a matrix\n
+    @param:\n
+        graph {networkx undirected}:  A undirected Graph is mandatory 
+    
+    @param:\n
+        show {bool}:  flag for showing plot (default: {False})
+    
+    @return:
+        [ax]:   axes of plot
+    """
+    # TODO refactor if only laplacians should be plotted
     if kind=="laplacian":
         if type(graph) == nx.MultiDiGraph:
             graph = nx.to_undirected(graph)
         L = nx.linalg.laplacian_matrix(graph)
         ax = plot_matrix(L)
-        #rows = L.tocoo().row
-        #cols = L.tocoo().col 
-        #data = L.tocoo().data
-        #ax = plt.subplot(111)
-        #im = ax.scatter(rows, cols, c=data, s=1, cmap='coolwarm')
-        #cbar = ax.figure.colorbar(im,ax=ax)
-        #ax.invert_yaxis()
         if show:
             plt.show()
         else:
@@ -169,13 +213,32 @@ def get_diag(graph,norm=False, show=False):
 
 
 def get_ids(graph):
+    """
+    This function return list containing the X- and Y-Postions and the OSMIDs of all nodes\n
+    @param:\n
+        graph {networks graph}:  any networkx graph coming from osmnx\n
+    @return:\n
+        [nodeXs]:  list containing all x positions in osmnx graph\n
+        [nodeYs]:  list containing all y positions in osmnx graph\n
+        [nodeID]:  list containing all IDs in osmnx graph
+    """
     nodeXs = [x for _, x in graph.nodes(data='x')]
     nodeYs = [y for _, y in graph.nodes(data='y')]
-    nodeID = [id for id, _ in graph.nodes(data='osmid')]
+    nodeID = [ID for ID, _ in graph.nodes(data='osmid')]
     return nodeXs, nodeYs, nodeID
 
 
 def plot_parallel_edges(ax, xs, ys, graph, color="blue"):
+    """
+    This function plots position of nodes where self-loops or multiedges are located\n
+    @param:\n
+        ax {axes}:     axes of base plot \n
+        xs {[type]}:   list of x-postions of complete graph\n
+        ys {[type]}:   list of y-postions of complete graph\n
+        graph {numpy matrix}:  numpy array containing adjancecy matrix\n
+    @param:\n
+        color {str}:   setting for node color of self-loops and multiedges(default: {"blue"})
+    """
     if sc.sparse.issparse(graph):
         print("Sparse Matrix --- Transformiere")
         temp = extract_adjencecacy(graph,structure="dense")
@@ -197,7 +260,6 @@ A = extract_adjencecacy(G,structure="dense")
 
 get_diag(G)
 
-# TODO comment function
 plot_parallel_edges(ax1,xs, ys, A)
 
 #A = extract_adjencecacy(G,structure="dense")
