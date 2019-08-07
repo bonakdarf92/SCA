@@ -39,11 +39,8 @@ import osmnx as ox
 #plt.legend()
 #mng = plt.get_current_fig_manager()
 #mng.window.showMaximized()
-<<<<<<< HEAD
 #plt.show()
-=======
-plt.savefig('darmstadtNetzwerk.pdf')
->>>>>>> 8a671ba87c78e996e84a08d666241a0921cc8c92
+#plt.savefig('darmstadtNetzwerk.pdf')
 #G = ox.graph_from_point((37.79, -122.41), distance=750, network_type='all')
 #ox.plot_graph(G)
 
@@ -61,3 +58,9 @@ for key, value in stats.items():
 import pandas as pd 
 print(pd.Series(stats))
 fig, ax = ox.plot_graph(G, bgcolor='k',node_size=30,node_color='#999999')
+
+from DarmstadtNetwork import DarmstadtNetwork
+
+dtown = DarmstadtNetwork()
+
+dtown.get_laplacian(show=True)

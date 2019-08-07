@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from stela import stela_lasso, soft_thresholding
 
-N = 1000; # number of rows of A (measurements)
-K = 2; # number of columns of A (features)
+N = 5000; # number of rows of A (measurements)
+K = 10; # number of columns of A (features)
 
 
 '''disable the following two lines to input your own number of measurements and features'''
@@ -28,16 +28,16 @@ x0[x0_positions] = np.random.normal(0, 1, int(K * density))
 
 '''generate the noise'''
 sigma = 0.05 # noise standard deviation
-v     = np.random.normal(0, sigma, N) # noise
+v     = np.random.normal(1.5, sigma, N) # noise
 
 '''generate the noisy measurement'''
 y  = np.dot(A, x0) + v # measurement
 
 '''regularization gain'''
-mu = 0.001*np.linalg.norm(np.dot(y, A), np.inf)
+mu = 0.01*np.linalg.norm(np.dot(y, A), np.inf)
 
 '''call STELA'''
-MaxIter = 5000 # maximum number of iterations, optional input
+MaxIter = 10000 # maximum number of iterations, optional input
 objval, x, error = stela_lasso(A, y, mu, MaxIter)
 
 '''plot output'''

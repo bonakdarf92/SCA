@@ -342,13 +342,13 @@ class DarmstadtNetwork:
 
 
 
-geo = dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
-name = "d"
+#geo = dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
+#name = "d"
 #download_darmstadt(geo,name, ".", show=False)
 
-dtown = DarmstadtNetwork()
+#dtown = DarmstadtNetwork()
 
-
+"""
 
 
 G = dtown.Graph #load_darmstadt(name)
@@ -371,6 +371,8 @@ dtown.figCityMap.show()
 
 #dtown.figCityMap.show()
 #plt.show()
+"""
+
 """
 xs, ys, ids = get_ids(G)
 
