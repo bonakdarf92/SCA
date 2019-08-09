@@ -45,22 +45,34 @@ import osmnx as ox
 #ox.plot_graph(G)
 
 #gv.extension('bokeh')
-print("ok")
-#tiles = gv.tile_sources.Wikipedia
-#test = gpd.dataset.available()
-import osmnx as ox
-#t = ox.graph_from_place('Manhattan Island, New York City, New York, USA', network_type='drive')
-G = ox.load_graphml('g.graphml',folder='.')
+# print("ok")
+# #tiles = gv.tile_sources.Wikipedia
+# #test = gpd.dataset.available()
+# import osmnx as ox
+# #t = ox.graph_from_place('Manhattan Island, New York City, New York, USA', network_type='drive')
+# G = ox.load_graphml('g.graphml',folder='.')
 
-stats = ox.basic_stats(G) 
-for key, value in stats.items():
-    stats[key] = value 
-import pandas as pd 
-print(pd.Series(stats))
-fig, ax = ox.plot_graph(G, bgcolor='k',node_size=30,node_color='#999999')
+# stats = ox.basic_stats(G) 
+# for key, value in stats.items():
+#     stats[key] = value 
+# import pandas as pd 
+# print(pd.Series(stats))
+# fig, ax = ox.plot_graph(G, bgcolor='k',node_size=30,node_color='#999999')
 
+
+#from SCA.DarmstadtNetwork import DarmstadtNetwork
+
+import matplotlib.pyplot as plt
 from DarmstadtNetwork import DarmstadtNetwork
+import networkx as nx 
+import pygsp as ps
+
 
 dtown = DarmstadtNetwork()
 
-dtown.get_laplacian(show=True)
+#L, ax = dtown.get_laplacian(show=True)
+#print("1")
+
+dtown.plot_parallel_edges()
+print("2")
+dtown.show_citymap()

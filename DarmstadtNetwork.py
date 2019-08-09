@@ -43,7 +43,7 @@ class DarmstadtNetwork:
                 print("Could not find file ... redownload")
                 self.Graph = self.download_darmstadt(self.geo, self.nameFile, self.locationFile, show=False)
                 self.sparse_adj = self.extract_adjencecacy()
-                self.figCityMap, self.cityMap = ox.plot_graph(**self.settings)
+                self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
                 
 
     def load_darmstadt(self,name=None,show=False):
@@ -194,7 +194,12 @@ class DarmstadtNetwork:
             cols = matrix.tocoo().col
             data = matrix.tocoo().data
             ax = plt.subplot(figures)
-            im = ax.scatter(rows, cols, c=data, s=1, cmap='coolwarm')
+            if (matrix.shape[1]) < 50:
+                im = ax.scatter(rows, cols, c=data, s=15, cmap='coolwarm')
+            elif (matrix.shape[1]) < 100:
+                im = ax.scatter(rows, cols, c=data, s=10, cmap='coolwarm')
+            else:
+                im = ax.scatter(rows, cols, c=data, s=1, cmap='coolwarm')
             cbar = ax.figure.colorbar(im, ax=ax)
             ax.invert_yaxis()
             return ax
@@ -222,18 +227,39 @@ class DarmstadtNetwork:
         """
         if all(v is None for v in [graph, ax, xs, ys]):
             graph = self.sparse_adj
+            ax = self.cityMap
             
         if sc.sparse.issparse(graph):
             print("Sparse Matrix --- Transformiere")
-            temp = self.extract_adjencecacy(graph,structure="dense")
+            temp = self.extract_adjencecacy(self.Graph,structure="dense")
             xxs, yys = np.where(temp == np.amax(temp))
         else:
             print("Dichte Matrix --- berechne max einträge")
             xxs, yys = np.where(graph==np.amax(graph))
+        xs,ys,ids = self.get_ids()
         for k in range(0,len(xxs)):
             ax.scatter(xs[xxs[k]], ys[xxs[k]],c=color)
             ax.scatter(xs[yys[k]], ys[yys[k]], c=color)
         plt.show()
+
+    def remove_diagsLoops(self,xs=None,ys=None,graph=None):
+        if all(v is None for v in [graph,xs,ys]):
+            graph = self.sparse_adj
+        if sc.sparse.issparse(graph):
+            print("Sparse Matrix --- Transformiere")
+            temp = self.extract_adjencecacy(self.Graph, structure="dense")
+            xxs, yys = np.where(temp == np.amax(temp))
+        else:
+            print("Dichte Matrix --- berechne maximale Einträge")
+            xxs, yys = np.where(graph == np.amax(graph))
+        #xs, ys, ids = self.get_ids()
+        for k in range(0,len(xxs)):
+            if xxs[k] == yys[k]:
+                temp[xxs[k],xxs[k]] = 0
+            else:
+                temp[xxs[k],yys[k]] = 1
+                temp[yys[k],xxs[k]] = 1
+        return sc.sparse.csr_matrix(temp)
 
     def get_laplacian(self, graph=None, kind="laplacian",show=False):
         """
@@ -340,6 +366,12 @@ class DarmstadtNetwork:
         nodeID = [ID for ID, _ in graph.nodes(data='osmid')]
         return nodeXs, nodeYs, nodeID
 
+    def show_citymap(self):
+        fig = plt.figure()
+        new = fig.canvas.manager
+        new.canvas.figure = self.figCityMap
+        new.canvas.ax = self.cityMap
+        plt.show()
 
 
 #geo = dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
