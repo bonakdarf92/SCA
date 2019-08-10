@@ -242,12 +242,16 @@ class DarmstadtNetwork:
             ax.scatter(xs[yys[k]], ys[yys[k]], c=color)
         plt.show()
 
-    def remove_diagsLoops(self,xs=None,ys=None,graph=None):
+    def remove_diagsLoops(self,xs=None,ys=None,graph=None,direction="undirected"):
         if all(v is None for v in [graph,xs,ys]):
             graph = self.sparse_adj
-        if sc.sparse.issparse(graph):
+        if sc.sparse.issparse(graph) and direction=="undirected":
             print("Sparse Matrix --- Transformiere")
             temp = self.extract_adjencecacy(self.Graph, structure="dense")
+            xxs, yys = np.where(temp == np.amax(temp))
+        elif direction=="directed":
+            # TODO check for bugs
+            temp = self.extract_adjencecacy(structure="dense", direction="directed")
             xxs, yys = np.where(temp == np.amax(temp))
         else:
             print("Dichte Matrix --- berechne maximale Einträge")
