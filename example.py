@@ -235,11 +235,24 @@ G.set_coordinates([[v,z] for v,z in zip(xs,ys)])
 G.compute_laplacian('combinatorial')
 G.compute_fourier_basis()
 G.compute_differential_operator() 
+fig, axes = plt.subplots(1,5,figsize=(12,4))
+def plot_eigenvectors(G,axes):
+    limits = [f(G.U) for f in (np.min, np.max)]
+    for i, ax in enumerate(axes):
+        G.plot(G.U[:,i], limits=limits, colorbar=False, vertex_size=30,ax=ax)
+        energy = abs(G.dirichlet_energy(G.U[:,i]))
+        ax.set_title(r'$u^T L u = {}$'.format(energy))
+        ax.set_axis_off()
+
+plot_eigenvectors(G, axes)
+plt.show()
+
 scales = [10, 3, 0]
 limit = 1
 
 fig, axes = plt.subplots(2, len(scales), figsize=(12, 4))
 fig.subplots_adjust(hspace=0.5)
+
 
 x0 = np.random.RandomState(1).normal(size=G.N)
 for i, scale in enumerate(scales):

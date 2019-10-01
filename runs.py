@@ -1,5 +1,5 @@
-from SCA.DarmstadtNetwork import DarmstadtNetwork
-from SCA.Plots import initialPlots
+from DarmstadtNetwork import DarmstadtNetwork
+#from Plots import initialPlots
 import networkx as nx 
 import pygsp as ps 
 import numpy as np
@@ -117,10 +117,11 @@ plt.show()
 
 
 
-from SCA.stela import stela_lasso, soft_thresholding
+from stela import stela_lasso, soft_thresholding,stela_cappedL1
 y_stela = np.dot(x_loss,x) 
 mu = 0.01 * np.linalg.norm(np.dot(y_stela,x_loss),np.inf)
 objval, x_stela, error_stela = stela_lasso(x_loss,y_stela,mu,10000)
+objval1, x_stela1, error_stela1 = stela_cappedL1(x_loss,y_stela,mu,10000)
 fig3,axes_diff = plt.subplots(3,1,figsize=(12,4))
 axes_diff[0].errorbar(range(0,len(x)),x,yerr=x-prob1['sol'],ecolor='red')
 axes_diff[1].errorbar(range(0,len(x)),x,yerr=x-prob2['sol'],ecolor='red')
