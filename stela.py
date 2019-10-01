@@ -210,9 +210,9 @@ def stela_cappedL1(A, y, mu, theta, maxiter=1000):
         #stepsize = np.maximum(np.minimum(stepsize_numerator / stepsize_denominator, 1), 0)
         stepsize = np.minimum(stepsize_numerator / stepsize_denominator, 1)
         '''variable update'''
-        x = x + stepsize * x_dif;
+        x = x + stepsize * x_dif
 
-        residual = residual + stepsize * Ax_dif;
+        residual = residual + stepsize * Ax_dif
         f_gradient = np.dot(residual, A)
 
         CPU_time[t + 1] = time.time() - CPU_time[t + 1] + CPU_time[t]

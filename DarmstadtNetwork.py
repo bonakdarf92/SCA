@@ -18,9 +18,9 @@ from pathlib import Path
 
 class DarmstadtNetwork:
     adj = None
-    geo = dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
+    geo = None#dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
     locationFile = "."
-    nameFile = "d"
+    nameFile = None#"d"
     Graph = nx.MultiGraph
     sparse_adj = None
     cityMap = None
@@ -36,6 +36,7 @@ class DarmstadtNetwork:
             self.nameFile = name 
         else:
             try:
+                self.settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#ff0000",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
                 self.Graph = self.load_darmstadt(self.nameFile)
                 self.sparse_adj = self.extract_adjencecacy()
                 self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
@@ -376,6 +377,10 @@ class DarmstadtNetwork:
         new.canvas.figure = self.figCityMap
         new.canvas.ax = self.cityMap
         plt.show()
+
+    def plot_map(self):
+        ox.plot_graph(self.Graph,**self.settings)
+        #return fig,ax 
 
 
 #geo = dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
