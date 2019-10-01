@@ -17,15 +17,15 @@ import collections
 from pathlib import Path 
 
 class DarmstadtNetwork:
-    adj = None
-    geo = None#dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
-    locationFile = "."
-    nameFile = None#"d"
-    Graph = nx.MultiGraph
-    sparse_adj = None
-    cityMap = None
-    figCityMap = None
-    spy = None 
+    #adj = None
+    #geo = None#dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
+    #locationFile = "."
+    #nameFile = None#"d"
+    #Graph = nx.MultiGraph
+    #sparse_adj = None
+    #cityMap = None
+    #figCityMap = None
+    #spy = None 
     settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#ff0000",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
 
 
@@ -33,19 +33,19 @@ class DarmstadtNetwork:
         if geopostion:
             self.geo = geopostion
         if name:
-            self.nameFile = name 
-        else:
-            try:
-                self.settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#ff0000",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
-                self.Graph = self.load_darmstadt(self.nameFile)
-                self.sparse_adj = self.extract_adjencecacy()
-                self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
-            except FileNotFoundError:
-                print("Could not find file ... redownload")
-                self.Graph = self.download_darmstadt(self.geo, self.nameFile, self.locationFile, show=False)
-                self.sparse_adj = self.extract_adjencecacy()
-                self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
-                
+            self.nameFile = name
+    
+        try:
+            self.settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#ff0000",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
+            self.Graph = self.load_darmstadt(self.nameFile)
+            self.sparse_adj = self.extract_adjencecacy()
+            self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
+        except FileNotFoundError:
+            print("Could not find file ... redownload")
+            self.Graph = self.download_darmstadt(self.geo, self.nameFile, self.locationFile, show=False)
+            self.sparse_adj = self.extract_adjencecacy()
+            self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
+            
 
     def load_darmstadt(self,name=None,show=False):
         """
