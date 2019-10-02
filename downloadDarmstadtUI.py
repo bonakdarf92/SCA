@@ -3,6 +3,7 @@ from urllib import request
 import os
 import tqdm
 import math
+import platform
 
 url1_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6%2F10%2F19+4%3A59+AM&to=6%2F10%2F19+4%3A59+AM"
 url2_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6%2F10%2F19+4%3A58+AM&to=6%2F10%2F19+4%3A58+AM"
@@ -55,7 +56,12 @@ def download_data(csv_url, dest_file, current_counter, directory):
     csv_str = str(csv)
     lines = csv_str.split("\\n")
     dest_url = dest_file + ".csv"
-    fx = open(os.path.join('C:\\Users\\VonMir\\Desktop\\MasterThesis\\SCA\\Darmstadt_verkehr', directory, dest_url),"w")
+    if platform.system() == 'Windows':
+        print("Windows System")
+        fx = open(os.path.join('C:\\Users\\VonMir\\Desktop\\MasterThesis\\SCA\\Darmstadt_verkehr', directory, dest_url),"w")
+    elif platform.system() == 'Darwin':
+        print("Mac OS System")
+        fx = open(os.path.join('/Users/faridbonakdar/Documents/MasterThesis/SCA/Darmstadt_verkehr', directory, dest_url),"w")
     for line in lines:
         fx.write(line + "\n")
     fx.close()
@@ -77,29 +83,32 @@ def name_file(k):
 def make_dir(name):
     current_path = os.path.join(os.getcwd(),"Darmstadt_verkehr")
     newpath = name
-    os.mkdir(os.path.join(current_path,name))
+    try:
+        os.mkdir(os.path.join(current_path,name))
+    except FileExistsError:
+        return name
     print("Ordner erstellt")
-    return
+    return name
     #pass 
 
 date = {'year':2019,'month':5,'day':20}
 test = create_url(date['year'], date['month'], date['day'], None)
 missing_files = []
 
-make_dir("{}_{}_{}_darmstadtUI".format(date['year'],date['month'],date['day']))
+d = make_dir("{}_{}_{}_darmstadtUI".format(date['year'],date['month'],date['day']))
 #make_dir(os.path.)
 
 for k in range(1440):
     print(name_file(k))
 
-"""
+
 # TODO check for download errors and path saving
 for k in tqdm.trange(len(test)):
     url = test[k]
     print("Datei {} - aktueller Stand: {}".format(url,round(k/len(test),2)))
-    #missing = download_data(url,str(k), k)
-    #missing_files.append(missing)
-"""
+    missing = download_data(url,str(k), k, d)
+    missing_files.append(missing)
+
 
 """
 # TODO test

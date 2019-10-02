@@ -134,7 +134,7 @@ from stela import *
 import numpy as np
 from DarmstadtNetwork import DarmstadtNetwork
 import pygsp as ps 
-darmi = DarmstadtNetwork()
+darmi = DarmstadtNetwork(dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895),"d")
 A = darmi.remove_diagsLoops(direction="directed").toarray()
 D_g = ps.graphs.Graph(A) 
 xs,ys,_ = darmi.get_ids()

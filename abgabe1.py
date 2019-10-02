@@ -3,6 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import osmnx as ox
 import numpy as np
+import Plots.initialPlots 
 geo = dict(north=49.874,south=49.8679,west=8.6338,east=8.6517)
 D_city = DarmstadtNetwork(geo,"Abgabe")
 D_city.load_darmstadt(show=False)
@@ -35,8 +36,7 @@ bla = nx.to_directed(D_city.Graph)
 
 for k in range(len(strecke)):
     list_strecke = list(strecke[k][:])
-    list_strecke[2] = np.exp(-(np.square(list_strecke[2]))/(2*100**2))
-    #strecke[k][2] = np.exp(-np.square(strecke[k][2])/2)
+    list_strecke[2] = round(np.exp(-(np.square(list_strecke[2]))/(2*100**2)))
     bla.add_weighted_edges_from([tuple(list_strecke)])
 
 A = D_city.sparse_adj
@@ -55,9 +55,6 @@ G.set_coordinates([[v,z] for v,z in zip(xs,ys)])
 G2 = ps.graphs.Graph(A3)
 G2.set_coordinates([[v,z] for v,z in zip(xs,ys)])
 
-fig1,ax1 = plt.subplots(2,3,figsize=(12,5))
-plt.set_cmap('seismic')
-plt.tight_layout()
 #_ = ax1[0].spy(G.W,markersize=2)
 G.compute_laplacian('combinatorial')
 G.compute_fourier_basis()
@@ -66,6 +63,28 @@ G2.compute_laplacian('combinatorial')
 G2.compute_fourier_basis()
 G2.compute_differential_operator()
 rs = np.random.RandomState(42)
+filt = lambda x: 1 / (1 + 10*x)
+filt = ps.filters.Filter(G2,filt)
+signal_tik = filt.analyze(rs.normal(size=G2.N))
+mask = rs.uniform(0,1,G2.N) > 0.7
+measure = signal_tik.copy()
+measure[~mask] = np.nan 
+recovery = ps.learning.regression_tikhonov(G2,measure,mask,tau=0.01)
+fig3,ax3 = plt.subplots(1,3,sharey=True,figsize=(10,3))
+limits = [signal_tik.min(),signal_tik.max()]
+
+_ = G2.plot_signal(signal_tik,ax=ax3[0],limits=limits,title='Ground Truth')
+_ = G2.plot_signal(measure,ax=ax3[1],limits=limits,title='Measurement')
+_ = G2.plot_signal(recovery,ax=ax3[2],limits=limits,title='Recovery ')
+_ = fig3.tight_layout()
+plt.show()
+plt.plot(signal_tik-recovery)
+plt.show()
+
+
+fig1,ax1 = plt.subplots(2,3,figsize=(12,5))
+plt.set_cmap('seismic')
+plt.tight_layout()
 sources = 20#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
 signal = np.zeros(G2.n_vertices)
 signal[sources] = 20
@@ -93,3 +112,5 @@ for i, t in enumerate(times):
 
 
 plt.show()
+
+

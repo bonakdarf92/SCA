@@ -1,8 +1,8 @@
 import numpy as np 
-import holoviews as hv 
-from holoviews import opts 
+#import holoviews as hv 
+#from holoviews import opts 
 
-hv.extension('matplotlib','bokeh')
+#hv.extension('matplotlib','bokeh')
 
 import pickle
 import os
