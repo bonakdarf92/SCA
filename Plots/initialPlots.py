@@ -135,10 +135,12 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
         s = 0
         if len(dimX) > 1 and len(dimY) > 2:
             s = dimX[0]
-        if len(dimX) == 1 and len(dimY) == 2:
-            s = dimY[0]
-        if len(dimX) == 2 and len(dimY) == 2:
+        elif len(dimX) == 1 and len(dimY) == 2:
+            s = dimY[1]
+        elif len(dimX) == 2 and len(dimY) == 2:
             s = dimX[1]
+        else:
+            s = 1
         X_t = np.transpose(X)
         Y_t = np.transpose(Y)
         if axes:
@@ -164,7 +166,12 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
                         plt1.loglog(X_t[k,:], Y_t[:,k], label=legend[k])
                     else:
                         plt1.loglog(X_t[:,k], Y_t[:,0,k], label=legend[k])
-        
+                else:
+                    if len(legend) > 1:
+                        plt1.plot(X_t,Y_t[k,:],label=legend[k])
+                    else:
+                        plt1.plot(X_t,Y_t[k,:],label=legend[k])
+
         elif s == 1:
             for k in range(s):
                 if scale=="logy":
@@ -177,14 +184,32 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
         
         if grid:
             plt1.grid(True)
-        else:
-            fig.plot(X_t, Y_t, label=legend)
+        #else:
+        #    plt1.plot(X_t, Y_t, label=legend)
 
         if legend:
             plt1.legend()
         #plt1.show()
         return plt1
    
+
+def signalPoint(Sensor,show=False,title=None):
+    plt1 = settup_qd()
+    fig = plt1.figure()
+    ax = fig.add_subplot(111,projection='3d')
+    n,m = np.shape(Sensor)
+    for k in range(m):
+        ax.plot(range(n),Sensor[:,k],zs=k,zdir='y')
+    if title:
+        plt1.title(title)
+    if show:
+        now = datetime.now()
+        date_time = now.strftime("%Y_%m_%d-%H_%M_%S")
+        plt1.savefig(date_time)
+    else:
+        return plt1
+
+
 def generateNumbers(n,k,kind=None,specs=None,seed=None):
     if k:
         if kind=='zeros':

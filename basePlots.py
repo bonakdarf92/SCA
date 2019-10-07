@@ -148,15 +148,12 @@ surf = ax.plot_surface(xx,yy,z,cmap=cm.coolwarm,linewidth=0,antialiased=False)
 
 plt.show()
 
-"""
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+# fig = plt.figure()
+# ax = fig.gca(projection='3d')
 
-surf = ax.plot_surface(x,y,z)
-plt.show()
+# surf = ax.plot_surface(x,y,z)
+# plt.show()
 
-"""
-"""
 A = generateNumbers(10,k=10,kind='rand')
 x = np.linspace(-10,10)
 y0 = np.sin(x)
@@ -167,7 +164,6 @@ X = [x, x, x]
 Y = [y0, y1, y2]
 makePlots(X,Y)
 #makePlots(x, Y,saveIt=True,name=None)
-"""
 
 
 """

@@ -3,7 +3,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import osmnx as ox
 import numpy as np
-import Plots.initialPlots 
+
+# Load small darmstadt view
 geo = dict(north=49.874,south=49.8679,west=8.6338,east=8.6517)
 D_city = DarmstadtNetwork(geo,"Abgabe")
 D_city.load_darmstadt(show=False)
@@ -11,7 +12,7 @@ fig,ax = ox.plot_graph(D_city.Graph,**D_city.settings)
 xs,ys,ids = D_city.get_ids()
 posi = dict(zip(ids,zip(xs,ys)))
 
-NX = True
+NX = False
 # Draw the topology of darmstadt with streetnames
 hin = [k for k in D_city.Graph.edges.data('name')]
 edgepos = [hin[k][0:2] for k in range(len(hin))]
@@ -19,8 +20,8 @@ edgename = [hin[k][2] for k in range(len(hin))]
 if NX:
     nx.draw_networkx(D_city.Graph,pos=posi,with_labels=False,node_size=20,ax=ax)
     nx.draw_networkx_edge_labels(D_city.Graph,pos=posi,edge_labels=dict(zip(edgepos,edgename)))
-plt.tight_layout()
-plt.show()
+    plt.tight_layout()
+    plt.show()
 # Draw with weights
 strecke = [k for k in D_city.Graph.edges.data('length')]
 edgeposs = [strecke[k][0:2] for k in range(len(strecke))]
@@ -29,8 +30,8 @@ if NX:
     fig,ax = ox.plot_graph(D_city.Graph,**D_city.settings)
     nx.draw_networkx(D_city.Graph, pos=posi,with_labels=False,node_size=20,ax=ax)
     nx.draw_networkx_edge_labels(D_city.Graph,pos=posi,edge_labels=dict(zip(edgeposs,edgestrecke)))
-plt.tight_layout()
-plt.show()
+    plt.tight_layout()
+    plt.show()
 
 bla = nx.to_directed(D_city.Graph)
 
@@ -63,6 +64,7 @@ G2.compute_laplacian('combinatorial')
 G2.compute_fourier_basis()
 G2.compute_differential_operator()
 rs = np.random.RandomState(42)
+"""
 filt = lambda x: 1 / (1 + 10*x)
 filt = ps.filters.Filter(G2,filt)
 signal_tik = filt.analyze(rs.normal(size=G2.N))
@@ -80,7 +82,7 @@ _ = fig3.tight_layout()
 plt.show()
 plt.plot(signal_tik-recovery)
 plt.show()
-
+"""
 
 fig1,ax1 = plt.subplots(2,3,figsize=(12,5))
 plt.set_cmap('seismic')
@@ -111,6 +113,28 @@ for i, t in enumerate(times):
 
 
 
-plt.show()
+#plt.show()
 
+from Plots import initialPlots
 
+sensor_data = np.load('.\\Darmstadt_verkehr\\SensorData_{}.npz'.format('Sensor_Small_View'),allow_pickle=True)['arr_0'].reshape((1,))[0]
+
+a003 = np.nansum(sensor_data['A003']['signals'][:,0:11],axis=1) + sensor_data['A003']['signals'][:,22]
+a004 = np.nansum(sensor_data['A004']['signals'][:,0:11],axis=1)# + sensor_data['A003']['signals'][:,22]
+a005 = np.nansum(sensor_data['A005']['signals'][:,0:5],axis=1)# + sensor_data['A003']['signals'][:,22]
+a006 = np.nansum(sensor_data['A006']['signals'][:,[0,1,2,6,14]],axis=1)# + sensor_data['A003']['signals'][:,22]
+a007 = np.nansum(sensor_data['A007']['signals'][:,0:3],axis=1)# + sensor_data['A003']['signals'][:,22]
+a022 = np.nansum(sensor_data['A022']['signals'][:,0:9],axis=1)# + sensor_data['A003']['signals'][:,22]
+a023 = np.nansum(sensor_data['A023']['signals'][:,0:12],axis=1)
+a028 = np.nansum(sensor_data['A028']['signals'][:,13:19],axis=1)# + sensor_data['A003']['signals'][:,22]
+a029 = np.nansum(sensor_data['A029']['signals'][:,0:1],axis=1)# + sensor_data['A003']['signals'][:,22]
+a030 = np.nansum(sensor_data['A030']['signals'][:,16:18],axis=1)# + sensor_data['A003']['signals'][:,22]
+a045 = np.nansum(sensor_data['A045']['signals'][:,0:4],axis=1) + np.nansum(sensor_data['A045']['signals'][:,6:7],axis=1) + np.nansum(sensor_data['A045']['signals'][:,9:12],axis=1)
+a102 = np.nansum(sensor_data['A102']['signals'][:,0:1],axis=1)# + sensor_data['A003']['signals'][:,22]
+a104 = np.nansum(sensor_data['A104']['signals'][:,[2,3,4,5,14,15,18,19]],axis=1)# + sensor_data['A003']['signals'][:,22]
+#a139 = np.nansum(sensor_data['A139']['signals'][:,0:12]) + sensor_data['A003']['signals'][:,22]
+
+stack = np.array((a003,a004,a005,a006,a007,a022,a023,a028,a029,a030,a045,a102,a104))
+plt1 = initialPlots.signalPoint(stack.T,show=False,title="A4")
+plt1.show()
+#initialPlots.makePlots(range(1440),sensor_data,grid=True)

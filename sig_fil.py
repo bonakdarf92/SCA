@@ -24,3 +24,17 @@ G.plot(x, limits=limits, ax=axes[0],title='Input Signal $x$ in vertex domain')
 axes[0].text(0,-0.1,'$x^T L x = {:.2f}$'.format(G.dirichlet_energy(x)))
 axes[0].set_axis_off()
 g.plot(ax=axes[1], alpha=1)
+plt.show()
+legend = ["Sensor {}".format(k) for k in range(31)]
+from Plots import initialPlots
+data = np.load('SCA\\SensorData_A  3.npz')['arr_0']
+plt1 = initialPlots.makePlots(range(1440),data,legend=legend)
+plt1.show()
+
+from mpl_toolkits.mplot3d import Axes3D
+fig = plt.figure()
+ax = fig.add_subplot(111,projection='3d')
+for k in range(12):
+    ax.plot(range(1440),data[:,k],zs=k,zdir='y')
+#Axes3D.plot()
+plt.show()
