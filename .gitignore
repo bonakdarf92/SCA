@@ -125,4 +125,5 @@ dmypy.json
 
 # sample data
 Darmstadt_verkehr/
+Darmstadt_verkehr_old/
 #*.csv

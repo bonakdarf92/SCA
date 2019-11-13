@@ -4,31 +4,31 @@ import numpy as np
 import holoviews as hv 
 from holoviews import opts 
 import re
-hv.extension('matplotlib','bokeh') 
-hv.notebook_extension('matplotlib','bokeh')
+# hv.extension('matplotlib','bokeh') 
+# hv.notebook_extension('matplotlib','bokeh')
 
-# TODO auskommentieren oder anpassen
-img = hv.Image(np.random.rand(10,10))
-fig = hv.render(img)
-hv.output(fig='svg')
+# # TODO auskommentieren oder anpassen
+# img = hv.Image(np.random.rand(10,10))
+# fig = hv.render(img)
+# hv.output(fig='svg')
 
-# TODO auskommentieren oder anpassen
-from holoviews.operation import contours
-x = y = np.arange(-3.0, 3.0, 0.1)
-X,Y = np.meshgrid(x,y)
+# # TODO auskommentieren oder anpassen
+# from holoviews.operation import contours
+# x = y = np.arange(-3.0, 3.0, 0.1)
+# X,Y = np.meshgrid(x,y)
 
-# TODO auskommentieren oder anpassen
-def g(x,y,c):
-    return 2*((x-y)**2/(x**2+y**2)) + np.exp(-(np.sqrt(x**2+y**2)-c)**2)
+# # TODO auskommentieren oder anpassen
+# def g(x,y,c):
+#     return 2*((x-y)**2/(x**2+y**2)) + np.exp(-(np.sqrt(x**2+y**2)-c)**2)
 
-# TODO auskommentieren oder anpassen
-img = hv.Image(g(X,Y,3))
-filled_contours = contours(img,filled=True)
+# # TODO auskommentieren oder anpassen
+# img = hv.Image(g(X,Y,3))
+# filled_contours = contours(img,filled=True)
 gv, ge, gt = GIST_Algo(1000, 1600, 0.01, 1, 400, 0.001, False)
 t = np.linspace(0, np.sum(np.transpose(gt)),400) / (10**9)
 tt = t
-img2 = hv.Curve((t,np.transpose(gv)[:,0]))
-hv.save(img2, 'gist.svg')
+# img2 = hv.Curve((t,np.transpose(gv)[:,0]))
+# hv.save(img2, 'gist.svg')
 
 
 from bokeh.plotting import figure

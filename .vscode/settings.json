@@ -6,5 +6,8 @@
         "bal"
     ],
     "python.pythonPath": "/anaconda3/envs/MaTh/bin/python",
-    "python.condaPath": "/anaconda3/envs/"
+    "python.condaPath": "/anaconda3/envs/",
+    "files.associations": {
+        "matrix": "cpp"
+    }
 }

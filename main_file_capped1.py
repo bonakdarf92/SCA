@@ -4,13 +4,13 @@ from scipy import sparse
 import time
 #import datetime #from datetime import time 
 from Plots.initialPlots import makePlots
-import holoviews as hv 
-from holoviews import opts 
-import holoviews.plotting.mpl
+#import holoviews as hv 
+#from holoviews import opts 
+#import holoviews.plotting.mpl
 import tqdm
 
 
-hv.extension('matplotlib')
+#hv.extension('matplotlib')
 
 
 

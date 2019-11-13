@@ -33,6 +33,13 @@ if NX:
     plt.tight_layout()
     plt.show()
 
+if True:
+    fig8,ax8 = ox.plot_graph(D_city.Graph, **D_city.settings)
+    nx.draw_networkx_nodes(D_city.Graph,pos=posi,nodelist=D_city.Graph.nodes(), with_labels=False,node_size=30,ax=ax8)
+    nx.draw_networkx_labels(D_city.Graph,pos=posi,labels=dict(zip(D_city.Graph.nodes(),range(D_city.Graph.number_of_nodes()))))
+    plt.tight_layout()
+    plt.show()
+
 bla = nx.to_directed(D_city.Graph)
 
 for k in range(len(strecke)):
@@ -110,31 +117,92 @@ for i, t in enumerate(times):
     ax1[1,i].margins(x=-0.3,y=-0.49)
     ax1[1,i].set_axis_off()
 
-
-
-
 #plt.show()
-
 from Plots import initialPlots
 
-sensor_data = np.load('.\\Darmstadt_verkehr\\SensorData_{}.npz'.format('Sensor_Small_View'),allow_pickle=True)['arr_0'].reshape((1,))[0]
+sensor_data = np.load('./Darmstadt_verkehr/SensorData_{}.npz'.format('Sensor_Small_View'),allow_pickle=True)['arr_0'].reshape((1,))[0]
 
 a003 = np.nansum(sensor_data['A003']['signals'][:,0:11],axis=1) + sensor_data['A003']['signals'][:,22]
-a004 = np.nansum(sensor_data['A004']['signals'][:,0:11],axis=1)# + sensor_data['A003']['signals'][:,22]
-a005 = np.nansum(sensor_data['A005']['signals'][:,0:5],axis=1)# + sensor_data['A003']['signals'][:,22]
-a006 = np.nansum(sensor_data['A006']['signals'][:,[0,1,2,6,14]],axis=1)# + sensor_data['A003']['signals'][:,22]
-a007 = np.nansum(sensor_data['A007']['signals'][:,0:3],axis=1)# + sensor_data['A003']['signals'][:,22]
-a022 = np.nansum(sensor_data['A022']['signals'][:,0:9],axis=1)# + sensor_data['A003']['signals'][:,22]
-a023 = np.nansum(sensor_data['A023']['signals'][:,0:12],axis=1)
-a028 = np.nansum(sensor_data['A028']['signals'][:,13:19],axis=1)# + sensor_data['A003']['signals'][:,22]
-a029 = np.nansum(sensor_data['A029']['signals'][:,0:1],axis=1)# + sensor_data['A003']['signals'][:,22]
-a030 = np.nansum(sensor_data['A030']['signals'][:,16:18],axis=1)# + sensor_data['A003']['signals'][:,22]
-a045 = np.nansum(sensor_data['A045']['signals'][:,0:4],axis=1) + np.nansum(sensor_data['A045']['signals'][:,6:7],axis=1) + np.nansum(sensor_data['A045']['signals'][:,9:12],axis=1)
-a102 = np.nansum(sensor_data['A102']['signals'][:,0:1],axis=1)# + sensor_data['A003']['signals'][:,22]
-a104 = np.nansum(sensor_data['A104']['signals'][:,[2,3,4,5,14,15,18,19]],axis=1)# + sensor_data['A003']['signals'][:,22]
-#a139 = np.nansum(sensor_data['A139']['signals'][:,0:12]) + sensor_data['A003']['signals'][:,22]
+a004 = np.nansum(sensor_data['A004']['signals'][:,0:11],axis=1)
+a005 = np.nansum(sensor_data['A005']['signals'][:,0:5],axis=1)
+a006 = np.nansum(sensor_data['A006']['signals'][:,[0,1,2,6,14]],axis=1)
+a007 = np.nansum(sensor_data['A007']['signals'][:,0:3],axis=1)
+a022 = np.nansum(sensor_data['A022']['signals'][:,0:9],axis=1)
+a023 = np.nansum(sensor_data['A023']['signals'][:,0:9],axis=1)
+a028 = np.nansum(sensor_data['A028']['signals'][:,13:19],axis=1)
+a029 = np.nansum(sensor_data['A029']['signals'][:,0:1],axis=1)
+a030 = np.nansum(sensor_data['A030']['signals'][:,16:18],axis=1)
+a045 = np.nansum(sensor_data['A045']['signals'][:,0:7],axis=1) + np.nansum(sensor_data['A045']['signals'][:,15:18],axis=1) + np.nansum(sensor_data['A045']['signals'][:,21:22],axis=1)
+a102 = np.nansum(sensor_data['A102']['signals'][:,0:1],axis=1)
+a104 = np.nansum(sensor_data['A104']['signals'][:,[2,3,4,5,14,15,18,19]],axis=1)
 
-stack = np.array((a003,a004,a005,a006,a007,a022,a023,a028,a029,a030,a045,a102,a104))
+
+stack = np.array((a003,a004,a005,a006,a007,a022,a023,a028,a030,a045,a102,a104))
 plt1 = initialPlots.signalPoint(stack.T,show=False,title="A4")
 plt1.show()
-#initialPlots.makePlots(range(1440),sensor_data,grid=True)
+
+sources = 20#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
+signal = np.zeros(G2.n_vertices)
+#signal[sources] = 20
+
+s3 = [11,23,39,43,63]    # 11 = D2, 39 = D3,D4, 23 = D1, 63 = D11,D12,D13, 43 = V10
+s4 = [19,42,45,46,66,68,15,30,57,70,65,71]
+s5 = [27,33]
+s6 = [44]
+s7 = [29]
+s22 = [0,26]
+s23 = [4,13,37,58,67,69]
+s28 = [12,47]
+s30 = [48]
+s45 = [49,74]
+s102 = [32]
+s104 = [3,7,55,72]
+
+sources = [11,23,39,43,63,19,42,45,46,66,68,15,30,57,70,65,71,27,33,44,29,0,26,4,13,37,58,67,69,12,47,48,49,74,32,3,7,55,72]
+snapshot = 600
+signal[s3] = a003[snapshot]
+signal[s4] = a004[snapshot]
+signal[s5] = a005[snapshot]
+signal[s6] = a006[snapshot]
+signal[s7] = a007[snapshot]
+signal[s22] = a022[snapshot]
+signal[s23] = a023[snapshot]
+signal[s28] = a028[snapshot]
+signal[s30] = a030[snapshot]
+signal[s45] = a045[snapshot]
+signal[s102] = a102[snapshot]
+signal[s104] = a104[snapshot]
+fig3, ax3 = plt.subplots(2,2,figsize=(12,5))
+plt.set_cmap('seismic')
+plt.tight_layout()
+times = [0,5]
+for i,t in enumerate(times):
+    g = ps.filters.Heat(G2,scale=t,normalize=False)
+    title = r'$\hat{{f}}({0}) = g_{{1,{0}}} \odot \hat{{f}}(0)$'.format(t)
+    g.plot(alpha=1,ax=ax3[0,i],title=title)
+    ax3[0,i].set_label(r'$\lambda$')
+    if i > 0:
+        ax3[0,i].set_ylabel('')
+    y = g.filter(signal)
+    line, = ax3[0,i].plot(G2.e,G2.gft(y))
+    labels = [r'$\hat{{f}}({})$'.format(t), r'$g_{{1,{}}}$'.format(t)]
+    ax3[0,i].legend([line,ax3[0,i].lines[-3]],labels,loc='lower right')
+    G2.plot(y,edges=True,edge_width=we,highlight=sources,ax=ax3[1,i], title=r'$f({}) $'.format(t))
+    ax3[1,i].set_aspect('equal','datalim')
+    ax3[1,i].margins(x=-0.3,y=-0.49)
+    ax3[1,i].set_axis_off()
+
+plt.show()
+
+
+from matplotlib.widgets import Slider
+fig5, ax5 = plt.subplots(figsize=(12,5))
+plt.set_cmap('seismic')
+plt.tight_layout()
+sn = 0
+snaps = np.linspace(sn,snapshot)
+timer = Slider(plt.axes([0.25,0.1,0.65,0.3],facecolor='lightgoldenrodyellow'),sn,snapshot,valint=1,valstep=1)
+
+def update():
+    ti = timer.val
+    

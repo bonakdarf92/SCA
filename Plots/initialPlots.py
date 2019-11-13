@@ -198,8 +198,13 @@ def signalPoint(Sensor,show=False,title=None):
     fig = plt1.figure()
     ax = fig.add_subplot(111,projection='3d')
     n,m = np.shape(Sensor)
+    yticks = ["A3","A4","A5","A6","A7","A22","A23","A28","A30","A45","A102","A104"]
+    x_ticks = [0, 180, 360, 540, 720, 900, 1080, 1260, 1440]
+    xlabels = ["0:00","3:00","6:00","9:00","12:00","15:00","18:00","21:00","24:00"]
     for k in range(m):
         ax.plot(range(n),Sensor[:,k],zs=k,zdir='y')
+    plt1.xticks(x_ticks,xlabels)
+    plt1.yticks(range(m),yticks)
     if title:
         plt1.title(title)
     if show:
