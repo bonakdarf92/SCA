@@ -1,7 +1,7 @@
 import cvxpy as cp
 import numpy as np
 import matplotlib.pyplot as plt
-#import gurobipy
+import gurobipy
 
 
 # Problem data
@@ -53,7 +53,7 @@ plt.plot(l1_penalty, sq_penalty)
 plt.xlabel(r"$\|x\|_1$", fontsize=16)
 plt.ylabel(r"$\|Ax-b\|^2$",fontsize=16)
 plt.title('Tradeoff Curve for Lasso', fontsize=16)
-#plt.show()
+plt.show()
 
 # Plot entries of x vs gamma
 plt.subplot(212)

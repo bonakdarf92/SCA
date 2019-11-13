@@ -1,6 +1,7 @@
 import numpy as np 
 #import holoviews as hv 
 #from holoviews import opts 
+import random
 
 #hv.extension('matplotlib','bokeh')
 
@@ -196,10 +197,27 @@ def makePlots(X, Y, legend=None, scale=None, grid=False, axes=['s','f'], saveIt=
 def signalPoint(Sensor,show=False,title=None):
     plt1 = settup_qd()
     fig = plt1.figure()
-    ax = fig.add_subplot(111,projection='3d')
+    ax = fig.add_subplot(1,2,1, projection='3d')
+    ax2 = fig.add_subplot(1,2,2, projection='3d')
+    linestyle_tuple = [
+     (0, (1, 1)),
+     #(0, (1, 1)),
+     #(0, (5, 10)),
+     (0, (5, 5)),
+     (0, (5, 1)),
+     #(0, (3, 5, 1, 5)),
+     (0, (3, 1, 1, 1)),
+     #(0, (3, 5, 1, 5, 1, 5)),
+     (0, (3, 1, 1, 1, 1, 1))]
+
     n,m = np.shape(Sensor)
+    plt1.gca().set_prop_cycle(plt1.cycler('color', plt1.cm.rainbow(np.linspace(0,1, m))))
+
     for k in range(m):
-        ax.plot(range(n),Sensor[:,k],zs=k,zdir='y')
+        if k < m/2:
+            ax.plot(range(n),Sensor[:,k],zs=k,zdir='y',linestyle=random.choice(linestyle_tuple))
+        else:
+            ax2.plot(range(n),Sensor[:,k],zs=k,zdir='y',linestyle=random.choice(linestyle_tuple))
     if title:
         plt1.title(title)
     if show:
