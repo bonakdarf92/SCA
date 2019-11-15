@@ -52,12 +52,6 @@ for k in range(len(strecke)):
 A = D_city.sparse_adj
 A2 = D_city.remove_diagsLoops(direction="directed")
 A3 = nx.convert_matrix.to_scipy_sparse_matrix(bla)
-#fig2,ax2 = plt.subplots(1,2)
-
-#D_city.plot_matrix(A,figures=ax2[0])
-#D_city.plot_matrix(nx.convert_matrix.to_scipy_sparse_matrix(bla),figures=ax2[1])
-
-#plt.show()
 
 import pygsp as ps 
 G = ps.graphs.Graph(A)
@@ -92,20 +86,74 @@ plt.show()
 plt.plot(signal_tik-recovery)
 plt.show()
 """
+plt.show()
+
+def gen_signal(sigma=0.1):
+    sources_path = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
+    signal = np.zeros(G2.n_vertices)
+    signal[sources_path] = 1
+    noisy = signal + np.random.normal(0, 0.4, G2.n_vertices)
+    return noisy
+
+def mse(x, t):
+    return cp.norm2(x - t)**2
+
+
+def cut_based(y, Graph, lambd):
+    x = cp.Variable(Graph.n_vertices, boolean=True)
+    object_cut = cp.Minimize(cp.sum_squares(y - x) + lambd * (cp.norm1(Graph.A @ x) - cp.quad_form(x, Graph.A)))
+    problem_cut = cp.Problem(object_cut)
+    problem_cut.solve(solver=cp.GUROBI)
+    return x, lambd
+    
+def path_based1(y, Graph, tp):
+    
+
+x = cp.Variable(G2.n_vertices, boolean=True)
+obje = cp.Minimize(cp.sum_squares(noisy-x) + 0.5 * cp.quad_form(x,G2.L))
+problem = cp.Problem(obje)
+problem.solve(solver=cp.GUROBI,verbose=True)
+
+x1 = cp.Variable(G2.n_vertices, nonneg=True)
+constr = [cp.norm(A3@x1, 'inf') <= 2, x1 <= 1]
+obje_path = cp.Minimize(cp.sum_squares(noisy - x1))
+prog = cp.Problem(obje_path, constr)
+prog.solve(solver=cp.GUROBI)
+
+x2 = cp.Variable(G2.n_vertices, nonneg=True)
+constr2 = [cp.norm(A3@x2, 'inf') <= 2, x2 <= 1]
+obj_far = cp.Minimize(cp.sum_squares(noisy - x2) + (2*np.max(signal) - 1)*cp.sum(x2))
+prog2 = cp.Problem(obj_far, constr2)
+prog2.solve(solver=cp.GUROBI)
+
+#x2.value[x2.value <= 0.1] = 0
+#x2.value[x2.value >= 0.1] = 1
+
+x3 = cp.Variable(G2.n_vertices, nonneg=True)
+resid = x3 - 1
+f1 = cp.norm(A3@x3, 'inf') - 2 #+ cp.sum_squares(resid)
+theta = cp.Parameter(nonneg=True)
+theta.value = 0.01
+aug_lagr = cp.sum_squares(noisy - x3) + theta * f1 
+analy = []
+for eps in range(10):
+    analy.append(theta.value)
+    obj_far = cp.Problem(cp.Minimize(aug_lagr)).solve(solver=cp.GUROBI)
+    theta.value += theta.value     
+    #prog2.solve(solver=cp.GUROBI)
+
+plt.scatter(range(75),x2.value,label='t-0.4',marker='x')
+plt.scatter(range(75),signal,label='Original',marker='o',edgecolor='k',facecolor='none')
+plt.scatter(range(75),x1.value,label='Paper',marker='v')
+plt.legend()
+plt.show()
+
+plt.plot(analy)
+plt.show()
 
 fig1,ax1 = plt.subplots(2,1,figsize=(12,8))
 plt.set_cmap('seismic')
 plt.tight_layout()
-sources = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
-signal = np.zeros(G2.n_vertices)
-signal[sources] = 1
-noisy = signal + np.random.normal(0, 0.1, G2.n_vertices)
-print(D_city.get_laplacian())
-x = cp.Variable(G2.n_vertices, boolean=True)
-obje = cp.Minimize(cp.sum_squares(noisy-x) + 0.5 * cp.quad_form(x,G2.L))
-problem = cp.Problem(obje)
-problem.solve(solver=cp.ECOS_BB,verbose=True)
-
 _,_,we = G2.get_edge_list()
 times = [0]#, 5, 20]
 for i, t in enumerate(times):
@@ -114,7 +162,7 @@ for i, t in enumerate(times):
     title = r"Noisy Signal$ y = f(x) + \sigma$"
     #g.plot(alpha=1,ax=ax1[0,i],title=title)
     #g.plot(alpha=1,ax=ax1[0],title=title)
-    G2.plot(noisy,edges=True,edge_width=we, highlight=sources,ax=ax1[0],title=title)
+    G2.plot(noisy,edges=True,edge_width=we, highlight=sources_path,ax=ax1[0],title=title)
     #ax1[0,i].set_xlabel(r'$\lambda$')
     #ax1[0].set_xlabel(r'$\y = Lx + \sigma $')
     if i > 0:
@@ -126,8 +174,8 @@ for i, t in enumerate(times):
     #ax1[0, i].legend([line, ax1[0, i].lines[-3]], labels, loc='lower right')
     #ax1[0].legend([line, ax1[0].lines[-3]], labels, loc='lower right')
     #G2.plot(y, edges=True,edge_width=we, highlight=sources, ax=ax1[1, i], title=r'$f({})$'.format(t))
-    G2.plot(y, edges=True,edge_width=we, highlight=sources, ax=ax1[1], title=r'$f({})$'.format(t))
-    G2.plot(x.value,edges=True, edge_width=we, highlight=x, ax=ax1[0])
+    #G2.plot(y, edges=True,edge_width=we, highlight=sources, ax=ax1[1], title=r'$f({})$'.format(t))
+    G2.plot(x.value,edges=True, edge_width=we, highlight=[i for i,k in enumerate(x.value) if k > 0.9 ], ax=ax1[1])
     #print(np.sum(y))
     #ax1[1,i].set_aspect('equal','datalim')
     #ax1[1,i].margins(x=-0.3,y=-0.49)
@@ -141,7 +189,7 @@ for i, t in enumerate(times):
 
 
 
-#plt.show()
+plt.show()
 
 from Plots import initialPlots
 
