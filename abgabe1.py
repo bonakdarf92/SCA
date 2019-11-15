@@ -107,10 +107,18 @@ def cut_based(y, Graph, lambd):
     return x, lambd
     
 def path_based1(y, Graph, tp):
-    
+    pass
 
+fig1, ax1 = plt.subplots(1,2,figsize=(12,8))
+plt.set_cmap('seismic')
+plt.tight_layout()
+sources = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
+signal = np.zeros(G2.n_vertices)
+signal[sources] = 1
+noisy = signal + np.random.normal(0, 0.5, G2.n_vertices)
+#print(D_city.get_laplacian())
 x = cp.Variable(G2.n_vertices, boolean=True)
-obje = cp.Minimize(cp.sum_squares(noisy-x) + 0.5 * cp.quad_form(x,G2.L))
+obje = cp.Minimize(cp.sum_squares(noisy-x) + 0.3 * cp.quad_form(x,G2.L))
 problem = cp.Problem(obje)
 problem.solve(solver=cp.GUROBI,verbose=True)
 
@@ -175,7 +183,7 @@ for i, t in enumerate(times):
     #ax1[0].legend([line, ax1[0].lines[-3]], labels, loc='lower right')
     #G2.plot(y, edges=True,edge_width=we, highlight=sources, ax=ax1[1, i], title=r'$f({})$'.format(t))
     #G2.plot(y, edges=True,edge_width=we, highlight=sources, ax=ax1[1], title=r'$f({})$'.format(t))
-    G2.plot(x.value,edges=True, edge_width=we, highlight=[i for i,k in enumerate(x.value) if k > 0.9 ], ax=ax1[1])
+    G2.plot(x.value, edges=True, edge_width=we, highlight=[i for i, x in enumerate(x.value) if x > 0.9], ax=ax1[1])
     #print(np.sum(y))
     #ax1[1,i].set_aspect('equal','datalim')
     #ax1[1,i].margins(x=-0.3,y=-0.49)
@@ -186,14 +194,16 @@ for i, t in enumerate(times):
     ax1[0].set_aspect('equal','datalim')
     ax1[0].margins(x=-0.2,y=-0.4)
     ax1[0].set_axis_off()
+    #ax1[2].set_aspect('equal','datalim')
+    #ax1[2].margins(x=-0.2,y=-0.4)
+    #ax1[2].set_axis_off()
 
 
 
 plt.show()
-
 from Plots import initialPlots
 
-sensor_data = np.load('.\\Darmstadt_verkehr\\SensorData_{}.npz'.format('Sensor_Small_View'),allow_pickle=True)['arr_0'].reshape((1,))[0]
+sensor_data = np.load('./Darmstadt_verkehr/SensorData_{}.npz'.format('Sensor_Small_View'),allow_pickle=True)['arr_0'].reshape((1,))[0]
 
 a003 = np.nansum(sensor_data['A003']['signals'][:,0:11],axis=1) + sensor_data['A003']['signals'][:,22]
 a004 = np.nansum(sensor_data['A004']['signals'][:,0:11],axis=1)
@@ -210,7 +220,6 @@ a045 = (np.nansum(sensor_data['A045']['signals'][:,0:4],axis=1)
         + np.nansum(sensor_data['A045']['signals'][:,9:12],axis=1))
 a102 = np.nansum(sensor_data['A102']['signals'][:,0:1],axis=1)
 a104 = np.nansum(sensor_data['A104']['signals'][:,[2,3,4,5,14,15,18,19]],axis=1)
-#a139 = np.nansum(sensor_data['A139']['signals'][:,0:12]) + sensor_data['A003']['signals'][:,22]
 
 stack = np.array((a003,a004,a005,a006,a007,a022,a023,a028,a030,a045,a102,a104))
 plt1 = initialPlots.signalPoint(stack.T,show=False,title="A4")
@@ -222,4 +231,69 @@ plt1.xticks((0, 60, 120, 180, 240, 300, 360, 420, 480, 540,
             "15","16","17","18","19","20","21","22","23"))
 plt1.xlabel("Uhrzeit")
 plt1.show()
-#initialPlots.makePlots(range(1440),sensor_data,grid=True)
+
+sources = 20#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
+signal = np.zeros(G2.n_vertices)
+#signal[sources] = 20
+
+s3 = [11,23,39,43,63]    # 11 = D2, 39 = D3,D4, 23 = D1, 63 = D11,D12,D13, 43 = V10
+s4 = [19,42,45,46,66,68,15,30,57,70,65,71]
+s5 = [27,33]
+s6 = [44]
+s7 = [29]
+s22 = [0,26]
+s23 = [4,13,37,58,67,69]
+s28 = [12,47]
+s30 = [48]
+s45 = [49,74]
+s102 = [32]
+s104 = [3,7,55,72]
+
+sources = [11,23,39,43,63,19,42,45,46,66,68,15,30,57,70,65,71,27,33,44,29,0,26,4,13,37,58,67,69,12,47,48,49,74,32,3,7,55,72]
+snapshot = 600
+signal[s3] = a003[snapshot]
+signal[s4] = a004[snapshot]
+signal[s5] = a005[snapshot]
+signal[s6] = a006[snapshot]
+signal[s7] = a007[snapshot]
+signal[s22] = a022[snapshot]
+signal[s23] = a023[snapshot]
+signal[s28] = a028[snapshot]
+signal[s30] = a030[snapshot]
+signal[s45] = a045[snapshot]
+signal[s102] = a102[snapshot]
+signal[s104] = a104[snapshot]
+fig3, ax3 = plt.subplots(2,2,figsize=(12,5))
+plt.set_cmap('seismic')
+plt.tight_layout()
+times = [0,5]
+for i,t in enumerate(times):
+    g = ps.filters.Heat(G2,scale=t,normalize=False)
+    title = r'$\hat{{f}}({0}) = g_{{1,{0}}} \odot \hat{{f}}(0)$'.format(t)
+    g.plot(alpha=1,ax=ax3[0,i],title=title)
+    ax3[0,i].set_label(r'$\lambda$')
+    if i > 0:
+        ax3[0,i].set_ylabel('')
+    y = g.filter(signal)
+    line, = ax3[0,i].plot(G2.e,G2.gft(y))
+    labels = [r'$\hat{{f}}({})$'.format(t), r'$g_{{1,{}}}$'.format(t)]
+    ax3[0,i].legend([line,ax3[0,i].lines[-3]],labels,loc='lower right')
+    G2.plot(y,edges=True,edge_width=we,highlight=sources,ax=ax3[1,i], title=r'$f({}) $'.format(t))
+    ax3[1,i].set_aspect('equal','datalim')
+    ax3[1,i].margins(x=-0.3,y=-0.49)
+    ax3[1,i].set_axis_off()
+
+plt.show()
+
+
+#from matplotlib.widgets import Slider
+#fig5, ax5 = plt.subplots(figsize=(12,5))
+#plt.set_cmap('seismic')
+#plt.tight_layout()
+#sn = 0
+#snaps = np.linspace(sn,snapshot)
+#timer = Slider(plt.axes([0.25,0.1,0.65,0.3],facecolor='lightgoldenrodyellow'),sn,snapshot,valint=1,valstep=1)
+
+#def update():
+#    ti = timer.val
+    
