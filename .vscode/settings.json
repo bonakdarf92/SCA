@@ -5,7 +5,7 @@
     "terminal.integrated.shellArgs.windows": [
         "bal"
     ],
-    "python.pythonPath": "/anaconda3/envs/MaTh/bin/python",
+    "python.pythonPath": "C:\\Anaconda3\\envs\\MaTh\\python.exe",
     "python.condaPath": "/anaconda3/envs/",
     "files.associations": {
         "matrix": "cpp"

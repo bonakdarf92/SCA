@@ -26,7 +26,7 @@ class DarmstadtNetwork:
     #cityMap = None
     #figCityMap = None
     #spy = None 
-    settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#ff0000",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
+    settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#1f78b4",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
 
 
     def __init__(self, geopostion=None, name=None):
@@ -36,7 +36,7 @@ class DarmstadtNetwork:
             self.nameFile = name
     
         try:
-            self.settings = dict(bgcolor="white",equal_aspect=False,node_size=10,node_color="#ff0000",node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
+            self.settings = dict(bgcolor="white",equal_aspect=False,node_size=30,node_color='#1f78b4',node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="#555555",edge_linewidth=1.5,edge_alpha=1,show=False,close=False,save=False)
             self.Graph = self.load_darmstadt(self.nameFile)
             self.sparse_adj = self.extract_adjencecacy()
             self.figCityMap, self.cityMap = ox.plot_graph(self.Graph,**self.settings)
