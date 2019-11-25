@@ -1,59 +1,31 @@
 from DarmstadtNetwork import DarmstadtNetwork
 import networkx as nx 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import osmnx as ox
 import numpy as np
 import cvxpy as cp 
-#from cvxopt import lapack, solvers, matrix, spdiag, log, div, normal 
+from tqdm import tqdm
 import gurobipy
+
 plt.rcParams.update({'font.size':18})
 # Load small darmstadt view
 geo = dict(north=49.874,south=49.8679,west=8.6338,east=8.6517)
-D_city = DarmstadtNetwork(geo,"Abgabe")
+D_city = DarmstadtNetwork(geo, "Abgabe")
 D_city.load_darmstadt(show=False)
-settings = dict(bgcolor="white",equal_aspect=False,node_size=30,node_edgecolor="none",node_zorder=2,axis_off=False,edge_color="white",edge_linewidth=0,edge_alpha=0,show=False,close=False,save=False)
-fig,ax = ox.plot_graph(D_city.Graph,**settings)
+settings = dict(bgcolor="white", equal_aspect=False, node_size=30, node_edgecolor="none", node_zorder=2, axis_off=False, edge_color="white",edge_linewidth=0,edge_alpha=0,show=False,close=False,save=False)
 xs,ys,ids = D_city.get_ids()
 posi = dict(zip(ids,zip(xs,ys)))
 
-NX = True
-# Draw the topology of darmstadt with streetnames
-hin = [k for k in D_city.Graph.edges.data('name')]
-edgepos = [hin[k][0:2] for k in range(len(hin))]
-edgename = [hin[k][2] for k in range(len(hin))]
-if NX:
-    nx.draw_networkx(D_city.Graph,pos=posi,with_labels=False,node_size=20,ax=ax)
-    nx.draw_networkx_edge_labels(D_city.Graph,pos=posi,edge_labels=dict(zip(edgepos,edgename)))
-    plt.tight_layout()
-    plt.show()
-# Draw with weights
-strecke = [k for k in D_city.Graph.edges.data('length')]
-edgeposs = [strecke[k][0:2] for k in range(len(strecke))]
-edgestrecke = [np.around(strecke[k][2],0).astype(int) for k in range(len(strecke))]
-if NX:
-    fig,ax = ox.plot_graph(D_city.Graph,**settings)
-    nx.draw_networkx(D_city.Graph, pos=posi,with_labels=False,node_size=20,ax=ax)
-    nx.draw_networkx_edge_labels(D_city.Graph,pos=posi,edge_labels=dict(zip(edgeposs,edgestrecke)))
-    plt.tight_layout()
-    plt.title("Lenght of street")
-    plt.show()
 
-if NX:
-    fig,ax = ox.plot_graph(D_city.Graph, **D_city.settings)
-    nx.draw_networkx_nodes(D_city.Graph, pos=posi, nodelist=D_city.Graph.nodes(), with_labels=False, node_size=30,ax=ax)
-    nx.draw_networkx_labels(D_city.Graph, pos=posi, labels=dict(zip(D_city.Graph.nodes(),range(D_city.Graph.number_of_nodes()))))
-    plt.tight_layout()
-    plt.show()
-bla = nx.to_directed(D_city.Graph)
+#D_city.plot_streetlenght(posi,D_city, settings)
+#D_city.plot_streetnames(posi, D_city, settings)
+#D_city.plot_streetnumber(posi, D_city, settings)
 
-for k in range(len(strecke)):
-    list_strecke = list(strecke[k][:])
-    list_strecke[2] = round(np.exp(-(np.square(list_strecke[2]))/(2*100**2)))
-    bla.add_weighted_edges_from([tuple(list_strecke)])
 
 A = D_city.sparse_adj
 A2 = D_city.remove_diagsLoops(direction="directed")
-A3 = nx.convert_matrix.to_scipy_sparse_matrix(bla)
+A3 = nx.convert_matrix.to_scipy_sparse_matrix(D_city.fill_weights())
 
 import pygsp as ps 
 G = ps.graphs.Graph(A)
@@ -90,26 +62,35 @@ plt.show()
 """
 plt.show()
 
-def gen_signal(sigma=0.1):
-    sources_path = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
-    signal = np.zeros(G2.n_vertices)
-    signal[sources_path] = 1
-    noisy = signal + np.random.normal(0, 0.4, G2.n_vertices)
-    return noisy
+def gen_signal(Graph, sigma=0.1, kind="ball",size="big"):
+    if kind == "ball" and size == "big":
+        sources = [2, 6, 74, 41, 20, 32, 31, 9, 10, 56, 17, 16, 18]
+    elif kind == "line" and size == "big":
+        sources = [20, 41, 74, 6, 16, 45, 68, 57, 15, 30, 11, 23, 43, 24]
+    elif kind == "idk":
+        sources = [19, 42, 45, 46, 66, 68, 70, 57, 15, 30, 65, 71]
+    #sources = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
+    signal = np.zeros(Graph.n_vertices)
+    signal[sources] = 1
+    noisy = signal + np.random.normal(0, sigma, Graph.n_vertices)
+    return noisy, sources, signal
 
 def mse(x, t):
-    return cp.norm2(x - t)**2
+    return np.linalg.norm(x - t)
 
-# TODO fast fertig
+# TODO Kommentieren
 def cut_based(y, Graph, lambd):
     x = cp.Variable(Graph.n_vertices, boolean=True)
-    X = (np.ones((Graph.n_vertices,Graph.n_vertices)) - np.eye((Graph.n_vertices))) @ cp.diag(x)
-    X_i = Graph.A.astype(np.double) @ cp.diag(x)
-    X = X @ Graph.A.astype(np.double)
-    object_cut = cp.Minimize((cp.square(y - x) + lambd * cp.sum(cp.abs(X - X_i),axis=1))@np.ones(75))
+    lookup = Graph.A.astype(np.double)
+    indices = lookup.tocsr().nonzero()
+    second = []
+    for k in range(len(lookup.nonzero()[0])):
+        second.append(cp.abs(x[indices[0][k]] - x[indices[1][k]]))
+    
+    object_cut = cp.Minimize(cp.sum_squares(y - x) + lambd * cp.sum(second))
     problem_cut = cp.Problem(object_cut)
     problem_cut.solve(solver=cp.GUROBI)
-    return x, lambd
+    return x, lambd, problem_cut
     
 def path_based1(y, Graph, tp):
     pass
@@ -118,35 +99,45 @@ fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
 plt.set_cmap('seismic')
 plt.tight_layout()
 #sources_path = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
-sources_path = [2, 6, 74, 41, 20, 32, 31, 9, 10, 56, 17, 16, 18]
+#sources_path = [2, 6, 74, 41, 20, 32, 31, 9, 10, 56, 17, 16, 18]
 #sources = [19, 42, 45, 46, 66, 68, 70, 57, 15, 30, 65, 71]
-signal = np.zeros(G2.n_vertices)
-signal[sources_path] = 1
-noisy = signal + np.random.normal(0, 0.8, G2.n_vertices)
+#signal = np.zeros(G2.n_vertices)
+#signal[sources_path] = 1
+#noisy = signal + np.random.normal(0, 0.5, G2.n_vertices)
+
+noisy, sources, signal = gen_signal(G2)
 
 ''' gLap Algorithmus lambda 0.3 binär''' 
-x = cp.Variable(G2.n_vertices, boolean=True)
-obje = cp.Minimize(cp.sum_squares(noisy-x) + 0.3 * cp.quad_form(x,G2.L))
-problem = cp.Problem(obje)
-problem.solve(solver=cp.GUROBI,verbose=True)
+def glap_binary(y, Graph, lambd, verbose=False):
+    x = cp.Variable(Graph.n_vertices, boolean=True)
+    obje = cp.Minimize(cp.sum_squares(y-x) + lambd * cp.quad_form(x,Graph.L))
+    problem = cp.Problem(obje)
+    problem.solve(solver=cp.GUROBI, verbose=verbose)
+    return x, problem
 
 ''' path Algorithmus einfach reell'''
-x1 = cp.Variable(G2.n_vertices, nonneg=True)
-constr = [cp.norm(A3@x1, 'inf') <= 2, x1 <= 1]
-obje_path = cp.Minimize(cp.sum_squares(noisy - x1))
-prog = cp.Problem(obje_path, constr)
-prog.solve(solver=cp.GUROBI, verbose=True)
+def path_real(y, Graph, verbose=False):    
+    Adjacency = nx.convert_matrix.to_scipy_sparse_matrix(nx.to_directed(Graph))
+    x1 = cp.Variable(Graph.n_vertices, nonneg=True)
+    constr = [cp.norm(Adjacency@x1, 'inf') <= 2, x1 <= 1]
+    obje_path = cp.Minimize(cp.sum_squares(y - x1))
+    prog = cp.Problem(obje_path, constr)
+    prog.solve(solver=cp.GUROBI, verbose=verbose)
+    return x1, prog 
 
 ''' path Algorithmus C2 lambda 2x_max - 1 '''
-x2 = cp.Variable(G2.n_vertices, nonneg=True)
-constr2 = [cp.norm(A3@x2, 'inf') <= 2, x2 <= 1]
-obj_far = cp.Minimize(cp.sum_squares(noisy - x2) + (2*np.max(signal) - 1)*cp.sum(x2))
-prog2 = cp.Problem(obj_far, constr2)
-prog2.solve(solver=cp.GUROBI)
+def path_lmax(y, Graph, verbose=False):
+    Adjacency = nx.convert_matrix.to_scipy_sparse_matrix(nx.to_directed(Graph))
+    x2 = cp.Variable(Graph.n_vertices, nonneg=True)
+    constr2 = [cp.norm(Adjacency@x2, 'inf') <= 2, x2 <= 1]
+    obj_far = cp.Minimize(cp.sum_squares(y - x2) + (2*np.max(y) - 1)*cp.sum(x2))
+    prog2 = cp.Problem(obj_far, constr2)
+    prog2.solve(solver=cp.GUROBI,verbose=verbose)
+    return x2, prog2
 
 #x2.value[x2.value <= 0.1] = 0
 #x2.value[x2.value >= 0.1] = 1
-
+# TODO check tp part
 x3 = cp.Variable(G2.n_vertices, nonneg=True)
 resid = x3 - 1
 f1 = cp.norm(A3@x3, 'inf') - 2 #+ cp.sum_squares(resid)
@@ -160,16 +151,56 @@ for eps in range(10):
     theta.value += theta.value     
     #prog2.solve(solver=cp.GUROBI)
 
-x2, _ = cut_based(noisy, G2, 2*np.max(signal) - 1 )
+x2, lambd, problem_cut = cut_based(noisy, G2, 2*np.max(signal) - 1 )
 
-ax2.scatter(range(75),x2.value,label=r'$\lambda = 2 x_{max} - 1$',marker='x')
-ax2.scatter(range(75),signal,label='Original',marker='o',edgecolor='k',facecolor='none')
-ax2.scatter(range(75),x1.value,label='Paper',marker='v')
-ax2.legend(loc="upper right")
+ax2.scatter(range(75), x2.value,label="$\lambda = 2 x_{0} - 1 n = {1} $".format("{max}",np.size(x2.value.nonzero())),marker='x')
+ax2.scatter(range(75), signal,label='Original',marker='o',edgecolor='k',facecolor='none')
+#ax2.scatter(range(75),x1.value,label='Paper',marker='v')
+ax2.legend(loc="upper left")
 plt.show()
 
-if True:
-    GGG = D_city.Graph.copy()
+def lambda_error_plot(y, Graph, k=50, solver="cut"):
+    performance = []
+    errors = []
+    lambdas = np.logspace(-2, 2, k)
+    if solver == "cut":
+        for kk in tqdm(lambdas):
+            x_star, l_star, problem_cut = cut_based(noisy, G2, kk)
+            errors.append(mse(signal, x_star.value))
+            performance.append(problem_cut.value)
+    elif solver == "path1":
+        # TODO check for tp
+        for kk in tqdm(lambdas):
+            x_star, l_star, problem_cut = path_based1(noisy, G2, kk)
+            errors.append(mse(signal, x_star.value))
+            performance.append(problem_cut.value)
+    elif solver == "path_real":
+        # TODO check for tp
+        for kk in tqdm(lambdas):
+            x_star, l_star, problem_cut = path_real(noisy, G2, kk)
+            errors.append(mse(signal, x_star.value))
+            performance.append(problem_cut.value)
+    mins = np.where(errors == np.min(errors))[0][:]
+    l_star_best = lambdas[mins[0] + np.argmin([performance[k] for k in mins])]
+    x_star, l_star, problem_star = cut_based(noisy, G2, l_star_best)
+    fig,ax = plt.subplots(1,1,figsize=(12,8))
+    ax.set_xscale("log")
+    ax.xaxis.set_major_locator(ticker.LogLocator(base=10.0,numticks=15))
+    ax.plot(lambdas, errors, label="Error")
+    ax.plot(lambdas, performance, label="Performance")
+    ax.set_xlabel(r"$\lambda$",fontsize=16)
+    ax.set_title("Mean Squared Error (MSE)")
+    ax.axvline(x=l_star,linestyle='--',color="k")
+    ax.axvline(x=2*np.max(y)-1, linestyle='-.',color="r")
+    xticks = [0.01, 0.1, 1, 10, 100, l_star, 2*np.max(y)-1]
+    xlabels = ["$10^{-2}$","$10^{-1}$","$10^{0}$","$10^{1}$","$10^{2}$","$\lambda^{*}$","$\lambda_{max}$"]
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xlabels)
+    ax.legend(loc="upper left")
+    plt.show()
+
+def s_t_graph(Graph,show=False):
+    GGG = Graph.copy()
     GGG.add_node('s')
     GGG.add_node('t')
     GGG._node['s'] = {'x':8.638,'y':49.8665}
@@ -188,45 +219,47 @@ if True:
     labels_nodes = dict(zip(GGG.nodes(),range(GGG.number_of_nodes())))
     labels_nodes['s'] = 's'
     labels_nodes['t'] = 't'
-    nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=GGG.nodes(), with_labels=False, node_size=30)
-    nx.draw_networkx_labels(GGG, pos=posi2, labels=labels_nodes)
-    nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=['s','t'], node_color=["red","green"], with_labels=False, node_size=30)
-    nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if k[2] != None], arrows=True)
-    col = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[0] == 's')], edge_color="red", alpha=0.2, arrowsize=20)
-    for patch in col:
-        patch.set_linestyle('dotted')
-    col2 = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[1] == 't')], edge_color="green", alpha=0.2, arrowsize=20)
-    for patch in col2:
-        patch.set_linestyle('dotted')
-    plt.margins(x=-0.1,y=-0.1)
-    plt.tight_layout()
-    plt.show()
-tester = GGG.copy()
-count = 0
-for k in tester.nodes(data='osmid'):
-    if k != None and count <= 74:
-        tester.nodes()[k[1]]['capacity'] = noisy[count]
-        count += 1
-for k in list(tester.edges()):
-    if k[0] != 's' and k[1] != 't':
-        tester.edges()._adjdict[k[0]][k[1]][0]['capacity'] = np.mean(noisy)# tester.nodes()[k[0]]['capacity'] - tester.nodes()[k[1]]['capacity']
-    elif k[0] == 's':
-        tester.edges()._adjdict[k[0]][k[1]][0]['capacity'] = np.mean(noisy)*tester.nodes()[k[1]]['capacity']
-    elif k[1] == 't':
-        tester.edges()._adjdict[k[0]][k[1]][0]['capacity'] =  np.mean(noisy)*(1 - tester.nodes()[k[0]]['capacity'])
-R = nx.algorithms.flow.boykov_kolmogorov(nx.DiGraph(tester),'s','t')
-lookup = dict(zip(tester.nodes(),range(tester.number_of_nodes())))
-results = []
-for k in list(R.graph['trees'][0].keys()):
-    if k != 's':
-        results.append(lookup[k])
-flow_value = R.graph['flow_value']
-print(flow_value)
+    if show:
+        nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=GGG.nodes(), with_labels=False, node_size=30)
+        nx.draw_networkx_labels(GGG, pos=posi2, labels=labels_nodes)
+        nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=['s','t'], node_color=["red","green"], with_labels=False, node_size=30)
+        nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if k[2] != None], arrows=True)
+        col = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[0] == 's')], edge_color="red", alpha=0.2, arrowsize=20)
+        for patch in col:
+            patch.set_linestyle('dotted')
+        col2 = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[1] == 't')], edge_color="green", alpha=0.2, arrowsize=20)
+        for patch in col2:
+            patch.set_linestyle('dotted')
+        plt.margins(x=-0.1,y=-0.1)
+        plt.tight_layout()
+        plt.show()
+    else:
+        return GGG
 
+def boykov_kolmogorov_maxcut(y,st_Graph):
+    count = 0
+    for k in st_Graph.nodes(data='osmid'):
+        if k != None and count <= 74:
+            st_Graph.nodes()[k[1]]['capacity'] = y[count]
+            count += 1
+    for k in list(st_Graph.edges()):
+        if k[0] != 's' and k[1] != 't':
+            st_Graph.edges()._adjdict[k[0]][k[1]][0]['capacity'] = np.mean(y)
+        elif k[0] == 's':
+            st_Graph.edges()._adjdict[k[0]][k[1]][0]['capacity'] = np.mean(y)*st_Graph.nodes()[k[1]]['capacity']
+        elif k[1] == 't':
+            st_Graph.edges()._adjdict[k[0]][k[1]][0]['capacity'] =  np.mean(y)*(1 - st_Graph.nodes()[k[0]]['capacity'])
+    R = nx.algorithms.flow.boykov_kolmogorov(nx.DiGraph(st_Graph),'s','t')
+    lookup = dict(zip(st_Graph.nodes(),range(st_Graph.number_of_nodes())))
+    results = []
+    for k in list(R.graph['trees'][0].keys()):
+        if k != 's':
+            results.append(lookup[k])
+    flow_value = R.graph['flow_value']
+    return results
 
-#ax2[1].plot(analy)
-#plt.show()
-
+st_graph = s_t_graph(D_city.Graph)
+results = boykov_kolmogorov_maxcut(noisy, st_graph)
 fig1,ax1 = plt.subplots(2,1,figsize=(12,8))
 plt.set_cmap('rainbow')
 plt.tight_layout()
@@ -238,7 +271,7 @@ for i, t in enumerate(times):
     title = r"Noisy Signal$ y = f(x) + \sigma$"
     #g.plot(alpha=1,ax=ax1[0,i],title=title)
     #g.plot(alpha=1,ax=ax1[0],title=title)
-    G2.plot(noisy,edges=True,edge_width=we, highlight=sources_path,ax=ax1[0],title=title)
+    G2.plot(noisy,edges=True,edge_width=we, highlight=results,ax=ax1[0],title=title)
     #ax1[0,i].set_xlabel(r'$\lambda$')
     #ax1[0].set_xlabel(r'$\y = Lx + \sigma $')
     if i > 0:
@@ -250,7 +283,7 @@ for i, t in enumerate(times):
     #ax1[0, i].legend([line, ax1[0, i].lines[-3]], labels, loc='lower right')
     #ax1[0].legend([line, ax1[0].lines[-3]], labels, loc='lower right')
     #G2.plot(y, edges=True,edge_width=we, highlight=sources, ax=ax1[1, i], title=r'$f({})$'.format(t))
-    G2.plot(noisy, edges=True,edge_width=we, highlight=results, ax=ax1[1], title=r'$f({})$'.format(t))
+    G2.plot(noisy, edges=True,edge_width=we, highlight=x2.value.nonzero(), ax=ax1[1], title=r'$f({})$'.format(t))
     #G2.plot(x2.value, edges=True, edge_width=we, highlight=[i for i, x in enumerate(x2.value) if x > 0.15], ax=ax1[1])
     #print(np.sum(y))
     #ax1[1,i].set_aspect('equal','datalim')
@@ -354,7 +387,7 @@ for i,t in enumerate(times):
     line, = ax3[0,i].plot(G2.e,G2.gft(y))
     labels = [r'$\hat{{f}}({})$'.format(t), r'$g_{{1,{}}}$'.format(t)]
     ax3[0,i].legend([line,ax3[0,i].lines[-3]],labels,loc='lower right')
-    G2.plot(y,edges=True,edge_width=we,highlight=sources_path,ax=ax3[1,i], title=r'$f({}) $'.format(t))
+    G2.plot(y,edges=True,edge_width=we,highlight=sources,ax=ax3[1,i], title=r'$f({}) $'.format(t))
     ax3[1,i].set_aspect('equal','datalim')
     ax3[1,i].margins(x=-0.3,y=-0.49)
     ax3[1,i].set_axis_off()
@@ -362,14 +395,3 @@ for i,t in enumerate(times):
 plt.show()
 
 
-#from matplotlib.widgets import Slider
-#fig5, ax5 = plt.subplots(figsize=(12,5))
-#plt.set_cmap('seismic')
-#plt.tight_layout()
-#sn = 0
-#snaps = np.linspace(sn,snapshot)
-#timer = Slider(plt.axes([0.25,0.1,0.65,0.3],facecolor='lightgoldenrodyellow'),sn,snapshot,valint=1,valstep=1)
-
-#def update():
-#    ti = timer.val
-    

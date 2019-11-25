@@ -371,6 +371,24 @@ class DarmstadtNetwork:
         nodeID = [ID for ID, _ in graph.nodes(data='osmid')]
         return nodeXs, nodeYs, nodeID
 
+    def fill_weights(self,Graph=None):
+        if Graph:
+            out = nx.to_directed(Graph)
+            strecke = [k for k in Graph.edges.data('length')]
+            for k in range(len(strecke)):
+                list_strecke = list(strecke[k][:])
+                list_strecke[2] = round(np.exp(-(np.square(list_strecke[2]))/(2*100**2)))
+                out.add_weighted_edges_from([tuple(list_strecke)])
+            return out
+        else:
+            out = nx.to_directed(self.Graph)
+            strecke = [k for k in self.Graph.edges.data('length')]
+            for k in range(len(strecke)):
+                list_strecke = list(strecke[k][:])
+                list_strecke[2] = round(np.exp(-(np.square(list_strecke[2]))/(2*100**2)))
+                out.add_weighted_edges_from([tuple(list_strecke)])
+            return out
+
     def show_citymap(self):
         fig = plt.figure()
         new = fig.canvas.manager
@@ -382,6 +400,85 @@ class DarmstadtNetwork:
         ox.plot_graph(self.Graph,**self.settings)
         #return fig,ax 
 
+    def plot_streetnames(self, positions, City=None, settings=None):
+        # Draw the topology of darmstadt with streetnames
+        if City:
+            if settings:
+                fig,ax = ox.plot_graph(City.Graph,**settings)
+            else:
+                fig,ax = ox.plot_graph(City.Graph, **City.settings)
+            hin = [k for k in City.Graph.edges.data('name')]
+            edgepos = [hin[k][0:2] for k in range(len(hin))]
+            edgename = [hin[k][2] for k in range(len(hin))]
+            nx.draw_networkx(City.Graph, pos=positions, with_labels=False, node_size=20, ax=ax)
+            nx.draw_networkx_edge_labels(City.Graph, pos=positions, edge_labels=dict(zip(edgepos, edgename)))
+            plt.tight_layout()
+            plt.show()
+        else:
+            if settings:
+                fig,ax = ox.plot_graph(self.Graph,**settings)
+            else:
+                fig,ax = ox.plot_graph(self.Graph, **self.settings)
+            hin = [k for k in self.Graph.edges.data('name')]
+            edgepos = [hin[k][0:2] for k in range(len(hin))]
+            edgename = [hin[k][2] for k in range(len(hin))]
+            nx.draw_networkx(self.Graph, pos=positions, with_labels=False, node_size=20, ax=ax)
+            nx.draw_networkx_edge_labels(self.Graph, pos=positions, edge_labels=dict(zip(edgepos, edgename)))
+            plt.tight_layout()
+            plt.show()
+
+
+    def plot_streetnumber(self, positions, City=None, settings=None):
+        if City:
+            if settings:
+                fig,ax = ox.plot_graph(City.Graph, **settings)
+            else:
+                fig,ax = ox.plot_graph(City.Graph, **City.settings)
+            nx.draw_networkx(City.Graph, pos=positions,node_size=0,node_color="white", with_labels=False, edge_linewidth=1)
+            nx.draw_networkx_nodes(City.Graph, pos=positions, nodelist=City.Graph.nodes(), node_color="none", node_edgecolor="black",with_labels=False, node_size=100,ax=ax)
+            nx.draw_networkx_labels(City.Graph, pos=positions, labels=dict(zip(City.Graph.nodes(),range(City.Graph.number_of_nodes()))), font_size=18)
+            plt.tight_layout()
+            plt.show()
+        else:
+            if settings:
+                fig,ax = ox.plot_graph(self.Graph, **settings)
+            else:
+                fig,ax = ox.plot_graph(self.Graph, **self.settings)
+            nx.draw_networkx(self.Graph, pos=positions,node_size=0,node_color="white", with_labels=False, edge_linewidth=1)
+            nx.draw_networkx_nodes(self.Graph, pos=positions, nodelist=self.Graph.nodes(), node_color="none", node_edgecolor="black",with_labels=False, node_size=100,ax=ax)
+            nx.draw_networkx_labels(self.Graph, pos=positions, labels=dict(zip(self.Graph.nodes(),range(self.Graph.number_of_nodes()))), font_size=18)
+            plt.tight_layout()
+            plt.show()
+
+    def plot_streetlenght(self, positions, City=None, settings=None):
+        if City:
+            # Draw with weights
+            strecke = [k for k in City.Graph.edges.data('length')]
+            edgeposs = [strecke[k][0:2] for k in range(len(strecke))]
+            edgestrecke = [np.around(strecke[k][2],0).astype(int) for k in range(len(strecke))]
+            if settings:
+                fig,ax = ox.plot_graph(City.Graph,**settings)
+            else:
+                fig,ax = ox.plot_graph(City.Graph, **City.settings)
+            nx.draw_networkx(City.Graph, pos=positions, with_labels=False, node_size=20, ax=ax)
+            nx.draw_networkx_edge_labels(City.Graph, pos=positions, edge_labels=dict(zip(edgeposs, edgestrecke)))
+            plt.tight_layout()
+            plt.title("Lenght of street in m")
+            plt.show()
+        else:
+            # Draw with weights
+            strecke = [k for k in self.Graph.edges.data('length')]
+            edgeposs = [strecke[k][0:2] for k in range(len(strecke))]
+            edgestrecke = [np.around(strecke[k][2],0).astype(int) for k in range(len(strecke))]
+            if settings:
+                fig,ax = ox.plot_graph(self.Graph,**settings)
+            else:
+                fig,ax = ox.plot_graph(self.Graph, **self.settings)
+            nx.draw_networkx(self.Graph, pos=positions, with_labels=False, node_size=20, ax=ax)
+            nx.draw_networkx_edge_labels(self.Graph, pos=positions, edge_labels=dict(zip(edgeposs, edgestrecke)))
+            plt.tight_layout()
+            plt.title("Lenght of street in m")
+            plt.show()
 
 #geo = dict(north=49.8815,south=49.8463,west=8.6135,east=8.6895)
 #name = "d"
