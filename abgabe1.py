@@ -7,6 +7,7 @@ import numpy as np
 import cvxpy as cp 
 from tqdm import tqdm
 import gurobipy
+from solver import Solver
 
 plt.rcParams.update({'font.size':18})
 # Load small darmstadt view
@@ -20,7 +21,7 @@ posi = dict(zip(ids,zip(xs,ys)))
 
 #D_city.plot_streetlenght(posi,D_city, settings)
 #D_city.plot_streetnames(posi, D_city, settings)
-#D_city.plot_streetnumber(posi, D_city, settings)
+D_city.plot_streetnumber(posi, D_city, settings)
 
 
 A = D_city.sparse_adj
@@ -34,9 +35,9 @@ G2 = ps.graphs.Graph(A3)
 G2.set_coordinates([[v,z] for v,z in zip(xs,ys)])
 
 #_ = ax1[0].spy(G.W,markersize=2)
-G.compute_laplacian('combinatorial')
-G.compute_fourier_basis()
-G.compute_differential_operator()
+#G.compute_laplacian('combinatorial')
+#G.compute_fourier_basis()
+#G.compute_differential_operator()
 G2.compute_laplacian('combinatorial')
 G2.compute_fourier_basis()
 G2.compute_differential_operator()
@@ -62,14 +63,13 @@ plt.show()
 """
 plt.show()
 
-def gen_signal(Graph, sigma=0.1, kind="ball",size="big"):
+def gen_signal(Graph, sigma=0.1, kind="ball", size="big"):
     if kind == "ball" and size == "big":
         sources = [2, 6, 74, 41, 20, 32, 31, 9, 10, 56, 17, 16, 18]
     elif kind == "line" and size == "big":
         sources = [20, 41, 74, 6, 16, 45, 68, 57, 15, 30, 11, 23, 43, 24]
     elif kind == "idk":
         sources = [19, 42, 45, 46, 66, 68, 70, 57, 15, 30, 65, 71]
-    #sources = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
     signal = np.zeros(Graph.n_vertices)
     signal[sources] = 1
     noisy = signal + np.random.normal(0, sigma, Graph.n_vertices)
@@ -78,19 +78,6 @@ def gen_signal(Graph, sigma=0.1, kind="ball",size="big"):
 def mse(x, t):
     return np.linalg.norm(x - t)
 
-# TODO Kommentieren
-def cut_based(y, Graph, lambd):
-    x = cp.Variable(Graph.n_vertices, boolean=True)
-    lookup = Graph.A.astype(np.double)
-    indices = lookup.tocsr().nonzero()
-    second = []
-    for k in range(len(lookup.nonzero()[0])):
-        second.append(cp.abs(x[indices[0][k]] - x[indices[1][k]]))
-    
-    object_cut = cp.Minimize(cp.sum_squares(y - x) + lambd * cp.sum(second))
-    problem_cut = cp.Problem(object_cut)
-    problem_cut.solve(solver=cp.GUROBI)
-    return x, lambd, problem_cut
     
 def path_based1(y, Graph, tp):
     pass
@@ -98,74 +85,42 @@ def path_based1(y, Graph, tp):
 fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
 plt.set_cmap('seismic')
 plt.tight_layout()
-#sources_path = [20,41,74,6,16,45,68,57,15,30,11,23,43,24]#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
-#sources_path = [2, 6, 74, 41, 20, 32, 31, 9, 10, 56, 17, 16, 18]
-#sources = [19, 42, 45, 46, 66, 68, 70, 57, 15, 30, 65, 71]
-#signal = np.zeros(G2.n_vertices)
-#signal[sources_path] = 1
-#noisy = signal + np.random.normal(0, 0.5, G2.n_vertices)
+sigma = 0.5
+noisy, sources, signal = gen_signal(G2, kind="line", sigma=sigma)
 
-noisy, sources, signal = gen_signal(G2)
-
-''' gLap Algorithmus lambda 0.3 binär''' 
-def glap_binary(y, Graph, lambd, verbose=False):
-    x = cp.Variable(Graph.n_vertices, boolean=True)
-    obje = cp.Minimize(cp.sum_squares(y-x) + lambd * cp.quad_form(x,Graph.L))
-    problem = cp.Problem(obje)
-    problem.solve(solver=cp.GUROBI, verbose=verbose)
-    return x, problem
-
-''' path Algorithmus einfach reell'''
-def path_real(y, Graph, verbose=False):    
-    Adjacency = nx.convert_matrix.to_scipy_sparse_matrix(nx.to_directed(Graph))
-    x1 = cp.Variable(Graph.n_vertices, nonneg=True)
-    constr = [cp.norm(Adjacency@x1, 'inf') <= 2, x1 <= 1]
-    obje_path = cp.Minimize(cp.sum_squares(y - x1))
-    prog = cp.Problem(obje_path, constr)
-    prog.solve(solver=cp.GUROBI, verbose=verbose)
-    return x1, prog 
-
-''' path Algorithmus C2 lambda 2x_max - 1 '''
-def path_lmax(y, Graph, verbose=False):
-    Adjacency = nx.convert_matrix.to_scipy_sparse_matrix(nx.to_directed(Graph))
-    x2 = cp.Variable(Graph.n_vertices, nonneg=True)
-    constr2 = [cp.norm(Adjacency@x2, 'inf') <= 2, x2 <= 1]
-    obj_far = cp.Minimize(cp.sum_squares(y - x2) + (2*np.max(y) - 1)*cp.sum(x2))
-    prog2 = cp.Problem(obj_far, constr2)
-    prog2.solve(solver=cp.GUROBI,verbose=verbose)
-    return x2, prog2
 
 #x2.value[x2.value <= 0.1] = 0
 #x2.value[x2.value >= 0.1] = 1
 # TODO check tp part
-x3 = cp.Variable(G2.n_vertices, nonneg=True)
-resid = x3 - 1
-f1 = cp.norm(A3@x3, 'inf') - 2 #+ cp.sum_squares(resid)
-theta = cp.Parameter(nonneg=True)
-theta.value = 0.01
-aug_lagr = cp.sum_squares(noisy - x3) + theta * f1 
-analy = []
-for eps in range(10):
-    analy.append(theta.value)
-    obj_far = cp.Problem(cp.Minimize(aug_lagr)).solve(solver=cp.GUROBI)
-    theta.value += theta.value     
-    #prog2.solve(solver=cp.GUROBI)
+# x3 = cp.Variable(G2.n_vertices, nonneg=True)
+# resid = x3 - 1
+# f1 = cp.norm(A3@x3, 'inf') - 2 #+ cp.sum_squares(resid)
+# theta = cp.Parameter(nonneg=True)
+# theta.value = 0.01
+# aug_lagr = cp.sum_squares(noisy - x3) + theta * f1 
+# analy = []
+# for eps in range(10):
+#     analy.append(theta.value)
+#     obj_far = cp.Problem(cp.Minimize(aug_lagr)).solve(solver=cp.GUROBI)
+#     theta.value += theta.value     
+#     #prog2.solve(solver=cp.GUROBI)
 
-x2, lambd, problem_cut = cut_based(noisy, G2, 2*np.max(signal) - 1 )
+#x2, lambd, problem_cut = cut_based(noisy, G2, 2*np.max(signal) - 1 )
+c = Solver("Bullshit", noisy, G2)
+#c.cut_based() 
+c.path_based()
 
-ax2.scatter(range(75), x2.value,label="$\lambda = 2 x_{0} - 1 n = {1} $".format("{max}",np.size(x2.value.nonzero())),marker='x')
-ax2.scatter(range(75), signal,label='Original',marker='o',edgecolor='k',facecolor='none')
-#ax2.scatter(range(75),x1.value,label='Paper',marker='v')
-ax2.legend(loc="upper left")
-plt.show()
-
-def lambda_error_plot(y, Graph, k=50, solver="cut"):
+def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
     performance = []
     errors = []
-    lambdas = np.logspace(-2, 2, k)
+    lambdas = np.logspace(-1.2, 1.2, k)
+    tp = np.linspace(0.05, 0.95, 15)
     if solver == "cut":
         for kk in tqdm(lambdas):
-            x_star, l_star, problem_cut = cut_based(noisy, G2, kk)
+            k = kk 
+            solv_obj.lambd = k 
+            solv_obj.cut_based()
+            x_star, l_star, problem_cut = solv_obj.variable, solv_obj.lambd, solv_obj.problem
             errors.append(mse(signal, x_star.value))
             performance.append(problem_cut.value)
     elif solver == "path1":
@@ -180,16 +135,35 @@ def lambda_error_plot(y, Graph, k=50, solver="cut"):
             x_star, l_star, problem_cut = path_real(noisy, G2, kk)
             errors.append(mse(signal, x_star.value))
             performance.append(problem_cut.value)
+    elif solver == "path":
+        for kk in tqdm(tp):
+            k = kk
+            solv_obj.lambd = k 
+            solv_obj.path_based()
+            x_star, l_star, problem_path = solv_obj.variable, solv_obj.lambd, solv_obj.problem
+            errors.append(mse(signal, x_star.value))
+            performance.append(problem_path.value)
+            #solv_obj.Graph.strongly_connected_components([i for i, x in enumerate(x_sub.value) if x == 1])
+            subgraph = solv_obj.Graph.to_networkx().subgraph([i for i, x in enumerate(x_star.value) if x == 1])
+            x_path = nx.algorithms.strongly_connected_component_subgraphs(subgraph)
+            sss = subgraph.to_undirected()
+            S = [sss.subgraph(c).copy() for c in nx.connected_components(sss)]
+            largest_cc = max(S, key=len)
+            nx.draw(largest_cc)
+            plt.show()
+
     mins = np.where(errors == np.min(errors))[0][:]
     l_star_best = lambdas[mins[0] + np.argmin([performance[k] for k in mins])]
-    x_star, l_star, problem_star = cut_based(noisy, G2, l_star_best)
+    solv_obj.lambd = l_star_best
+    solv_obj.cut_based()
+    x_star, l_star, problem_star = solv_obj.variable, solv_obj.lambd, solv_obj.problem
     fig,ax = plt.subplots(1,1,figsize=(12,8))
     ax.set_xscale("log")
     ax.xaxis.set_major_locator(ticker.LogLocator(base=10.0,numticks=15))
     ax.plot(lambdas, errors, label="Error")
     ax.plot(lambdas, performance, label="Performance")
     ax.set_xlabel(r"$\lambda$",fontsize=16)
-    ax.set_title("Mean Squared Error (MSE)")
+    ax.set_title("Mean Squared Error (MSE) and Performance $\sigma = {0}$".format(sigma))
     ax.axvline(x=l_star,linestyle='--',color="k")
     ax.axvline(x=2*np.max(y)-1, linestyle='-.',color="r")
     xticks = [0.01, 0.1, 1, 10, 100, l_star, 2*np.max(y)-1]
@@ -198,6 +172,22 @@ def lambda_error_plot(y, Graph, k=50, solver="cut"):
     ax.set_xticklabels(xlabels)
     ax.legend(loc="upper left")
     plt.show()
+    return x_star, problem_star
+
+x_star, _ = lambda_error_plot(noisy, c, solver="path")
+x_sub = x_star.copy()
+fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
+plt.set_cmap('seismic')
+plt.tight_layout()
+
+ax2.scatter(range(75), x_star.value, label="$\lambda = \lambda^{*}$",marker='x',color="red")
+ax2.scatter(range(75), signal,label='Original',marker='o',edgecolor='k',facecolor='none')
+ax2.scatter(range(75), x_sub.value, label='Subgraph',marker='v',color="blue")
+ax2.set_xlabel("Index of vertices")
+ax2.set_ylabel("Vertex active")
+ax2.legend(loc="center left")
+ax2.set_title("Estimated Mobility Pattern with {0} nodes".format(np.size(x_star.value.nonzero())))
+plt.show()
 
 def s_t_graph(Graph,show=False):
     GGG = Graph.copy()
@@ -271,7 +261,7 @@ for i, t in enumerate(times):
     title = r"Noisy Signal$ y = f(x) + \sigma$"
     #g.plot(alpha=1,ax=ax1[0,i],title=title)
     #g.plot(alpha=1,ax=ax1[0],title=title)
-    G2.plot(noisy,edges=True,edge_width=we, highlight=results,ax=ax1[0],title=title)
+    G2.plot(noisy,edges=True,edge_width=we, highlight=results,ax=ax1[0],title="boykov-kolmogorov")
     #ax1[0,i].set_xlabel(r'$\lambda$')
     #ax1[0].set_xlabel(r'$\y = Lx + \sigma $')
     if i > 0:
@@ -283,7 +273,7 @@ for i, t in enumerate(times):
     #ax1[0, i].legend([line, ax1[0, i].lines[-3]], labels, loc='lower right')
     #ax1[0].legend([line, ax1[0].lines[-3]], labels, loc='lower right')
     #G2.plot(y, edges=True,edge_width=we, highlight=sources, ax=ax1[1, i], title=r'$f({})$'.format(t))
-    G2.plot(noisy, edges=True,edge_width=we, highlight=x2.value.nonzero(), ax=ax1[1], title=r'$f({})$'.format(t))
+    G2.plot(noisy, edges=True,edge_width=we, highlight=c.variable.value.nonzero(), ax=ax1[1], title="cut based optimization")
     #G2.plot(x2.value, edges=True, edge_width=we, highlight=[i for i, x in enumerate(x2.value) if x > 0.15], ax=ax1[1])
     #print(np.sum(y))
     #ax1[1,i].set_aspect('equal','datalim')
@@ -358,40 +348,87 @@ s45 = [49,74]
 s102 = [32]
 s104 = [3,7,55,72]
 
-sources = [11,23,39,43,63,19,42,45,46,66,68,15,30,57,70,65,71,27,33,44,29,0,26,4,13,37,58,67,69,12,47,48,49,74,32,3,7,55,72]
-snapshot = 600
-signal[s3] = a003[snapshot]
-signal[s4] = a004[snapshot]
-signal[s5] = a005[snapshot]
-signal[s6] = a006[snapshot]
-signal[s7] = a007[snapshot]
-signal[s22] = a022[snapshot]
-signal[s23] = a023[snapshot]
-signal[s28] = a028[snapshot]
-signal[s30] = a030[snapshot]
-signal[s45] = a045[snapshot]
-signal[s102] = a102[snapshot]
-signal[s104] = a104[snapshot]
-fig3, ax3 = plt.subplots(2,2,figsize=(12,5))
-plt.set_cmap('seismic')
-plt.tight_layout()
-times = [0,5]
-for i,t in enumerate(times):
-    g = ps.filters.Heat(G2,scale=t,normalize=False)
-    title = r'$\hat{{f}}({0}) = g_{{1,{0}}} \odot \hat{{f}}(0)$'.format(t)
-    g.plot(alpha=1,ax=ax3[0,i],title=title)
-    ax3[0,i].set_label(r'$\lambda$')
-    if i > 0:
-        ax3[0,i].set_ylabel('')
-    y = g.filter(signal)
-    line, = ax3[0,i].plot(G2.e,G2.gft(y))
-    labels = [r'$\hat{{f}}({})$'.format(t), r'$g_{{1,{}}}$'.format(t)]
-    ax3[0,i].legend([line,ax3[0,i].lines[-3]],labels,loc='lower right')
-    G2.plot(y,edges=True,edge_width=we,highlight=sources,ax=ax3[1,i], title=r'$f({}) $'.format(t))
-    ax3[1,i].set_aspect('equal','datalim')
-    ax3[1,i].margins(x=-0.3,y=-0.49)
-    ax3[1,i].set_axis_off()
 
-plt.show()
+# for t in range(600,610):
+#     sources = [11,23,39,43,63,19,42,45,46,66,68,15,30,57,70,65,71,27,33,44,29,0,26,4,13,37,58,67,69,12,47,48,49,74,32,3,7,55,72]
+#     snapshot = t
+#     signal[s3] = a003[snapshot]
+#     signal[s4] = a004[snapshot]
+#     signal[s5] = a005[snapshot]
+#     signal[s6] = a006[snapshot]
+#     signal[s7] = a007[snapshot]
+#     signal[s22] = a022[snapshot]
+#     signal[s23] = a023[snapshot]
+#     signal[s28] = a028[snapshot]
+#     signal[s30] = a030[snapshot]
+#     signal[s45] = a045[snapshot]
+#     signal[s102] = a102[snapshot]
+#     signal[s104] = a104[snapshot]
+#     fig3, ax3 = plt.subplots(2,2,figsize=(12,5))
+#     plt.set_cmap('seismic')
+#     plt.tight_layout()
+#     times = [0,5]
+#     for i,t in enumerate(times):
+#         g = ps.filters.Heat(G2,scale=t,normalize=False)
+#         title = r'$\hat{{f}}({0}) = g_{{1,{0}}} \odot \hat{{f}}(0)$'.format(t)
+#         g.plot(alpha=1,ax=ax3[0,i],title=title)
+#         ax3[0,i].set_label(r'$\lambda$')
+#         if i > 0:
+#             ax3[0,i].set_ylabel('')
+#         y = g.filter(signal)
+#         line, = ax3[0,i].plot(G2.e,G2.gft(y))
+#         labels = [r'$\hat{{f}}({})$'.format(t), r'$g_{{1,{}}}$'.format(t)]
+#         ax3[0,i].legend([line,ax3[0,i].lines[-3]],labels,loc='lower right')
+#         G2.plot(y,edges=True,edge_width=we,highlight=sources,ax=ax3[1,i], title=r'$f({}) $'.format(t))
+#         ax3[1,i].set_aspect('equal','datalim')
+#         ax3[1,i].margins(x=-0.3,y=-0.49)
+#         ax3[1,i].set_axis_off()
 
+#     plt.show()
 
+#     print("------------------------------------------")
+#     print("  it  |  mu  |  lambda  |  eps  |  cost  |")
+#     print("------------------------------------------")
+#     signal /= np.max(signal)
+#     mu = 1
+#     d = Solver("Test", signal/mu, G2)
+#     for m in range(20):
+#         d.cut_based()
+#         x_darm, problem_darm = lambda_error_plot(signal/mu, d)
+#         mu_old = mu
+#         mu = np.dot(signal, x_darm.value) / np.dot(x_darm.value, x_darm.value)
+#         if np.isnan(mu) or np.dot(x_darm.value, x_darm.value) == 0:
+#             mu = mu_old 
+#         d.signals /= mu 
+#         #d.lambd = 2*np.max(d.signals) - 1
+#         eps = mu_old - mu 
+#         print(" {0} | {1} | {2} | {3} | {4} |".format(m, round(mu,4), round(d.lambd,2), round(eps,4), round(problem_darm.value,2)))
+#         if eps <= 0.001:
+#             break
+
+#     fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
+#     plt.set_cmap('seismic')
+#     plt.tight_layout()
+
+#     ax2.scatter(range(75), x_darm.value, label="$\lambda = \lambda^{*}$",marker='x',color="red")
+#     ax2.scatter(range(75), signal/mu,label='Original',marker='o',edgecolor='k',facecolor='none')
+#     #ax2.scatter(range(75),x1.value,label='Paper',marker='v')
+#     ax2.set_xlabel("Index of vertices")
+#     ax2.set_ylabel("Vertex active")
+#     ax2.legend(loc="center left")
+#     ax2.set_title("Estimated Mobility Pattern with {0} nodes".format(np.size(x_darm.value.nonzero())))
+#     plt.show()
+
+#     fig1,ax1 = plt.subplots(2,1,figsize=(12,8))
+#     plt.set_cmap('rainbow')
+#     plt.tight_layout()
+#     _,_,we = G2.get_edge_list()
+#     G2.plot(signal, edges=True, edge_width=we, highlight=sources, ax=ax1[0],title="Gemessen Darmstadt")
+#     G2.plot(signal, edges=True,edge_width=we, highlight=d.variable.value.nonzero(), ax=ax1[1], title="Mobility Patters")
+#     ax1[1].set_aspect('equal','datalim')
+#     ax1[1].margins(x=-0.2,y=-0.4)
+#     ax1[1].set_axis_off()
+#     ax1[0].set_aspect('equal','datalim')
+#     ax1[0].margins(x=-0.2,y=-0.4)
+#     ax1[0].set_axis_off()
+#     plt.show()
