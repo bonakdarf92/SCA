@@ -3,11 +3,13 @@
     "workbench.sideBar.location": "right",
     "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe",
     "terminal.integrated.shellArgs.windows": [
-        "bal"
+        "/K",
+        "C:\\Anaconda3\\Scripts\\activate.bat C:\\Anaconda3\\envs\\MaTh & activate MaTh"
     ],
     "python.pythonPath": "C:\\Anaconda3\\envs\\MaTh\\python.exe",
     "python.condaPath": "/anaconda3/envs/",
     "files.associations": {
         "matrix": "cpp"
-    }
+    },
+    "terminal.explorerKind": "integrated"
 }

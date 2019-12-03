@@ -73,6 +73,7 @@ def gen_signal(Graph, sigma=0.1, kind="ball", size="big"):
     signal = np.zeros(Graph.n_vertices)
     signal[sources] = 1
     noisy = signal + np.random.normal(0, sigma, Graph.n_vertices)
+    noisy[noisy <= 0] = 0
     return noisy, sources, signal
 
 def mse(x, t):
@@ -85,7 +86,7 @@ def path_based1(y, Graph, tp):
 fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
 plt.set_cmap('seismic')
 plt.tight_layout()
-sigma = 0.5
+sigma = 0.3
 noisy, sources, signal = gen_signal(G2, kind="line", sigma=sigma)
 
 
@@ -108,13 +109,13 @@ noisy, sources, signal = gen_signal(G2, kind="line", sigma=sigma)
 #x2, lambd, problem_cut = cut_based(noisy, G2, 2*np.max(signal) - 1 )
 c = Solver("Bullshit", noisy, G2)
 #c.cut_based() 
-c.path_based()
+#c.path_based()
 
 def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
     performance = []
     errors = []
     lambdas = np.logspace(-1.2, 1.2, k)
-    tp = np.linspace(0.05, 0.95, 15)
+    tp = np.linspace(0.07, 0.8, k)
     if solver == "cut":
         for kk in tqdm(lambdas):
             k = kk 
@@ -136,26 +137,33 @@ def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
             errors.append(mse(signal, x_star.value))
             performance.append(problem_cut.value)
     elif solver == "path":
-        for kk in tqdm(tp):
+        for kk in tqdm(lambdas):
             k = kk
             solv_obj.lambd = k 
-            solv_obj.path_based()
+            solv_obj.path_based()#path_lmax()
             x_star, l_star, problem_path = solv_obj.variable, solv_obj.lambd, solv_obj.problem
             errors.append(mse(signal, x_star.value))
             performance.append(problem_path.value)
             #solv_obj.Graph.strongly_connected_components([i for i, x in enumerate(x_sub.value) if x == 1])
-            subgraph = solv_obj.Graph.to_networkx().subgraph([i for i, x in enumerate(x_star.value) if x == 1])
-            x_path = nx.algorithms.strongly_connected_component_subgraphs(subgraph)
-            sss = subgraph.to_undirected()
-            S = [sss.subgraph(c).copy() for c in nx.connected_components(sss)]
-            largest_cc = max(S, key=len)
-            nx.draw(largest_cc)
-            plt.show()
+            ##subgraph = solv_obj.Graph.to_networkx().subgraph([i for i, x in enumerate(x_star.value) if x == 1])
+            ##x_path = nx.algorithms.strongly_connected_component_subgraphs(subgraph)
+            ##sss = subgraph.to_undirected()
+            ##S = [sss.subgraph(c).copy() for c in nx.connected_components(sss)]
+            ##largest_cc = max(S, key=len)
+            #nx.draw(largest_cc)
+            #plt.show()
+            #G2.plot(y, highlight=x_star.value.nonzero())
+            #plt.show()
 
     mins = np.where(errors == np.min(errors))[0][:]
-    l_star_best = lambdas[mins[0] + np.argmin([performance[k] for k in mins])]
-    solv_obj.lambd = l_star_best
-    solv_obj.cut_based()
+    if solver == "cut":
+        l_star_best = lambdas[mins[0] + np.argmin([performance[k] for k in mins])]
+        solv_obj.lambd = l_star_best
+        solv_obj.cut_based()
+    else:
+        l_star_best = lambdas[mins[0] + np.argmin([performance[k] for k in mins])]
+        solv_obj.lambd = l_star_best 
+        solv_obj.path_based()
     x_star, l_star, problem_star = solv_obj.variable, solv_obj.lambd, solv_obj.problem
     fig,ax = plt.subplots(1,1,figsize=(12,8))
     ax.set_xscale("log")
@@ -172,23 +180,31 @@ def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
     ax.set_xticklabels(xlabels)
     ax.legend(loc="upper left")
     plt.show()
-    return x_star, problem_star
+    return x_star, l_star, problem_star
 
-x_star, _ = lambda_error_plot(noisy, c, solver="path")
-x_sub = x_star.copy()
+x_star, l_star, _ = lambda_error_plot(noisy, c, k=30, solver="path")
+c.lambd = l_star
+c.path_based(threshold=False)
+reconstruct = c.variable.copy()
+reconstruct.value[:] = 0
+reconstruct.value[c.sparse_var.value.nonzero()[0]] = 1
+x_sub = reconstruct
 fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
 plt.set_cmap('seismic')
 plt.tight_layout()
 
 ax2.scatter(range(75), x_star.value, label="$\lambda = \lambda^{*}$",marker='x',color="red")
 ax2.scatter(range(75), signal,label='Original',marker='o',edgecolor='k',facecolor='none')
-ax2.scatter(range(75), x_sub.value, label='Subgraph',marker='v',color="blue")
+ax2.scatter(range(75), x_sub, label='Subgraph',marker='v',color="blue")
 ax2.set_xlabel("Index of vertices")
 ax2.set_ylabel("Vertex active")
+ax2.axhline(l_star)
 ax2.legend(loc="center left")
-ax2.set_title("Estimated Mobility Pattern with {0} nodes".format(np.size(x_star.value.nonzero())))
+ax2.set_title("Estimated Mobility Pattern with {0} nodes".format(len(x_star.value.nonzero()[0])))
 plt.show()
 
+c.path_based(threshold=True)
+x_sub = c.variable
 def s_t_graph(Graph,show=False):
     GGG = Graph.copy()
     GGG.add_node('s')
