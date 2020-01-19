@@ -33,6 +33,47 @@ class Solver:
         self.problem = cp.Problem(object_cut)
         self.problem.solve(solver=cp.GUROBI)
 
+    def path_based2(self,stGraph, verbose=False, threshold=True):
+        self.path_based()
+        preselection = self.variable
+        print("Erstelle Simplen Graphen")
+        paths = nx.all_simple_paths(stGraph,source='s',target='t',cutoff=18)
+        self.Adjacency = self.Graph.A.astype(np.double)
+        list_paths = [p for p in paths if len(p) > 10]
+        pathDic = np.zeros((self.Graph.n_vertices, len(list_paths)))
+        count = 0
+        s = [t for t in stGraph.nodes._nodes]
+        print("Bestimme Dictionary")
+        for k in list_paths:
+            k.pop(0)
+            k.pop()
+            locs = [s.index(t) for t in k]
+            pathDic[locs, count] = 1
+            count += 1
+        for kick in preselection:
+            pass
+        print("Beginne Optimierung")
+        self.variable = cp.Variable(len(pathDic[0]), boolean=True)
+        #resid = (np.max(self.signals)*np.ones(self.Graph.n_vertices,) - self.signals)
+        #W = self.Adjacency.copy()
+        #rows, cols = [k for k in W.nonzero()[0]], [k for k in W.nonzero()[1]]
+        #lookup = self.Graph.A.astype(np.double)
+        #indices = lookup.tocsr().nonzero()
+        #second = []
+        #for k in range(len(lookup.nonzero()[0])):
+        #    second.append(cp.abs(self.variable[indices[0][k]] - self.variable[indices[1][k]]))
+        #for k in range(W.count_nonzero()):
+        #    W[rows[k],cols[k]] = (resid[rows[0]] + resid[cols[k]])/2
+
+        constraint = [cp.sum(self.variable) == 1]
+        #constraint = [cp.norm(self.Adjacency @ self.variable, 'inf') <= 2, cp.sum(self.variable)- 0.5*cp.sum(self.Adjacency @ self.variable) - 1 == 0 ]
+        #object_farid = cp.Minimize(cp.sum_squares(self.signals - self.variable) + self.lambd * cp.norm(W @ self.variable,1) )
+        object_farid = cp.Minimize(cp.sum_squares(self.signals - pathDic@self.variable))# + self.lambd*cp.norm1(self.variable))
+        self.problem = cp.Problem(object_farid,constraint)
+        self.problem.solve(solver=cp.GUROBI, verbose=verbose)
+        self.solution = pathDic @ self.variable
+
+
     def path_based(self, verbose=False, threshold=True):
         self.Adjacency = self.Graph.A.astype(np.double)
         self.variable = cp.Variable(self.Graph.n_vertices, nonneg=True)
@@ -50,12 +91,12 @@ class Solver:
             self.subAdjacency = self.Adjacency[np.ix_(self.variable.value.nonzero()[0],self.variable.value.nonzero()[0])]
             self.sparse_var = cp.Variable(self.subAdjacency.shape[0], boolean=True)
             constraint2 = [2*cp.sum(self.sparse_var) - cp.sum(self.subAdjacency @ self.sparse_var) == 2]
-            object_path_sparse = cp.Minimize(cp.sum(self.sparse_var))
+            object_path_sparse = cp.Minimize(cp.norm(self.signals[np.ix_(self.variable.value.nonzero()[0])] - self.sparse_var) - np.ones(self.subAdjacency.shape[0],)@self.sparse_var)
             self.subProblem = cp.Problem(object_path_sparse, constraint2)
             self.subProblem.solve(solver=cp.GUROBI, verbose=verbose)
             #reconstruct = dict(zip(self.variable.value.nonzero()[0],self.subProblem.value))
             #print(reconstruct)
-            print(len(self.sparse_var.value.nonzero()[0]))
+            print("Anzahl der aktivierte Knoten {0}  Anzahl der optimierten Knoten {1}".format(len(self.variable.value.nonzero()[0]), len(self.sparse_var.value.nonzero()[0])))
             
     
     def path_farid(self, verbose=False):
@@ -113,5 +154,5 @@ class Solver:
         #return x2, prog2
 
     
-    def multi_signal_decomp(self):
+    def multi_signal_decomp(self, K=3):
         self.variable = cp.Variable(self.Graph.n_vertices, nonneg=True)
