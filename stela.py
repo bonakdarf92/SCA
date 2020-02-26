@@ -10,6 +10,14 @@ def soft_thresholding(q, t, K):
     x = np.maximum(q - t, np.zeros(K)) - np.maximum(-q - t, np.zeros(K));
     return x
 
+def soft_thresholding_pos(q, t, K):
+    '''
+    The soft-thresholding function returns the optimal x that minimizes
+        min_x 0.5 * x^2 - q * x + t * |x|
+    '''
+    x = np.maximum(q - t, np.zeros(K))
+    return x
+
 
 def stela_lasso(A, y, mu, MaxIter=1000):
     '''
@@ -82,8 +90,8 @@ def stela_lasso(A, y, mu, MaxIter=1000):
         CPU_time[t + 1] = time.time()
 
         '''approximate problem, cf. (49) of reference'''
-        Bx = soft_thresholding(x - np.divide(f_gradient, AtA_diag), mu_vec_normalized, K)
-
+        #Bx = soft_thresholding(x - np.divide(f_gradient, AtA_diag), mu_vec_normalized, K)
+        Bx = soft_thresholding_pos(x - np.divide(f_gradient, AtA_diag), mu_vec_normalized, K)
         x_dif = Bx - x
         Ax_dif = np.dot(A, x_dif)  # A * (Bx - x)
 

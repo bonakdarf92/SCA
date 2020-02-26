@@ -1,5 +1,5 @@
 using Convex
-using SCS
+using Gurobi 
 
 PLOT_FIGURES = true # True to plot figures, false to suppress plots
 N = 96 # Number of periods in the day (so each interval 15 minutes)

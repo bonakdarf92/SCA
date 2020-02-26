@@ -9,9 +9,22 @@ using LinearAlgebra
 using Formatting
 using StatsBase
 using Distributions
-using Plots
+using Plots, PyCall
 using BenchmarkTools
+using NPZ
+using Convex
+using Gurobi
+using LightGraphs
 
+
+function compare(c::Number)
+    plot(A*x, label="Stela")
+    plot!(A*x_cv.value, label="Gurobi")
+    plot!(x0, label="Original")
+    plot!(y, label="Measurement")
+end
+
+performance() = plot(plot(objval), plot(err), layout=(1,2))
 
 function soft_threshholding(q,t,K)
     x = max.(q-t, zeros(K)) - max.(-q - t, zeros(K))
@@ -33,11 +46,12 @@ end
 stepdom(∇Ax) = ∇Ax'*∇Ax
 
 
-function own_stela!(x, ∇f, μ_vec_norm, K, A, ϵ, μ_vec, ν, objval, err, Maxiter)
-    for t = 1:Maxiter
-        𝔹x = soft_threshholding((x' - ))
-    end
-end
+
+#function own_stela!(x, ∇f, μ_vec_norm, K, A, ϵ, μ_vec, ν, objval, err, Maxiter)
+#    for t = 1:Maxiter
+#        �x = soft_threshholding((x' - ))
+#    end
+#end
 
 function kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
     for t = 1:Maxiter
@@ -46,9 +60,9 @@ function kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval,
         @inbounds ∇Ax = A * δx
         #bla = descent_dir(𝔹x, x, 1)
 
-        @inbounds step_num = stepnum(ϵ, ∇Ax, 𝔹x, x, μ_vec) #- (ϵ' * ∇Ax + (abs.(𝔹x) - abs.(x))' * µ_vec)
+        @inbounds step_num = stepnum(ϵ, ∇Ax, 𝔹x, x, μ_vec) #- (ϵ' * ∇Ax + (abs.(�x) - abs.(x))' * µ_vec)
         @inbounds step_denom = stepdom(∇Ax) #∇Ax' * ∇Ax
-        step_size =  max.(min.(step_num/ step_denom, 1), 0) #stepsize(ϵ, ∇Ax, 𝔹x, x, μ_vec)
+        step_size =  max.(min.(step_num/ step_denom, 1), 0) #stepsize(ϵ, ∇Ax, �x, x, μ_vec)
 
         @inbounds x[:] +=  δx[:] * step_size #descent_dir(𝔹x, x, step_size)
         @inbounds ϵ[:] += ∇Ax * step_size
@@ -58,9 +72,10 @@ function kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval,
         @inbounds g = µ * norm(x,1)
         @inbounds objval[t+1] = f[1] + g
         #setindex!(objval[:],f[1]+g,t+1)
+        IterationOut = "{1:9}|{2:10}|{3:15}|{4:15}"
         @inbounds error[t+1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))), Inf)
         #printfmtln(IterationOut, t+1, "N/A", format(objval[t+1], width=7), format(error[t+1], width=7), format(CPU_Time[t+1], precision=7))
-        #printfmtln(IterationOut, t+1, format(step_size[1],width = 4), format(objval[t+1], width=7), format(error[t+1], width=7))
+        printfmtln(IterationOut, t+1, format(step_size[1],width = 4), format(objval[t+1], width=7), format(error[t+1], width=7))
 
         if error[t+1] < 1e-6
             println("Succesfull")
@@ -96,16 +111,16 @@ function stela_lasso(A::Array{Float64,2}, y::Vector{Float64}, µ::Float64, Maxit
     setindex!(objval[:],f[1],1)
     @inbounds error[1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))),Inf)
 
-    #IterationOut = "{1:9}|{2:10}|{3:15}|{4:15}"
-    #printfmtln(IterationOut,"Iteration", "stepsize", "objval", "error")
-    #printfmtln(IterationOut, 1, "N/A", format(objval[1], width=7), format(error[1], width=7))
+    IterationOut = "{1:9}|{2:10}|{3:15}|{4:15}"
+    printfmtln(IterationOut,"Iteration", "stepsize", "objval", "error")
+    printfmtln(IterationOut, 1, "N/A", format(objval[1], width=7), format(error[1], width=7))
     kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
     # for t = 1:Maxiter
-    #     𝔹x = soft_threshholding((x'- ∇f ./ AtA_diag)', µ_vec_norm', K)
-    #     δx = 𝔹x - x
+    #     �x = soft_threshholding((x'- ∇f ./ AtA_diag)', µ_vec_norm', K)
+    #     δx = �x - x
     #     ∇Ax = A * δx
     #
-    #     step_num = - (ϵ' * ∇Ax + (abs.(𝔹x) - abs.(x))' * µ_vec)
+    #     step_num = - (ϵ' * ∇Ax + (abs.(�x) - abs.(x))' * µ_vec)
     #     step_denom = ∇Ax' * ∇Ax
     #     step_size = max.(min.(step_num / step_denom, 1), 0)
     #
@@ -131,23 +146,35 @@ function stela_lasso(A::Array{Float64,2}, y::Vector{Float64}, µ::Float64, Maxit
     return objval, x, error
 end
 
-N = 40000
-K = 3000
-A = rand(Normal(0,0.1),N, K)
-
+# N = 4000
+# K = 3000
+# A = rand(Normal(0,0.1),N, K)
+A = npzread("PathDic_20_7.npz")["arr_0"]; 
+Graph = npzread("DarmstadtJulia.npz")["arr_0"]
+GG = DiGraph(Graph)
+L = laplacian_matrix(GG)
 dens = 0.01
-x0 = zeros(K)
-x0_pos = sample(collect(1:K), round(Int,K*dens))
+x0 = zeros(75)
+#x0_pos = sample(collect(1:K), round(Int, K*dens))
+x0_pos = [20, 41, 74, 6, 16, 45, 68, 57, 15, 30, 11, 23, 43, 24]
 
-for t = 1:round(Int,K*dens)
-    x0[x0_pos[t]] = rand(Normal(0,1))
+for t = 1:14#round(Int,K*dens)
+    x0[x0_pos[t]] = rand(20:40)#rand(Normal(0,1))
 end
 
 sigma = 0.01
-v = rand(Normal(0,sigma), N)'
-y = (A*x0 + v')
+v = rand(Normal(0,sigma), 75)'
+y = x0 + rand(-2:5,75)#v #(A*x0 + v')
+y[y.<0] .= 0
 
-µ = 0.01*norm((y'*A),Inf)
+µ = 0.0017*norm((y'*A),Inf)
 
-@benchmark objval , x, err = stela_lasso(A, y, µ, 100)
+#@benchmark 
+objval , x, err = stela_lasso(A, y, µ, 500)
+
+x_cv = Variable(size(A)[2]);
+problem = minimize(0.5*sumsquares(y - A*x_cv) + μ * norm_1(x_cv), x_cv >=0)
+solve!(problem, GurobiSolver())
+x_prob = A*x ./ maximum(A*x)
+
 println("fertig")
