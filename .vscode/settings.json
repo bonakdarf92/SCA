@@ -1,12 +1,15 @@
 {
     "workbench.colorTheme": "One Dark Pro",
     "workbench.sideBar.location": "right",
-    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\cmd.exe",
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
     "terminal.integrated.shellArgs.windows": [
-        "/K",
-        "C:\\Anaconda3\\Scripts\\activate.bat C:\\Anaconda3\\envs\\MaTh & activate MaTh"
+        //"/K",
+        //"echo Bla"
+        //"conda activate MaTh2"
+        //"C:\\Users\\FaridLenovo\\Anaconda3\\Scripts\\activate.bat 
+        //"C:\\Users\\FaridLenovo\\Anaconda3\\envs\\MaTh2\\Scripts\\activate.bat & conda activate MaTh2"
     ],
-    "python.pythonPath": "C:\\Anaconda3\\envs\\MaTh\\python.exe",
+    //"python.pythonPath": "C:\\Users\\FaridLenovo\\Anaconda3\\envs\\MaTh2\\python.exe",
     "python.condaPath": "/anaconda3/envs/",
     "files.associations": {
         "matrix": "cpp"

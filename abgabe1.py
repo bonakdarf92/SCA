@@ -8,19 +8,20 @@ import cvxpy as cp
 from tqdm import tqdm
 import gurobipy
 from solver import Solver
+import scipy.stats as ss
 
 plt.rcParams.update({'font.size':18})
 # Load small darmstadt view
-geo = dict(north=49.874,south=49.8679,west=8.6338,east=8.6517)
+geo = dict(north=49.874, south=49.8679, west=8.6338, east=8.6517)
 D_city = DarmstadtNetwork(geo, "Abgabe")
 D_city.load_darmstadt(show=False)
 settings = dict(bgcolor="white", equal_aspect=False, node_size=30, node_edgecolor="none", node_zorder=2, axis_off=False, edge_color="white",edge_linewidth=0,edge_alpha=0,show=False,close=False,save=False)
-xs,ys,ids = D_city.get_ids()
-posi = dict(zip(ids,zip(xs,ys)))
+xs, ys, ids = D_city.get_ids()
+posi = dict(zip(ids, zip(xs, ys)))
 
 
-#D_city.plot_streetlenght(posi,D_city, settings)
-#D_city.plot_streetnames(posi, D_city, settings)
+# D_city.plot_streetlenght(posi,D_city, settings)
+# D_city.plot_streetnames(posi, D_city, settings)
 D_city.plot_streetnumber(posi, D_city, settings)
 
 
@@ -30,14 +31,14 @@ A3 = nx.convert_matrix.to_scipy_sparse_matrix(D_city.fill_weights())
 
 import pygsp as ps 
 G = ps.graphs.Graph(A)
-G.set_coordinates([[v,z] for v,z in zip(xs,ys)])
+G.set_coordinates([[v, z] for v, z in zip(xs, ys)])
 G2 = ps.graphs.Graph(A3)
-G2.set_coordinates([[v,z] for v,z in zip(xs,ys)])
+G2.set_coordinates([[v, z] for v, z in zip(xs, ys)])
 
 #_ = ax1[0].spy(G.W,markersize=2)
-#G.compute_laplacian('combinatorial')
-#G.compute_fourier_basis()
-#G.compute_differential_operator()
+# G.compute_laplacian('combinatorial')
+# G.compute_fourier_basis()
+# G.compute_differential_operator()
 G2.compute_laplacian('combinatorial')
 G2.compute_fourier_basis()
 G2.compute_differential_operator()
@@ -63,18 +64,28 @@ plt.show()
 """
 plt.show()
 
+
 def gen_signal(Graph, sigma=0.1, kind="ball", size="big"):
     if kind == "ball" and size == "big":
         sources = [2, 6, 74, 41, 20, 32, 31, 9, 10, 56, 17, 16, 18]
     elif kind == "line" and size == "big":
-        sources = [20, 41, 74, 6, 16, 45, 68, 57, 15, 30, 11, 23, 43, 24]
+        sources = [20, 41, 74, 6, 16, 45, 68, 57, 15, 30, 11, 23, 43, 24]#,
+                   #48, 12, 21, 13, 69, 37, 7, 3, 63]
     elif kind == "idk":
         sources = [19, 42, 45, 46, 66, 68, 70, 57, 15, 30, 65, 71]
     signal = np.zeros(Graph.n_vertices)
-    signal[sources] = 1
-    noisy = signal + np.random.normal(0, sigma, Graph.n_vertices)
+    signal[sources] = np.random.randint(20, 40, (np.shape(sources)))#1
+    np.random.seed(43)
+    noise = np.random.normal(0, sigma, Graph.n_vertices)
+    #noise[noise <= 0] = 0
+    noise = np.arange(-15, 16)
+    noiseU, noiseL = noise + 0.5, noise - 0.5
+    prob = ss.norm.cdf(noiseU, scale=9) - ss.norm.cdf(noiseL, scale=9)
+    prob = prob/prob.sum()
+    noisy = signal + np.random.choice(noise, size=Graph.n_vertices, p=prob) #np.random.normal(0, sigma, Graph.n_vertices)
     noisy[noisy <= 0] = 0
     return noisy, sources, signal
+
 
 def mse(x, t):
     return np.linalg.norm(x - t)
@@ -86,12 +97,12 @@ def path_based1(y, Graph, tp):
 fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
 plt.set_cmap('rainbow')
 plt.tight_layout()
-sigma = 0.6
+sigma = 0.9
 noisy, sources, signal = gen_signal(G2, kind="line", sigma=sigma)
 
 
-#x2.value[x2.value <= 0.1] = 0
-#x2.value[x2.value >= 0.1] = 1
+# x2.value[x2.value <= 0.1] = 0
+# x2.value[x2.value >= 0.1] = 1
 # TODO check tp part
 # x3 = cp.Variable(G2.n_vertices, nonneg=True)
 # resid = x3 - 1
@@ -106,10 +117,10 @@ noisy, sources, signal = gen_signal(G2, kind="line", sigma=sigma)
 #     theta.value += theta.value     
 #     #prog2.solve(solver=cp.GUROBI)
 
-#x2, lambd, problem_cut = cut_based(noisy, G2, 2*np.max(signal) - 1 )
+# x2, lambd, problem_cut = cut_based(noisy, G2, 2*np.max(signal) - 1 )
 c = Solver("Bullshit", noisy, G2)
-#c.cut_based() 
-#c.path_based()
+# c.cut_based() 
+# c.path_based()
 
 def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
     performance = []
@@ -167,15 +178,15 @@ def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
     x_star, l_star, problem_star = solv_obj.variable, solv_obj.lambd, solv_obj.problem
     fig,ax = plt.subplots(1,1,figsize=(12,8))
     ax.set_xscale("log")
-    ax.xaxis.set_major_locator(ticker.LogLocator(base=10.0,numticks=15))
+    ax.xaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=15))
     ax.plot(lambdas, errors, label="Error")
     ax.plot(lambdas, performance, label="Cost")
-    ax.set_xlabel(r"$\lambda$",fontsize=16)
+    ax.set_xlabel(r"$\lambda$", fontsize=16)
     ax.set_title("Mean Squared Error (MSE) and Performance $\sigma = {0}$".format(sigma))
-    ax.axvline(x=l_star,linestyle='--',color="k")
-    ax.axvline(x=2*np.max(y)-1, linestyle='-.',color="r")
+    ax.axvline(x=l_star, linestyle='--', color="k")
+    ax.axvline(x=2*np.max(y)-1, linestyle='-.', color="r")
     xticks = [0.01, 0.1, 1, 10, 100, l_star, 2*np.max(y)-1]
-    xlabels = ["$10^{-2}$","$10^{-1}$","$10^{0}$","$10^{1}$","$10^{2}$","$\lambda^{*}$","$\lambda_{max}$"]
+    xlabels = ["$10^{-2}$", "$10^{-1}$", "$10^{0}$", "$10^{1}$", "$10^{2}$", "$\lambda^{*}$", "$\lambda_{max}$"]
     ax.set_xticks(xticks)
     ax.set_xticklabels(xlabels)
     ax.legend(loc="upper left")
@@ -284,14 +295,20 @@ st_graph = s_t_graph(D_city.Graph)
 results = boykov_kolmogorov_maxcut(noisy, st_graph)
 compare_solvers(x_star, signal, results )
 
+th = np.max(signal)/2.25
 d = Solver("Bully",noisy,G2)
 d.lambd = l_star
-d.path_based2(st_graph, verbose=True,threshold=False)
-G2.plot(noisy, highlight=d.solution.value.nonzero()[0])
-plt.title("GLap with $\lambda = \lambda^* \, {0} \, \sigma = {1}$".format(" at  ",sigma))
-plt.tight_layout()
-plt.show()
-
+d.path_based2(st_graph, verbose=True, threshold=th, dictionary=True, save=False)
+plt.set_cmap('rainbow')
+d.optim_stela(0.0017235714190248091)
+G2.plot(np.zeros((75,)), highlight=sources)
+#plt.title("GLap with $\lambda = \lambda^* \, {0} \, \sigma = {1}$".format(" at  ",sigma))
+#plt.tight_layout()
+#plt.show()
+fig4,ax4 = plt.subplots(2,1,figsize=(12,8))
+ax4[0].plot(d.variable.value,color='b')
+ax4[1].plot(cp.sum(d.recons[:]),marker='x',color='r')
+ax4[1].axhline(th)#np.var(noisy))
 fig1,ax1 = plt.subplots(1,2,figsize=(12,8))
 plt.set_cmap('rainbow')
 plt.tight_layout()
@@ -303,7 +320,7 @@ for i, t in enumerate(times):
     title = r"Noisy Signal$ y = f(x) + \sigma$"
     #g.plot(alpha=1,ax=ax1[0,i],title=title)
     #g.plot(alpha=1,ax=ax1[0],title=title)
-    G2.plot(noisy,edges=True,edge_width=we, highlight=results,ax=ax1[0],title="boykov-kolmogorov")
+    G2.plot(noisy,edges=True,edge_width=we, highlight=d.solution.nonzero(), ax=ax1[0], title="Dictionary")
     #ax1[0,i].set_xlabel(r'$\lambda$')
     #ax1[0].set_xlabel(r'$\y = Lx + \sigma $')
     if i > 0:
@@ -330,6 +347,8 @@ for i, t in enumerate(times):
     #ax1[2].set_aspect('equal','datalim')
     #ax1[2].margins(x=-0.2,y=-0.4)
     #ax1[2].set_axis_off()
+
+
 
 
 plt.tight_layout()
@@ -377,18 +396,18 @@ sources = 20#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
 signal = np.zeros(G2.n_vertices)
 #signal[sources] = 20
 
-s3 = [11,23,39,43,63]    # 11 = D2, 39 = D3,D4, 23 = D1, 63 = D11,D12,D13, 43 = V10
-s4 = [19,42,45,46,66,68,15,30,57,70,65,71]
-s5 = [27,33]
+s3 = [11, 23, 39, 43, 63]    # 11 = D2, 39 = D3,D4, 23 = D1, 63 = D11,D12,D13, 43 = V10
+s4 = [19, 42, 45, 46, 66, 68, 15, 30, 57, 70, 65, 71]
+s5 = [27, 33]
 s6 = [44]
 s7 = [29]
-s22 = [0,26]
-s23 = [4,13,37,58,67,69]
-s28 = [12,47]
+s22 = [0, 26]
+s23 = [4, 13, 37, 58, 67, 69]
+s28 = [12, 47]
 s30 = [48]
-s45 = [49,74]
+s45 = [49, 74]
 s102 = [32]
-s104 = [3,7,55,72]
+s104 = [3, 7, 55, 72]
 
 """
 for t in range(700,705):
