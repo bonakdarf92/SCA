@@ -284,13 +284,13 @@ st_graph = s_t_graph(D_city.Graph)
 results = boykov_kolmogorov_maxcut(noisy, st_graph)
 compare_solvers(x_star, signal, results )
 
-d = Solver("Bully",noisy,G2)
-d.lambd = l_star
-d.path_based2(st_graph, verbose=True,threshold=False)
-G2.plot(noisy, highlight=d.solution.value.nonzero()[0])
-plt.title("GLap with $\lambda = \lambda^* \, {0} \, \sigma = {1}$".format(" at  ",sigma))
-plt.tight_layout()
-plt.show()
+#d = Solver("Bully",noisy,G2)
+#d.lambd = l_star
+#d.path_based2(st_graph, verbose=True,threshold=False)
+#G2.plot(noisy, highlight=d.solution.value.nonzero()[0])
+#plt.title("GLap with $\lambda = \lambda^* \, {0} \, \sigma = {1}$".format(" at  ",sigma))
+#plt.tight_layout()
+#plt.show()
 
 fig1,ax1 = plt.subplots(1,2,figsize=(12,8))
 plt.set_cmap('rainbow')

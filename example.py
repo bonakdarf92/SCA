@@ -181,7 +181,8 @@ y[selec] = 0
 mu = 0.00008 * np.linalg.norm(np.dot(y,A),np.inf)
 theta = 50
 maxiter = 25000
-objval, x, error = stela_cappedL1(A,y,mu,theta,maxiter)
+#objval, x, error = stela_cappedL1(A,y,mu,theta,maxiter)
+objval, x, error = stela_lasso(A,y,mu,maxiter)
 offset = np.absolute(np.mean(x[x<np.amin(x)+1]))
 
 D_g.plot(x+offset, vertex_size=30,ax=ax[1])
