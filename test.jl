@@ -15,8 +15,35 @@ using NPZ
 using Convex
 using Gurobi
 using LightGraphs
+using LightXML
 
+function findPos(att)
+    counter = 1
+    x_pos, y_pos = zeros(1,1), zeros(1,1)
+    for m in junc
+        for k in attributes(m)
+            if (name(k) == "type") && (value(k) == att)
+                counter += 1
+                println("x_pos: ",attribute(m,"x"), " y_pos: ", attribute(m,"y"))                x_pos = hcat(x_pos, parse(Float64,attribute(m,"x")))
+                y_pos = hcat(y_pos, parse(Float64,attribute(m,"y")))
+            end
+        end
+    end
+    println(counter)
+    return x_pos, y_pos
+end
 
+function findNodes(xroot, childNode, att)
+   counter = 1
+   for m in xroot[childNode]
+       for k in attributes(m)
+           if (name(k) == att)
+               counter += 1
+           end
+       end
+   end
+   println(counter)
+end
 function compare(c::Number)
     plot(A*x, label="Stela")
     plot!(A*x_cv.value, label="Gurobi")
@@ -55,7 +82,7 @@ stepdom(∇Ax) = ∇Ax'*∇Ax
 
 function kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
     for t = 1:Maxiter
-        𝔹x = soft_threshholding((x'- ∇f ./ AtA_diag)', µ_vec_norm', K)
+        𝔹x = soft_threshholding((x'- ∇f ./ AtA_diag)' , µ_vec_norm', K)
         @inbounds δx = descent_dir(𝔹x, x, 1)#𝔹x - x
         @inbounds ∇Ax = A * δx
         #bla = descent_dir(𝔹x, x, 1)
@@ -115,34 +142,6 @@ function stela_lasso(A::Array{Float64,2}, y::Vector{Float64}, µ::Float64, Maxit
     printfmtln(IterationOut,"Iteration", "stepsize", "objval", "error")
     printfmtln(IterationOut, 1, "N/A", format(objval[1], width=7), format(error[1], width=7))
     kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
-    # for t = 1:Maxiter
-    #     �x = soft_threshholding((x'- ∇f ./ AtA_diag)', µ_vec_norm', K)
-    #     δx = �x - x
-    #     ∇Ax = A * δx
-    #
-    #     step_num = - (ϵ' * ∇Ax + (abs.(�x) - abs.(x))' * µ_vec)
-    #     step_denom = ∇Ax' * ∇Ax
-    #     step_size = max.(min.(step_num / step_denom, 1), 0)
-    #
-    #     x += δx * step_size
-    #     ϵ += ∇Ax * step_size
-    #
-    #     ∇f = ϵ' * A
-    #     f = 0.5 * ϵ' * ϵ
-    #     g = µ * norm(x,1)
-    #     objval[t+1] = f[1] + g
-    #     error[t+1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))), Inf)
-    #     #printfmtln(IterationOut, t+1, "N/A", format(objval[t+1], width=7), format(error[t+1], width=7), format(CPU_Time[t+1], precision=7))
-    #     #printfmtln(IterationOut, t+1, format(step_size[1],width = 4), format(objval[t+1], width=7), format(error[t+1], width=7))
-    #
-    #     if error[t+1] < 1e-6
-    #         println("Succesfull")
-    #         break
-    #     elseif t == Maxiter
-    #         println("Optimization not possibles with given amount iterations")
-    #     end
-    #
-    # end
     return objval, x, error
 end
 
@@ -174,7 +173,7 @@ objval , x, err = stela_lasso(A, y, µ, 500)
 
 x_cv = Variable(size(A)[2]);
 problem = minimize(0.5*sumsquares(y - A*x_cv) + μ * norm_1(x_cv), x_cv >=0)
-solve!(problem, GurobiSolver())
+solve!(problem, Gurobi.Optimizer)
 x_prob = A*x ./ maximum(A*x)
 
 println("fertig")

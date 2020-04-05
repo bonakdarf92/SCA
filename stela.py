@@ -3,24 +3,29 @@ import time
 
 
 def soft_thresholding(q, t, K):
-    '''
+    """
     The soft-thresholding function returns the optimal x that minimizes
         min_x 0.5 * x^2 - q * x + t * |x|
-    '''
-    x = np.maximum(q - t, np.zeros(K)) - np.maximum(-q - t, np.zeros(K));
+    """
+    x = np.maximum(q - t, np.zeros(K)) - np.maximum(-q - t, np.zeros(K))
     return x
 
+
 def soft_thresholding_pos(q, t, K):
-    '''
+    """
     The soft-thresholding function returns the optimal x that minimizes
         min_x 0.5 * x^2 - q * x + t * |x|
-    '''
+    """
     x = np.maximum(q - t, np.zeros(K))
     return x
 
 
+def capped_thresholding(q,t):
+    return np.maximum(q - t*np.ones_like(q) + np.minimum(q, t*np.ones_like(q)), np.zeros_like(q))
+
+
 def stela_lasso(A, y, mu, MaxIter=1000):
-    '''
+    """
     STELA algorithm solves the following optimization problem:
         min_x 0.5*||y - A * x||^2 + mu * ||x||_1
 
@@ -43,7 +48,7 @@ def stela_lasso(A, y, mu, MaxIter=1000):
         objval: objective function value = f + g
         error:  specifies the solution precision (a smaller error implies a better solution), defined in (53) of the reference
 
-    '''
+    """
     if mu <= 0:
         print('mu must be positive!')
         return

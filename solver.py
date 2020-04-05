@@ -170,10 +170,10 @@ class Solver:
     def optim_stela(self, mu, threshold=None):
         self.val, self.st_x, self.error = st.stela_lasso(self.pathDic, self.signals, mu*cp.norm_inf(self.signals@self.pathDic).value, 500)
 
-        if threshold:
-            self.stela_sol[self.stela_sol <= threshold] = 0
-        else:
-            self.stela_sol[self.stela_sol <= np.var(self.signals)] = 0
+        #if threshold:
+        #    self.stela_sol[self.stela_sol <= threshold] = 0
+        #else:
+        #    self.stela_sol[self.stela_sol <= np.var(self.signals)] = 0
         #self.stela_sol =
 
 

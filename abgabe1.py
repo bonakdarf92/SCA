@@ -357,24 +357,26 @@ from Plots import initialPlots
 
 sensor_data = np.load('./Darmstadt_verkehr/SensorData_{}.npz'.format('Sensor_Small_View'),allow_pickle=True)['arr_0'].reshape((1,))[0]
 
-a003 = np.nansum(sensor_data['A003']['signals'][:,0:11],axis=1) + sensor_data['A003']['signals'][:,22]
-a004 = np.nansum(sensor_data['A004']['signals'][:,0:11],axis=1)
-a005 = np.nansum(sensor_data['A005']['signals'][:,0:5],axis=1)
-a006 = np.nansum(sensor_data['A006']['signals'][:,[0,1,2,6,14]],axis=1)
-a007 = np.nansum(sensor_data['A007']['signals'][:,0:3],axis=1)
-a022 = np.nansum(sensor_data['A022']['signals'][:,0:9],axis=1)
-a023 = np.nansum(sensor_data['A023']['signals'][:,0:12],axis=1)
-a028 = np.nansum(sensor_data['A028']['signals'][:,13:19],axis=1)
-a029 = np.nansum(sensor_data['A029']['signals'][:,0:1],axis=1)
-a030 = np.nansum(sensor_data['A030']['signals'][:,16:18],axis=1)
-a045 = (np.nansum(sensor_data['A045']['signals'][:,0:4],axis=1) 
-        + np.nansum(sensor_data['A045']['signals'][:,6:7],axis=1)  
-        + np.nansum(sensor_data['A045']['signals'][:,9:12],axis=1))
-a102 = np.nansum(sensor_data['A102']['signals'][:,0:1],axis=1)
-a104 = np.nansum(sensor_data['A104']['signals'][:,[2,3,4,5,14,15,18,19]],axis=1)
+a003 = np.nansum(sensor_data['A003']['signals'][:, 0:11], axis=1) + sensor_data['A003']['signals'][:, 22]
+a004 = np.nansum(sensor_data['A004']['signals'][:, 0:11], axis=1)
+a005 = np.nansum(sensor_data['A005']['signals'][:, 0:5], axis=1)
+a006 = np.nansum(sensor_data['A006']['signals'][:, [0, 1, 2, 6, 14]], axis=1)
+a007 = np.nansum(sensor_data['A007']['signals'][:, 0:3], axis=1)
+a022 = np.nansum(sensor_data['A022']['signals'][:, 0:9], axis=1)
+a023 = np.nansum(sensor_data['A023']['signals'][:, 0:12], axis=1)
+a028 = np.nansum(sensor_data['A028']['signals'][:, 13:19], axis=1)
+a029 = np.nansum(sensor_data['A029']['signals'][:, 0:1], axis=1)
+a030 = np.nansum(sensor_data['A030']['signals'][:, 16:18], axis=1)
+a045 = (np.nansum(sensor_data['A045']['signals'][:, 0:4], axis=1)
+        + np.nansum(sensor_data['A045']['signals'][:, 6:7], axis=1)
+        + np.nansum(sensor_data['A045']['signals'][:, 9:12], axis=1))
+a102 = np.nansum(sensor_data['A102']['signals'][:, 0:1], axis=1)
+a104 = np.nansum(sensor_data['A104']['signals'][:, [2, 3, 4, 5, 14, 15, 18, 19]], axis=1)
 
-stack = np.array((a003,a004,a005,a006,a007,a022,a023,a028,a030,a045,a102,a104))
+
+stack = np.array((a003, a004, a005, a006, a007, a022, a023, a028, a030, a045, a102, a104))
 plt1 = initialPlots.signalPoint(stack.T,show=False,title="Darmstadt Signal")
+a003 = sensor_data['A104']['signals'][:, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22]]
 #plt1.xticks((0, 60, 120, 180, 240, 300, 360, 420, 480, 540,
 #            600, 660, 720, 780, 840, 900, 960, 1020, 1080,
 #            1140, 1200, 1260, 1320, 1380, 1440),
@@ -391,6 +393,8 @@ plt1.xlabel("\nTime in hour")
 plt1.ylabel("\nIntersection")
 plt1.tight_layout()
 plt1.show()
+
+a003_sigs = sensor_data['A003']['signals'][:, 0:11]
 
 sources = 20#(rs.rand(G2.n_vertices) > 0.9).astype(bool)
 signal = np.zeros(G2.n_vertices)
