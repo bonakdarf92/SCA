@@ -46,6 +46,12 @@ end
 stepdom(∇Ax) = ∇Ax'*∇Ax
 
 
+function plot_spectorgram(s, fs, hw, overlap)
+    S = spectrogram(s[:,1], convert(Int, hw * fs), round(Int, overlap * fs); window=DSP.hanning)
+    heatmap(S.time, S.freq, DSP.pow2db(S.power))
+    return S
+end
+
 
 #function own_stela!(x, ∇f, μ_vec_norm, K, A, ϵ, μ_vec, ν, objval, err, Maxiter)
 #    for t = 1:Maxiter
@@ -149,7 +155,7 @@ end
 # N = 4000
 # K = 3000
 # A = rand(Normal(0,0.1),N, K)
-A = npzread("PathDic_20_7.npz")["arr_0"]; 
+A = npzread("PathDic_20_7.npz")["arr_0"];
 Graph = npzread("DarmstadtJulia.npz")["arr_0"]
 GG = DiGraph(Graph)
 L = laplacian_matrix(GG)
@@ -169,7 +175,7 @@ y[y.<0] .= 0
 
 µ = 0.0017*norm((y'*A),Inf)
 
-#@benchmark 
+#@benchmark
 objval , x, err = stela_lasso(A, y, µ, 500)
 
 x_cv = Variable(size(A)[2]);

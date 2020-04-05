@@ -57,7 +57,7 @@ def download_data(csv_url, dest_file, current_counter, directory):
     lines = csv_str.split("\\n")
     dest_url = dest_file + ".csv"
     if platform.system() == 'Windows':
-        print("Windows System")
+        #print("Windows System")
         fx = open(os.path.join('C:\\Users\\VonMir\\Desktop\\MasterThesis\\SCA\\Darmstadt_verkehr', directory, dest_url),"w")
     elif platform.system() == 'Darwin':
         print("Mac OS System")
@@ -91,7 +91,7 @@ def make_dir(name):
     return name
     #pass 
 
-date = {'year':2019,'month':5,'day':20}
+date = {'year':2020,'month':1,'day':18}
 test = create_url(date['year'], date['month'], date['day'], None)
 missing_files = []
 
@@ -105,7 +105,7 @@ for k in range(1440):
 # TODO check for download errors and path saving
 for k in tqdm.trange(len(test)):
     url = test[k]
-    print("Datei {} - aktueller Stand: {}".format(url,round(k/len(test),2)))
+    #print("Datei {} - aktueller Stand: {}".format(url,round(k/len(test),2)))
     missing = download_data(url,str(k), k, d)
     missing_files.append(missing)
 
