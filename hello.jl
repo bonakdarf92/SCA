@@ -7,6 +7,7 @@ n = 100
 ϵ_sum = 0.0
 m = 5
 
+
 for ϵ_val in e[1:m]
     global ϵ_sum = ϵ_sum + ϵ_val
 end

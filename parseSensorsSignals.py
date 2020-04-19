@@ -22,7 +22,7 @@ for j in knoten:
         new_sensors[j]["signals"] = np.empty((1440,14))
         new_sensors[j]["signals"][:] = np.nan
     elif j == "A045":
-        new_sensors[j]["signals"] = np.empty((1440,42))
+        new_sensors[j]["signals"] = np.empty((1440,46))
         new_sensors[j]["signals"][:] = np.nan
     elif j == "A030":
         new_sensors[j]["signals"] = np.empty((1440,20))
@@ -35,7 +35,7 @@ for j in knoten:
         new_sensors[j]["signals"][:] = np.nan 
 
 for k in trange(1440):
-    data_csv = '.\\Darmstadt_verkehr\\{}.csv'.format(k)
+    data_csv = '.\\Darmstadt_verkehr\\2020_1_19_darmstadtUI\\{}.csv'.format(k)
     try:
         my_data = np.genfromtxt(data_csv,delimiter=';',dtype=object,skip_header=0,skip_footer=2,deletechars="\r")
         for j in knoten:
@@ -54,4 +54,4 @@ for k in trange(1440):
         pass
 
 
-np.savez('.\\Darmstadt_verkehr\\SensorData_{}'.format('Sensor_Small_View_Load'),new_sensors)
+np.savez('.\\Darmstadt_verkehr\\SensorData_{}'.format('Sensor_Small_19_01_2020_Counts'),new_sensors)

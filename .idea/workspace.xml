@@ -2,11 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="faaec47c-6deb-4d38-8e75-4d5ddd1bc21b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/SCA.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SCA.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/juliaConfig.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/juliaConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/abgabe1.py" beforeDir="false" afterPath="$PROJECT_DIR$/abgabe1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/downloadDarmstadtUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/downloadDarmstadtUI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hello.jl" beforeDir="false" afterPath="$PROJECT_DIR$/hello.jl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parseSensorsSignals.py" beforeDir="false" afterPath="$PROJECT_DIR$/parseSensorsSignals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/solver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/stela.py" beforeDir="false" afterPath="$PROJECT_DIR$/stela.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.jl" beforeDir="false" afterPath="$PROJECT_DIR$/test.jl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,10 +44,19 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/.julia" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+<<<<<<< HEAD
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+=======
+    <property name="settings.editor.selected.configurable" value="org.ice1000.julia.lang.module.ui.JuliaPackageManagerImpl" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\FaridLenovo\Desktop\SCA\Darmstadt_verkehr" />
+    </key>
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
   </component>
   <component name="RunManager" selected="Python.downloadDarmstadtUI">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
@@ -197,18 +209,47 @@
       <workItem from="1560370632179" duration="379000" />
       <workItem from="1560371031214" duration="4595000" />
       <workItem from="1560697808168" duration="609000" />
+<<<<<<< HEAD
       <workItem from="1579966297941" duration="451000" />
       <workItem from="1579966761080" duration="78000" />
       <workItem from="1579966853084" duration="3439000" />
       <workItem from="1581678724826" duration="7050000" />
       <workItem from="1584028124933" duration="38000" />
       <workItem from="1584028170127" duration="9584000" />
+=======
+      <workItem from="1580480286718" duration="12424000" />
+      <workItem from="1580553453358" duration="6255000" />
+      <workItem from="1580649847820" duration="6615000" />
+      <workItem from="1580683985006" duration="6030000" />
+      <workItem from="1580741420606" duration="4147000" />
+      <workItem from="1581174815087" duration="1344000" />
+      <workItem from="1581343385285" duration="5405000" />
+      <workItem from="1581516584894" duration="4527000" />
+      <workItem from="1581940750159" duration="3144000" />
+      <workItem from="1582126829303" duration="18524000" />
+      <workItem from="1582575504706" duration="20759000" />
+      <workItem from="1582899488062" duration="3386000" />
+      <workItem from="1582914973953" duration="15228000" />
+      <workItem from="1583668235221" duration="51000" />
+      <workItem from="1583668313594" duration="3776000" />
+      <workItem from="1584028039897" duration="1046000" />
+      <workItem from="1584205833300" duration="444000" />
     </task>
+    <task id="LOCAL-00001" summary="SCA Update with Example">
+      <created>1582728630718</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1582728630718</updated>
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+<<<<<<< HEAD
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
@@ -229,13 +270,101 @@
     <state x="-3563" y="55" key="SettingsEditor/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@-3840.0.1536.824" timestamp="1584028185116" />
     <state width="775" height="419" key="XDebugger.FullValuePopup" timestamp="1584028573348">
       <screen x="-3840" y="0" width="1536" height="824" />
+=======
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="SCA Update with Example" />
+    <option name="LAST_COMMIT_MESSAGE" value="SCA Update with Example" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="361" y="92" key="#Notifications" timestamp="1580741545293">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="361" y="92" key="#Notifications/0.0.1536.864@0.0.1536.864" timestamp="1580741545293" />
+    <state x="612" y="170" key="#xdebugger.XInspectDialog" timestamp="1583670090220">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="612" y="170" key="#xdebugger.XInspectDialog/0.0.1536.834@0.0.1536.834" timestamp="1583670090220" />
+    <state x="716" y="154" key="#xdebugger.evaluate" timestamp="1580482308756">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="716" y="154" key="#xdebugger.evaluate/0.0.1536.864@0.0.1536.864" timestamp="1580482308756" />
+    <state x="393" y="12" key="CommitChangelistDialog2" timestamp="1582728629582">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="393" y="12" key="CommitChangelistDialog2/0.0.1536.834@0.0.1536.834" timestamp="1582728629582" />
+    <state x="428" y="157" key="FileChooserDialogImpl" timestamp="1583669513179">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="428" y="157" key="FileChooserDialogImpl/0.0.1536.834@0.0.1536.834" timestamp="1583669513179" />
+    <state x="428" y="163" key="FileChooserDialogImpl/0.0.1536.864@0.0.1536.864" timestamp="1581174900108" />
+    <state width="1493" height="276" key="GridCell.Tab.0.bottom" timestamp="1580553437752">
+      <screen x="0" y="0" width="1536" height="864" />
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
     </state>
     <state width="775" height="419" key="XDebugger.FullValuePopup/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@-3840.0.1536.824" timestamp="1584028573348" />
     <state x="-3375" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1584028170580">
       <screen x="-3840" y="0" width="1536" height="824" />
     </state>
+<<<<<<< HEAD
     <state x="-3375" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@-3840.0.1536.824" timestamp="1584028170580" />
     <state x="465" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@0.0.1536.824" timestamp="1581678829440" />
+=======
+    <state width="1493" height="276" key="GridCell.Tab.0.center/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
+    <state width="1493" height="276" key="GridCell.Tab.0.left" timestamp="1580553437752">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="276" key="GridCell.Tab.0.left/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
+    <state width="1493" height="276" key="GridCell.Tab.0.right" timestamp="1580553437752">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="276" key="GridCell.Tab.0.right/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
+    <state width="1493" height="276" key="GridCell.Tab.1.bottom" timestamp="1580553437752">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="276" key="GridCell.Tab.1.bottom/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
+    <state width="1493" height="276" key="GridCell.Tab.1.center" timestamp="1580553437752">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="276" key="GridCell.Tab.1.center/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
+    <state width="1493" height="276" key="GridCell.Tab.1.left" timestamp="1580553437752">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="276" key="GridCell.Tab.1.left/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
+    <state width="1493" height="276" key="GridCell.Tab.1.right" timestamp="1580553437752">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="276" key="GridCell.Tab.1.right/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
+    <state x="349" y="170" key="IDE.errors.dialog" timestamp="1583668451552">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="349" y="170" key="IDE.errors.dialog/0.0.1536.834@0.0.1536.834" timestamp="1583668451552" />
+    <state x="349" y="176" key="IDE.errors.dialog/0.0.1536.864@0.0.1536.864" timestamp="1580506389155" />
+    <state x="277" y="73" key="SettingsEditor" timestamp="1584206056590">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="277" y="73" key="SettingsEditor/0.0.1536.834@0.0.1536.834" timestamp="1584206056590" />
+    <state x="277" y="76" key="SettingsEditor/0.0.1536.864@0.0.1536.864" timestamp="1580669868519" />
+    <state x="361" y="151" key="Vcs.Push.Dialog.v2" timestamp="1582728684123">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="361" y="151" key="Vcs.Push.Dialog.v2/0.0.1536.834@0.0.1536.834" timestamp="1582728684123" />
+    <state width="775" height="424" key="XDebugger.FullValuePopup" timestamp="1582745860267">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state width="775" height="424" key="XDebugger.FullValuePopup/0.0.1536.834@0.0.1536.834" timestamp="1582745860267" />
+    <state width="775" height="439" key="XDebugger.FullValuePopup/0.0.1536.864@0.0.1536.864" timestamp="1580686032533" />
+    <state x="465" y="254" width="606" height="346" key="com.intellij.ide.util.TipDialog" timestamp="1584205835547">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="465" y="254" width="606" height="346" key="com.intellij.ide.util.TipDialog/0.0.1536.834@0.0.1536.834" timestamp="1584205835547" />
+    <state x="465" y="258" key="com.intellij.ide.util.TipDialog/0.0.1536.864/0.-1080.1920.1080@0.0.1536.864" timestamp="1582126834377" />
+    <state x="465" y="258" key="com.intellij.ide.util.TipDialog/0.0.1536.864@0.0.1536.864" timestamp="1581940750200" />
+    <state x="431" y="175" width="672" height="655" key="search.everywhere.popup" timestamp="1582748007451">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="431" y="175" width="672" height="655" key="search.everywhere.popup/0.0.1536.834@0.0.1536.834" timestamp="1582748007451" />
+    <state x="431" y="181" width="672" height="678" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1581516862321" />
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
