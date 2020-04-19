@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="faaec47c-6deb-4d38-8e75-4d5ddd1bc21b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/juliaConfig.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/juliaConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/abgabe1.py" beforeDir="false" afterPath="$PROJECT_DIR$/abgabe1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/downloadDarmstadtUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/downloadDarmstadtUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hello.jl" beforeDir="false" afterPath="$PROJECT_DIR$/hello.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parseSensorsSignals.py" beforeDir="false" afterPath="$PROJECT_DIR$/parseSensorsSignals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/solver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stela.py" beforeDir="false" afterPath="$PROJECT_DIR$/stela.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.jl" beforeDir="false" afterPath="$PROJECT_DIR$/test.jl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,6 +174,7 @@
       <workItem from="1583668313594" duration="3776000" />
       <workItem from="1584028039897" duration="1046000" />
       <workItem from="1584205833300" duration="444000" />
+      <workItem from="1586542798985" duration="8364000" />
     </task>
     <task id="LOCAL-00001" summary="SCA Update with Example">
       <created>1582728630718</created>
@@ -273,10 +266,10 @@
     </state>
     <state width="775" height="424" key="XDebugger.FullValuePopup/0.0.1536.834@0.0.1536.834" timestamp="1582745860267" />
     <state width="775" height="439" key="XDebugger.FullValuePopup/0.0.1536.864@0.0.1536.864" timestamp="1580686032533" />
-    <state x="465" y="254" width="606" height="346" key="com.intellij.ide.util.TipDialog" timestamp="1584205835547">
+    <state x="465" y="254" width="606" height="346" key="com.intellij.ide.util.TipDialog" timestamp="1586542805637">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state x="465" y="254" width="606" height="346" key="com.intellij.ide.util.TipDialog/0.0.1536.834@0.0.1536.834" timestamp="1584205835547" />
+    <state x="465" y="254" width="606" height="346" key="com.intellij.ide.util.TipDialog/0.0.1536.834@0.0.1536.834" timestamp="1586542805637" />
     <state x="465" y="258" key="com.intellij.ide.util.TipDialog/0.0.1536.864/0.-1080.1920.1080@0.0.1536.864" timestamp="1582126834377" />
     <state x="465" y="258" key="com.intellij.ide.util.TipDialog/0.0.1536.864@0.0.1536.864" timestamp="1581940750200" />
     <state x="431" y="175" width="672" height="655" key="search.everywhere.popup" timestamp="1582748007451">

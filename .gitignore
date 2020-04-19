@@ -11,6 +11,9 @@ __pycache__/
 *.jpg
 *.pgf 
 
+# workspace
+workspace.xml 
+
 # Distribution / packaging
 .Python
 build/
