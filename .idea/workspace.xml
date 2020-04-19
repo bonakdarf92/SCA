@@ -25,7 +25,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectId" id="1XAE1d2FH6SBcCsqt3R4HPVak19" />
+  <component name="ProjectId" id="1WtQDG6yU6EJvWEmKF2Ic94qNud" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -39,14 +39,18 @@
     <property name="last_opened_file_path" value="$USER_HOME$/.julia" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+<<<<<<< HEAD
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+=======
     <property name="settings.editor.selected.configurable" value="org.ice1000.julia.lang.module.ui.JuliaPackageManagerImpl" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\FaridLenovo\Desktop\SCA\Darmstadt_verkehr" />
     </key>
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
   </component>
-  <component name="RunManager" selected="Python.abgabe1">
+  <component name="RunManager" selected="Python.downloadDarmstadtUI">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="SCA" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -69,7 +73,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="abgabe1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="abgabe1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="SCA" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -83,6 +87,25 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/abgabe1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="downloadDarmstadtUI" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SCA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/downloadDarmstadtUI.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -135,8 +158,29 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="parseSensorsSignals" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="SCA" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/parseSensorsSignals.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.downloadDarmstadtUI" />
+        <item itemvalue="Python.parseSensorsSignals" />
         <item itemvalue="Python.abgabe1" />
         <item itemvalue="Python.maps" />
         <item itemvalue="Python.main_file_capped1" />
@@ -157,6 +201,14 @@
       <workItem from="1560370632179" duration="379000" />
       <workItem from="1560371031214" duration="4595000" />
       <workItem from="1560697808168" duration="609000" />
+<<<<<<< HEAD
+      <workItem from="1579966297941" duration="451000" />
+      <workItem from="1579966761080" duration="78000" />
+      <workItem from="1579966853084" duration="3439000" />
+      <workItem from="1581678724826" duration="7050000" />
+      <workItem from="1584028124933" duration="38000" />
+      <workItem from="1584028170127" duration="9584000" />
+=======
       <workItem from="1580480286718" duration="12424000" />
       <workItem from="1580553453358" duration="6255000" />
       <workItem from="1580649847820" duration="6615000" />
@@ -182,6 +234,7 @@
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
       <updated>1582728630718</updated>
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
     </task>
     <option name="localTasksCounter" value="2" />
     <servers />
@@ -189,6 +242,28 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+<<<<<<< HEAD
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="-3563" y="55" key="SettingsEditor" timestamp="1584028185116">
+      <screen x="-3840" y="0" width="1536" height="824" />
+    </state>
+    <state x="-3563" y="55" key="SettingsEditor/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@-3840.0.1536.824" timestamp="1584028185116" />
+    <state width="775" height="419" key="XDebugger.FullValuePopup" timestamp="1584028573348">
+      <screen x="-3840" y="0" width="1536" height="824" />
+=======
   <component name="VcsManagerConfiguration">
     <MESSAGE value="SCA Update with Example" />
     <option name="LAST_COMMIT_MESSAGE" value="SCA Update with Example" />
@@ -217,11 +292,16 @@
     <state x="428" y="163" key="FileChooserDialogImpl/0.0.1536.864@0.0.1536.864" timestamp="1581174900108" />
     <state width="1493" height="276" key="GridCell.Tab.0.bottom" timestamp="1580553437752">
       <screen x="0" y="0" width="1536" height="864" />
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
     </state>
-    <state width="1493" height="276" key="GridCell.Tab.0.bottom/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
-    <state width="1493" height="276" key="GridCell.Tab.0.center" timestamp="1580553437752">
-      <screen x="0" y="0" width="1536" height="864" />
+    <state width="775" height="419" key="XDebugger.FullValuePopup/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@-3840.0.1536.824" timestamp="1584028573348" />
+    <state x="-3375" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1584028170580">
+      <screen x="-3840" y="0" width="1536" height="824" />
     </state>
+<<<<<<< HEAD
+    <state x="-3375" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@-3840.0.1536.824" timestamp="1584028170580" />
+    <state x="465" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824/-1920.0.1536.824/-3840.0.1536.824@0.0.1536.824" timestamp="1581678829440" />
+=======
     <state width="1493" height="276" key="GridCell.Tab.0.center/0.0.1536.864@0.0.1536.864" timestamp="1580553437752" />
     <state width="1493" height="276" key="GridCell.Tab.0.left" timestamp="1580553437752">
       <screen x="0" y="0" width="1536" height="864" />
@@ -277,6 +357,7 @@
     </state>
     <state x="431" y="175" width="672" height="655" key="search.everywhere.popup/0.0.1536.834@0.0.1536.834" timestamp="1582748007451" />
     <state x="431" y="181" width="672" height="678" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1581516862321" />
+>>>>>>> b52e280f21e53b0d1f753b38063118d26b44807a
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -297,6 +378,29 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/SCA$main_file_capped1.coverage" NAME="main_file_capped1 Coverage Results" MODIFIED="1559124587596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/SCA$maps.coverage" NAME="maps Coverage Results" MODIFIED="1560371180619" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/SCA$abgabe1.coverage" NAME="abgabe1 Coverage Results" MODIFIED="1580482049330" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>np.shape(A*x_orig)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>np.shape(x_orig)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>np.shape(A)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>A*x_orig</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
   </component>
 </project>

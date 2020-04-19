@@ -47,7 +47,7 @@ for k in trange(1440):
                 selec = my_data[:,2] == b"A102" #bytes(j.replace('0',' '),'utf-8')
             elif j == "A104":
                 selec = my_data[:,2] == b"A104" #bytes(j.replace('0',' '),'utf-8')
-            new_sensors[j]["signals"][k,:] = np.array([k.decode().split('\\r')[0] for k in my_data[selec,6].astype('S')])
+            new_sensors[j]["signals"][k,:] = np.array([k.decode().split('\\r')[0] for k in my_data[selec,5].astype('S')])
 
     except (FileNotFoundError,ValueError,OSError) as e:
         print("CSV {} nicht vorhanden oder Signal {} fehlt".format(data_csv, j))

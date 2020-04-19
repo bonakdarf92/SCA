@@ -1,0 +1,156 @@
+        - #=
+        - test:
+        - - Julia version: 1.0.2
+        - - Author: Von Mir
+        - - Date: 2019-03-16
+        - =#
+        - using Pkg
+        - using LinearAlgebra
+        - using Formatting
+        - using StatsBase
+        - using Distributions
+        - using Plots
+        - using BenchmarkTools
+        - 
+        - 
+        - function soft_threshholding(q,t,K)
+  9247488     x = max.(q-t, zeros(K)) - max.(-q - t, zeros(K))
+        0     return x
+        - end
+        - 
+        - function kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
+        0     for t = 1:Maxiter
+  2313984         𝔹x = soft_threshholding((x'- ∇f ./ AtA_diag)', µ_vec_norm', K)
+  1155840         @inbounds δx = 𝔹x - x
+ 15363840         @inbounds ∇Ax = A * δx
+        - 
+  3486720         @inbounds step_num = - (ϵ' * ∇Ax + (abs.(𝔹x) - abs.(x))' * µ_vec)
+     4608         @inbounds step_denom = ∇Ax' * ∇Ax
+    10752         step_size = max.(min.(step_num / step_denom, 1), 0)
+        - 
+  4627968         @inbounds x[:] += δx[:] * step_size
+ 46091520         @inbounds ϵ[:] += ∇Ax * step_size
+        - 
+  1156608         @inbounds ∇f[:] = ϵ' * A
+ 15363840         @inbounds f = 0.5 * ϵ' * ϵ
+     1536         @inbounds g = µ * norm(x,1)
+     1536         @inbounds objval[t+1] = f[1] + g
+        -         #setindex!(objval[:],f[1]+g,t+1)
+ 10976942         @inbounds error[t+1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))), Inf)
+        -         #printfmtln(IterationOut, t+1, "N/A", format(objval[t+1], width=7), format(error[t+1], width=7), format(CPU_Time[t+1], precision=7))
+        -         #printfmtln(IterationOut, t+1, format(step_size[1],width = 4), format(objval[t+1], width=7), format(error[t+1], width=7))
+        - 
+        0         if error[t+1] < 1e-6
+     2368             println("Succesfull")
+        -             break
+        0         elseif t == Maxiter
+        0             println("Optimization not possibles with given amount iterations")
+        -         end
+        - 
+        -     end
+        - end
+        - 
+        - 
+        - function stela_lasso(A::Array{Float64,2}, y::Vector{Float64}, µ::Float64, Maxiter::Int64)
+    26192     """
+        -     STELA algorithm solves the following optimization problem:
+        -         min_x 0.5*||y - A * x||^2 + mu * ||x||_1
+        - 
+        -     Reference:
+        -         Sec. IV-C of [Y. Yang, and M. Pesavento, "A unified successive pseudoconvex approximation framework", IEEE Transactions on Signal Processing, 2017]
+        -     Input Parameters:
+        -         A :      N * K matrix,  dictionary
+        -         y :      N * 1 vector,  noisy observation
+        -         mu:      positive scalar, regularization gain
+        -         MaxIter: (optional) maximum number of iterations, default = 1000
+        - 
+        -     Definitions:
+        -         N : the number of measurements
+        -         K : the number of features
+        -         f(x) = 0.5 * ||y - A * x||^2
+        -         g(x) = mu * ||x||_1
+        - 
+        -     Output Parameters:
+        -         x:      K * 1 vector, the optimal variable that minimizes {f(x) + g(x)}
+        -         objval: objective function value = f + g
+        -         error:  specifies the solution precision (a smaller error implies a better solution), defined in (53) of the reference
+        - 
+        -     """
+        0     if µ <= 0
+        0         println("must be positive")
+        0         return
+        0     elseif size(A)[1] != size(y)[1]
+        0         println("Number of rows in A must be equal to dimension of y")
+        0         return
+        -     end
+        - 
+        0     K = size(A)[2]
+5760144960     @inbounds AtA_diag = sum(A.*A,dims=1)
+   288960     µ_vec = µ*ones(K)
+   144480     @inbounds µ_vec_norm = µ_vec'./AtA_diag
+   144480     x = zeros(K)
+    10752     objval = Array{Float64}(zeros(Maxiter+1))
+     5376     error = zeros(Maxiter+1)
+  3840960     @inbounds ϵ = A*x - y
+   144576     @inbounds ∇f = ϵ' * A
+  1920480     @inbounds f = 0.5 * ϵ' * ϵ
+        0     @inbounds g = µ * norm(x,1)
+     5376     setindex!(objval[:],f[1],1)
+  1155840     @inbounds error[1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))),Inf)
+        - 
+        -     #IterationOut = "{1:9}|{2:10}|{3:15}|{4:15}"
+        -     #printfmtln(IterationOut,"Iteration", "stepsize", "objval", "error")
+        -     #printfmtln(IterationOut, 1, "N/A", format(objval[1], width=7), format(error[1], width=7))
+        0     kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
+        -     # for t = 1:Maxiter
+        -     #     𝔹x = soft_threshholding((x'- ∇f ./ AtA_diag)', µ_vec_norm', K)
+        -     #     δx = 𝔹x - x
+        -     #     ∇Ax = A * δx
+        -     #
+        -     #     step_num = - (ϵ' * ∇Ax + (abs.(𝔹x) - abs.(x))' * µ_vec)
+        -     #     step_denom = ∇Ax' * ∇Ax
+        -     #     step_size = max.(min.(step_num / step_denom, 1), 0)
+        -     #
+        -     #     x += δx * step_size
+        -     #     ϵ += ∇Ax * step_size
+        -     #
+        -     #     ∇f = ϵ' * A
+        -     #     f = 0.5 * ϵ' * ϵ
+        -     #     g = µ * norm(x,1)
+        -     #     objval[t+1] = f[1] + g
+        -     #     error[t+1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))), Inf)
+        -     #     #printfmtln(IterationOut, t+1, "N/A", format(objval[t+1], width=7), format(error[t+1], width=7), format(CPU_Time[t+1], precision=7))
+        -     #     #printfmtln(IterationOut, t+1, format(step_size[1],width = 4), format(objval[t+1], width=7), format(error[t+1], width=7))
+        -     #
+        -     #     if error[t+1] < 1e-6
+        -     #         println("Succesfull")
+        -     #         break
+        -     #     elseif t == Maxiter
+        -     #         println("Optimization not possibles with given amount iterations")
+        -     #     end
+        -     #
+        -     # end
+      192     return objval, x, error
+        - end
+        - 
+        - N = 40000
+        - K = 3000
+        - A = rand(Normal(0,0.1),N, K)
+        - 
+        - dens = 0.01
+        - x0 = zeros(K)
+        - x0_pos = sample(collect(1:K), round(Int,K*dens))
+        - 
+  1210061 for t = 1:round(Int,K*dens)
+     6128     x0[x0_pos[t]] = rand(Normal(0,1))
+        - end
+        - 
+        - sigma = 0.01
+        - v = rand(Normal(0,sigma), N)'
+        - y = (A*x0 + v')
+        - 
+        - µ = 0.01*norm((y'*A),Inf)
+        - 
+        - @btime stela_lasso(A, y, µ, 100)
+        - println("fertig")
+        - 

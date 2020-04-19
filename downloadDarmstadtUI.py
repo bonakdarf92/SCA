@@ -58,7 +58,7 @@ def download_data(csv_url, dest_file, current_counter, directory):
     dest_url = dest_file + ".csv"
     if platform.system() == 'Windows':
         #print("Windows System")
-        fx = open(os.path.join('C:\\Users\\FaridLenovo\\Desktop\\SCA\\Darmstadt_verkehr', directory, dest_url),"w")
+        fx = open(os.path.join('C:\\Users\\VonMir\\Desktop\\MasterThesis\\SCA\\Darmstadt_verkehr', directory, dest_url),"w")
     elif platform.system() == 'Darwin':
         print("Mac OS System")
         fx = open(os.path.join('/Users/faridbonakdar/Documents/MasterThesis/SCA/Darmstadt_verkehr', directory, dest_url),"w")
@@ -91,7 +91,7 @@ def make_dir(name):
     return name
     #pass 
 
-date = {'year':2020,'month':1,'day':19}
+date = {'year':2020,'month':1,'day':18}
 test = create_url(date['year'], date['month'], date['day'], None)
 missing_files = []
 
