@@ -91,15 +91,15 @@ def make_dir(name):
     return name
     #pass 
 
-date = {'year':2020,'month':1,'day':18}
+date = {'year':2020,'month':1,'day':31}
 test = create_url(date['year'], date['month'], date['day'], None)
 missing_files = []
 
 d = make_dir("{}_{}_{}_darmstadtUI".format(date['year'],date['month'],date['day']))
 #make_dir(os.path.)
 
-for k in range(1440):
-    print(name_file(k))
+#for k in range(1440):
+#    print(name_file(k))
 
 
 # TODO check for download errors and path saving
