@@ -7,7 +7,7 @@ import platform
 
 url1_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6%2F10%2F19+4%3A59+AM&to=6%2F10%2F19+4%3A59+AM"
 url2_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6%2F10%2F19+4%3A58+AM&to=6%2F10%2F19+4%3A58+AM"
-url3_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6/10/19+2:59+AM&to=6/10/19+2:59+AM"
+url3_link = "https://darmstadt.ui-traffic.de/resources/CSVExport?from=6/10/19+2:59+AM&to=6/10/19+3:59+AM"
 
 
 def create_url(year,month,day,duration):
@@ -58,7 +58,7 @@ def download_data(csv_url, dest_file, current_counter, directory):
     dest_url = dest_file + ".csv"
     if platform.system() == 'Windows':
         #print("Windows System")
-        fx = open(os.path.join('C:\\Users\\VonMir\\Desktop\\MasterThesis\\SCA\\Darmstadt_verkehr', directory, dest_url),"w")
+        fx = open(os.path.join('C:\\Users\\FaridLenovo\\Desktop\\SCA\\Darmstadt_verkehr', directory, dest_url),"w")
     elif platform.system() == 'Darwin':
         print("Mac OS System")
         fx = open(os.path.join('/Users/faridbonakdar/Documents/MasterThesis/SCA/Darmstadt_verkehr', directory, dest_url),"w")
@@ -91,16 +91,18 @@ def make_dir(name):
     return name
     #pass 
 
-date = {'year':2020,'month':1,'day':18}
+m = 11
+day = 20
+date = {'year':2019,'month':m,'day':day}
 test = create_url(date['year'], date['month'], date['day'], None)
 missing_files = []
 
 d = make_dir("{}_{}_{}_darmstadtUI".format(date['year'],date['month'],date['day']))
 #make_dir(os.path.)
 
-for k in range(1440):
-    print(name_file(k))
-
+#for k in range(1440):
+#    print(name_file(k))
+print("Jahr 2019, Monat {}, Tag {}".format(m,day))
 
 # TODO check for download errors and path saving
 for k in tqdm.trange(len(test)):
