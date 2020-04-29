@@ -243,11 +243,7 @@ if flag == "Big":
 date = {'year':2020,'month':1,'day':16}
 
 for k in trange(1440):
-<<<<<<< HEAD
     data_csv = '.\\Darmstadt_verkehr\\{}_{}_{}_darmstadtUI\\{}.csv'.format(date["year"],date["month"],date["day"],k)
-=======
-    data_csv = '.\\Darmstadt_verkehr\\2019_11_18_darmstadtUI\\{}.csv'.format(k)  #19 Januar
->>>>>>> 891f9f779222ba29ccdce4ba18b8633008342dea
     try:
         my_data = np.genfromtxt(data_csv,delimiter=';',dtype=object,skip_header=0,skip_footer=2,deletechars="\r")
         for j in knoten:
@@ -296,8 +292,4 @@ for k in trange(1440):
         pass
 
 
-<<<<<<< HEAD
 np.savez('.\\Darmstadt_verkehr\\SensorData_Sensor_{}_{}_{}_{}_Counts'.format(flag,date["day"],date["month"],date["year"]),new_sensors)
-=======
-np.savez('.\\Darmstadt_verkehr\\SensorData_{}'.format('Sensor_Small_18_11_2019_Counts'),new_sensors)
->>>>>>> 891f9f779222ba29ccdce4ba18b8633008342dea
