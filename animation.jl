@@ -86,6 +86,15 @@ y_pos = [pos[k][2] for k = 1:length(pos)]
 cM = hcat(1:25, ColorSchemes.hot[1:4:100])
 cS = [cM[Int.(x)+1, 2] for x in zuw[1, :]]
 
+A_con2 = copy(A_con)
+A_con2[6:7,1] .= 0;
+A_con2[11:12,13] .= 0;
+A_con2[17:18,19] .= 0;
+A_con2[26:27,30] .= 0;
+DCon2 = incidence_matrix(DiGraph(A_con2));
+Dp = max.(-DCon2, 0);
+Dm = -min.(-DCon2, 0);
+
 graphplot(
     A_con,
     x = x_pos,
@@ -102,7 +111,7 @@ graphplot(
 function crossPlot(i::Int)
     cS = [cM[Int.(x)+1, 2] for x in zuw[i, :]]
     graphplot(
-        A_con,
+        A_con2,
         x = x_pos,
         y = y_pos,
         markersize = 3,
@@ -155,18 +164,10 @@ function simulate_network(beginn::Int, ende::Int, name::String, fps = 30)
 end
 
 
-μ = 0.1
+μ = 0.01
 x = Variable(43, Positive())
 s = Variable(43, Positive())
 p = Variable(43, Negative())
-A_con2 = copy(A_con)
-A_con2[6:7,1] .= 0;
-A_con2[11:12,13] .= 0;
-A_con2[17:18,19] .= 0;
-A_con2[26:27,30] .= 0;
-DCon2 = incidence_matrix(DiGraph(A_con2));
-Dp = max.(-DCon2, 0);
-Dm = min.(-DCon2, 0);
 
 problem = minimize(
     sumsquares(-Dm * (x + s) - zuw[2, :]) +
@@ -187,10 +188,17 @@ function optim_day(measurements)
     for k = 1:1439
         fix!(y1, measurements[k, :])
         fix!(y2, measurements[k+1, :])
+        ym1 = copy(y1.value);
+        ym2 = copy(y2.value);
+        ym1[[6,7,11,12,17,18,26,27]] .= 0;
+        ym2[[1,13,19,30]] .= 0;
         problem2 = minimize(
-            norm_1(Dm * (p - s) - (y2-y1)) +
-            norm_1(Dp * (x) - y1) +
-            μ * (norm_1(x) + norm_1(s) + norm_1(p))
+            norm_1(Dm * x - y2) +
+            norm_1(Dp * x - y1) +
+            0.5 * norm_1(Dp * x - (y2-y1)) +
+            norm_1(-Dp * (x-p) + ym1) + 
+            norm_1(-Dm * (x+s) + ym2) +
+            μ * (norm_1(x) + 10*norm_1(s) + 10*norm_1(p))
         )
         solve!(problem2, Gurobi.Optimizer(), verbose = false, warmstart = true)
         x_val[:, k] = x.value

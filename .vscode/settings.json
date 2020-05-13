@@ -14,5 +14,6 @@
     "files.associations": {
         "matrix": "cpp"
     },
-    "terminal.explorerKind": "integrated"
+    "terminal.explorerKind": "integrated",
+    "cmake.configureOnOpen": false
 }

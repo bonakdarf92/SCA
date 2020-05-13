@@ -91,9 +91,9 @@ def make_dir(name):
     return name
     #pass 
 
-m = 11
-day = 15
-date = {'year':2019,'month':m,'day':day}
+m = 2
+day = 1
+date = {'year':2020,'month':m,'day':day}
 test = create_url(date['year'], date['month'], date['day'], None)
 missing_files = []
 
