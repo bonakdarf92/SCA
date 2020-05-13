@@ -91,13 +91,9 @@ def make_dir(name):
     return name
     #pass 
 
-<<<<<<< HEAD
-date = {'year':2020,'month':1,'day':31}
-=======
-m = 11
-day = 20
-date = {'year':2019,'month':m,'day':day}
->>>>>>> 891f9f779222ba29ccdce4ba18b8633008342dea
+m = 2
+day = 1
+date = {'year':2020,'month':m,'day':day}
 test = create_url(date['year'], date['month'], date['day'], None)
 missing_files = []
 
@@ -106,11 +102,7 @@ d = make_dir("{}_{}_{}_darmstadtUI".format(date['year'],date['month'],date['day'
 
 #for k in range(1440):
 #    print(name_file(k))
-<<<<<<< HEAD
-
-=======
 print("Jahr 2019, Monat {}, Tag {}".format(m,day))
->>>>>>> 891f9f779222ba29ccdce4ba18b8633008342dea
 
 # TODO check for download errors and path saving
 for k in tqdm.trange(len(test)):
