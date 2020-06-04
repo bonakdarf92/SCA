@@ -17,6 +17,7 @@ using Gurobi
 using LightGraphs
 using LightXML
 
+"""
 function findPos(att)
     counter = 1
     x_pos, y_pos = zeros(1,1), zeros(1,1)
@@ -51,14 +52,15 @@ function compare(c::Number)
     plot!(y, label="Measurement")
 end
 
+"""
 performance() = plot(plot(objval), plot(err), layout=(1,2))
 
-function soft_threshholding(q,t,K)
+function soft_threshholding1(q,t,K)
     x = max.(q-t, zeros(K)) - max.(-q - t, zeros(K))
     return x
 end
 
-function descent_dir(𝔹x, x, γ)
+function descent_dir1(𝔹x, x, γ)
     return (𝔹x - x)*γ
 end
 
@@ -66,11 +68,11 @@ function stepsize(ϵ, ∇Ax, 𝔹x, x, μ_vec)
     return max.(min.(- (ϵ' * ∇Ax + (abs.(𝔹x) - abs.(x))' * µ_vec) / ∇Ax' * ∇Ax, 1), 0)
 end
 
-function stepnum(ϵ, ∇Ax, 𝔹x, x, μ_vec)
-    return (- (ϵ' * ∇Ax + (abs.(𝔹x) - abs.(x))' * µ_vec))
+function stepnum1(ϵ, ∇Ax, 𝔹x, x, μ)
+    return (- (ϵ' * ∇Ax))# + (norm(𝔹x,1) - norm(x,1)) * µ))
 end
 
-stepdom(∇Ax) = ∇Ax'*∇Ax
+stepdom1(∇Ax) = ∇Ax'*∇Ax
 
 
 function plot_spectorgram(s, fs, hw, overlap)
@@ -86,31 +88,35 @@ end
 #    end
 #end
 
-function kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
+function kernel_stela1!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, err, Maxiter)
     for t = 1:Maxiter
-        𝔹x = soft_threshholding((x'- ∇f ./ AtA_diag)' , µ_vec_norm', K)
-        @inbounds δx = descent_dir(𝔹x, x, 1)#𝔹x - x
+        #println(size(x-∇f./AtA_diag),size(μ_vec_norm))
+        𝔹x = soft_threshholding1((x- ∇f ./ AtA_diag) , µ_vec_norm, K)
+        @inbounds δx = descent_dir1(𝔹x, x, 1)#𝔹x - x
         @inbounds ∇Ax = A * δx
         #bla = descent_dir(𝔹x, x, 1)
-
-        @inbounds step_num = stepnum(ϵ, ∇Ax, 𝔹x, x, μ_vec) #- (ϵ' * ∇Ax + (abs.(�x) - abs.(x))' * µ_vec)
-        @inbounds step_denom = stepdom(∇Ax) #∇Ax' * ∇Ax
+        #nans = findall(x->isnan(x),∇f./AtA_diag);
+        #println(∇f[nans], AtA_diag[nans])
+        @inbounds step_num = stepnum1(ϵ, ∇Ax, 𝔹x, x, μ_vec[1]) #- (ϵ' * ∇Ax + (abs.(�x) - abs.(x))' * µ_vec)
+        @inbounds step_denom = stepdom1(∇Ax) #∇Ax' * ∇Ax
+        #println("Zähler", step_num)
         step_size =  max.(min.(step_num/ step_denom, 1), 0) #stepsize(ϵ, ∇Ax, �x, x, μ_vec)
-
+        #step_size = stepsize(ϵ, ∇Ax, 𝔹x, x, μ_vec[1])
         @inbounds x[:] +=  δx[:] * step_size #descent_dir(𝔹x, x, step_size)
         @inbounds ϵ[:] += ∇Ax * step_size
 
-        @inbounds ∇f[:] = ϵ' * A
+        @inbounds ∇f[:] = A'* ϵ#ϵ' * A
         @inbounds f = 0.5 * ϵ' * ϵ
-        @inbounds g = µ * norm(x,1)
+        @inbounds g = µ_vec[1] * norm(x,1)
         @inbounds objval[t+1] = f[1] + g
         #setindex!(objval[:],f[1]+g,t+1)
         IterationOut = "{1:9}|{2:10}|{3:15}|{4:15}"
-        @inbounds error[t+1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))), Inf)
+        @inbounds err[t+1] = norm(abs.(∇f - min.( max.( (∇f - x), -µ_vec), μ_vec ) ), Inf);
         #printfmtln(IterationOut, t+1, "N/A", format(objval[t+1], width=7), format(error[t+1], width=7), format(CPU_Time[t+1], precision=7))
-        printfmtln(IterationOut, t+1, format(step_size[1],width = 4), format(objval[t+1], width=7), format(error[t+1], width=7))
+        #println( step_size, " ", objval[t+1], " ", err[t+1])
+        printfmtln(IterationOut, t+1, format(step_size[1],width = 4), format(objval[t+1], width=7), format(err[t+1], width=7))
 
-        if error[t+1] < 1e-6
+        if err[t+1] < 1e-6
             println("Succesfull")
             break
         elseif t == Maxiter
@@ -121,7 +127,7 @@ function kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval,
 end
 
 
-function stela_lasso(A::Array{Float64,2}, y::Vector{Float64}, µ::Float64, Maxiter::Int64)
+function stela_lasso1(A::Array{Float64,2}, y::Vector{Float64}, µ::Float64, Maxiter::Int64)
     if µ <= 0
         println("must be positive")
         return
@@ -131,26 +137,26 @@ function stela_lasso(A::Array{Float64,2}, y::Vector{Float64}, µ::Float64, Maxit
     end
 
     K = size(A)[2]
-    @inbounds AtA_diag = sum(A.*A,dims=1)
+    @inbounds AtA_diag = diag(A'*A);#sum(A.*A,dims=1)
     µ_vec = µ*ones(K)
-    @inbounds µ_vec_norm = µ_vec'./AtA_diag
+    @inbounds µ_vec_norm = µ_vec./AtA_diag
     x = zeros(K)
     objval = Array{Float64}(zeros(Maxiter+1))
-    error = zeros(Maxiter+1)
+    err = zeros(Maxiter+1)
     @inbounds ϵ = A*x - y
-    @inbounds ∇f = ϵ' * A
+    @inbounds ∇f = (A'*ϵ)# ϵ' * A
     @inbounds f = 0.5 * ϵ' * ϵ
     @inbounds g = µ * norm(x,1)
     setindex!(objval[:],f[1],1)
-    @inbounds error[1] = norm(abs.(∇f' - min.( max.((∇f - x')', -µ*ones(K) ), µ*ones(K))),Inf)
+    @inbounds err[1] = norm(abs.(∇f - min.( max.((∇f - x), -µ*ones(K) ), µ*ones(K))),Inf)
 
     IterationOut = "{1:9}|{2:10}|{3:15}|{4:15}"
     printfmtln(IterationOut,"Iteration", "stepsize", "objval", "error")
-    printfmtln(IterationOut, 1, "N/A", format(objval[1], width=7), format(error[1], width=7))
-    kernel_stela!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, error, Maxiter)
-    return objval, x, error
+    printfmtln(IterationOut, 1, "N/A", format(objval[1], width=7), format(err[1], width=7))
+    kernel_stela1!(x, ∇f, AtA_diag, µ_vec_norm, K, A, ϵ, µ_vec, objval, err, Maxiter)
+    return objval, x, err
 end
-
+"""
 # N = 4000
 # K = 3000
 # A = rand(Normal(0,0.1),N, K)
@@ -183,3 +189,4 @@ solve!(problem, Gurobi.Optimizer)
 x_prob = A*x ./ maximum(A*x)
 
 println("fertig")
+"""

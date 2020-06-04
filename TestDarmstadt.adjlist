@@ -1,0 +1,496 @@
+#setBigGraphDarmstadt.py
+# GMT Mon Jun  1 22:09:03 2020
+# 
+137_D1115 2
+137_D122 {'weight': 1}
+137_D121 {'weight': 1}
+137_D1114 1
+137_D112 {'weight': 1}
+137_D1113 1
+137_D111 {'weight': 1}
+137_D1112 1
+137_D102 {'weight': 1}
+137_D1111 2
+137_D101 {'weight': 1}
+137_E2 {'weight': 1}
+137_D912 1
+137_E1 {'weight': 1}
+137_D911 1
+137_E1 {'weight': 1}
+137_D71 2
+137_D111 {'weight': 1}
+137_D101 {'weight': 1}
+137_D122 1
+137_E5 {'weight': 1}
+137_D121 1
+137_E5 {'weight': 1}
+137_D112 1
+137_E4 {'weight': 1}
+137_D111 1
+137_E4 {'weight': 1}
+137_D102 1
+137_E3 {'weight': 1}
+137_D101 1
+137_E3 {'weight': 1}
+137_D511 0
+137_D512 0
+137_D61 0
+137_D92 1
+137_D512 {'weight': 1}
+137_D91 1
+137_D511 {'weight': 1}
+137_D81 2
+137_E4 {'weight': 1}
+137_E5 {'weight': 1}
+137_D11 1
+137_E1 {'weight': 1}
+137_D21 2
+137_D512 {'weight': 1}
+137_D61 {'weight': 1}
+137_D22 1
+137_E3 {'weight': 1}
+137_D51 1
+137_D511 {'weight': 1}
+137_D52 2
+137_D512 {'weight': 1}
+137_D61 {'weight': 1}
+137_D41 1
+137_E5 {'weight': 1}
+137_E1 0
+137_E2 0
+137_E3 2
+136_D41 {'weight': 1}
+136_D42 {'weight': 1}
+137_E4 1
+170_D111 {'weight': 1}
+137_E5 0
+170_D111 2
+170_E2 {'weight': 1}
+170_E3 {'weight': 1}
+170_D61.1 1
+170_E2 {'weight': 1}
+170_D51 1
+170_E1 {'weight': 1}
+170_D71 1
+170_E3 {'weight': 1}
+170_D91.1 1
+170_E1 {'weight': 1}
+170_E1 3
+137_D51 {'weight': 1}
+137_D52 {'weight': 1}
+137_D41 {'weight': 1}
+170_E2 0
+170_E3 3
+169_D111 {'weight': 1}
+136_D12 {'weight': 1}
+136_D11 {'weight': 1}
+169_D111 3
+147_D121 {'weight': 1}
+147_D112 {'weight': 1}
+147_D111 {'weight': 1}
+169_D51 2
+170_D51 {'weight': 1}
+170_D61.1 {'weight': 1}
+147_D121 1
+147_E1 {'weight': 1}
+147_D112 1
+147_E2 {'weight': 1}
+147_D111 1
+147_E3 {'weight': 1}
+147_D91.1 1
+169_D51 {'weight': 1}
+147_D82 1
+147_E1 {'weight': 1}
+147_D81 1
+147_E2 {'weight': 1}
+147_D61 1
+147_E3 {'weight': 1}
+147_D53 1
+169_D51 {'weight': 1}
+147_D52 1
+169_D51 {'weight': 1}
+147_D51 1
+147_E1 {'weight': 1}
+147_D31.1 1
+147_E2 {'weight': 1}
+147_D21 2
+169_D51 {'weight': 1}
+147_E3 {'weight': 1}
+147_E1 0
+147_E2 4
+142_D41 {'weight': 1}
+142_D42 {'weight': 1}
+142_D43 {'weight': 1}
+142_D44 {'weight': 1}
+147_E3 0
+136_D41 1
+136_E3 {'weight': 1}
+136_D42 1
+136_E2 {'weight': 1}
+136_D11 1
+136_E1 {'weight': 1}
+136_D12 1
+136_E3 {'weight': 1}
+136_D21 1
+136_E1 {'weight': 1}
+136_E1 3
+137_D92 {'weight': 1}
+137_D91 {'weight': 1}
+137_D81 {'weight': 1}
+136_E2 0
+136_E3 2
+95_D11 {'weight': 1}
+95_D12 {'weight': 1}
+95_D11 2
+95_E3 {'weight': 1}
+95_E4 {'weight': 1}
+95_D12 2
+96_D41 {'weight': 1}
+96_D42 {'weight': 1}
+142_D41 1
+142_E3 {'weight': 1}
+142_D42 0
+142_D43 1
+142_E2 {'weight': 1}
+142_D44 1
+142_E2 {'weight': 1}
+142_D33 1
+142_E1 {'weight': 1}
+142_D32 1
+142_E2 {'weight': 1}
+142_D31 1
+142_E2 {'weight': 1}
+142_D24 1
+142_E4 {'weight': 1}
+142_D23 1
+142_E4 {'weight': 1}
+142_D22 1
+142_E1 {'weight': 1}
+142_D21 1
+142_E1 {'weight': 1}
+142_D11 1
+142_E1 {'weight': 1}
+142_D12 1
+142_E4 {'weight': 1}
+142_D13 1
+142_E4 {'weight': 1}
+142_D15 1
+142_E3 {'weight': 1}
+142_E1 4
+147_D51 {'weight': 1}
+147_D52 {'weight': 1}
+147_D53 {'weight': 1}
+147_D61 {'weight': 1}
+142_E2 2
+144_D41 {'weight': 1}
+144_D42 {'weight': 1}
+142_E3 0
+142_E4 2
+8_D11 {'weight': 1}
+8_D13 {'weight': 1}
+144_D41 2
+144_E2 {'weight': 1}
+144_E3 {'weight': 1}
+144_D42 1
+144_E1 {'weight': 1}
+80_D11 1
+8_D11 {'weight': 1}
+8_D11 2
+8_E4 {'weight': 1}
+8_D12 {'weight': 1}
+8_D12 1
+8_E3 {'weight': 1}
+8_D13 1
+8_E2 {'weight': 1}
+8_D51 1
+8_E1 {'weight': 1}
+8_D21 1
+8_E4 {'weight': 1}
+8_D22 1
+8_E4 {'weight': 1}
+8_D44 1
+8_E1 {'weight': 1}
+8_D43 1
+8_E1 {'weight': 1}
+8_D42 1
+8_E2 {'weight': 1}
+8_D41 1
+8_E3 {'weight': 1}
+8_D32 1
+8_E1 {'weight': 1}
+8_D31 2
+8_E1 {'weight': 1}
+8_E2 {'weight': 1}
+8_E1 4
+80_D11 {'weight': 1}
+142_D33 {'weight': 1}
+142_D32 {'weight': 1}
+142_D31 {'weight': 1}
+8_E2 2
+90_V112 {'weight': 1}
+90_V111 {'weight': 1}
+8_E3 1
+9_D11 {'weight': 1}
+8_E4 4
+10_D11 {'weight': 1}
+10_D12 {'weigth': 1}
+10_D13 {'weight': 1}
+10_D14 {'weight': 1}
+10_D11 1
+10_E4 {'weight': 1}
+10_D12 1
+10_E3 {'weight': 1}
+10_D13 1
+10_E3 {'weight': 1}
+10_D14 1
+10_E2 {'weight': 1}
+9_D11 3
+9_E4 {'weight': 1}
+9_E2 {'weight': 1}
+9_E3 {'weight': 1}
+90_V112 1
+90_E1 {'weight': 1}
+90_V111 2
+90_E2 {'weight': 1}
+90_E3 {'weight': 1}
+10_D21 2
+10_E1 {'weight': 1}
+10_E4 {'weight': 1}
+10_D22 1
+10_E3 {'weight': 1}
+10_D31 2
+10_E1 {'weight': 1}
+10_E2 {'weight': 1}
+10_D32 1
+10_E1 {'weight': 1}
+10_D33 1
+10_E4 {'weight': 1}
+10_D41 1
+10_E1 {'weight': 1}
+10_D42 1
+10_E1 {'weight': 1}
+10_D43 1
+10_E3 {'weight': 1}
+10_E1 4
+8_D41 {'weight': 1}
+8_D42 {'weight': 1}
+8_D43 {'weight': 1}
+8_D44 {'weight': 1}
+10_E2 1
+134_A4 {'weight': 1}
+10_E3 0
+10_E4 3
+97_D51 {'weight': 1}
+97_D52 {'weight': 1}
+97_D61.1 {'weight': 1}
+97_D51 2
+97_E4 {'weight': 1}
+97_E1 {'weight': 1}
+97_D52 1
+97_E4 {'weight': 1}
+97_D61.1 1
+97_E3 {'weight': 1}
+134_A4 1
+134_E2 {'weight': 1}
+97_D81 2
+97_E2 {'weight': 1}
+97_E1 {'weight': 1}
+97_D82.1 1
+97_E4 {'weight': 1}
+97_D111 2
+97_E3 {'weight': 1}
+97_E2 {'weight': 1}
+97_D112 1
+97_E2 {'weight': 1}
+97_D121.1 1
+97_E1 {'weight': 1}
+97_D21.1 3
+97_E2 {'weight': 1}
+97_E3 {'weight': 1}
+97_E4 {'weight': 1}
+97_E1 0
+97_E2 3
+10_D41 {'weight': 1}
+10_D42 {'weight': 1}
+10_D43 {'weight': 1}
+97_E3 0
+97_E4 2
+96_D21 {'weight': 1}
+96_D22 {'weight': 1}
+96_D21 1
+95_D20 {'weight': 1}
+96_D22 2
+95_D21 {'weight': 1}
+95_D22 {'weight': 1}
+96_D31 1
+96_E2 {'weight': 1}
+96_D32 2
+95_D20 {'weight': 1}
+95_D21 {'weight': 1}
+96_D33 2
+95_D21 {'weight': 1}
+95_D22 {'weight': 1}
+96_D41 1
+96_E2 {'weight': 1}
+96_D42 1
+96_E2 {'weight': 1}
+96_E2 3
+97_D111 {'weight': 1}
+97_D112 {'weight': 1}
+97_D121.1 {'weight': 1}
+95_D20 1
+136_D21 {'weight': 1}
+95_D21 1
+95_E4 {'weight': 1}
+95_D22 1
+95_E3 {'weight': 1}
+95_V42 1
+96_D41 {'weight': 1}
+95_E3 0
+95_E4 0
+134_E4 2
+10_D21 {'weight': 1}
+10_D22 {'weight': 1}
+134_D11 2
+134_E4 {'weight': 1}
+134_E2 {'weight': 1}
+134_D31 2
+134_E4 {'weight': 1}
+134_E2 {'weight': 1}
+134_E2 1
+9_D41 {'weight': 1}
+134_A2 1
+134_E4 {'weight': 1}
+9_D41 3
+9_E2 {'weight': 1}
+9_E1 {'weight': 1}
+9_E3 {'weight': 1}
+9_E4 1
+134_A2 {'weight': 1}
+9_D21 3
+9_E4 {'weight': 1}
+9_E1 {'weight': 1}
+9_E3 {'weight': 1}
+9_E2 0
+9_D31 3
+9_E1 {'weight': 1}
+9_E2 {'weight': 1}
+9_E4 {'weight': 1}
+9_E1 2
+8_D31 {'weight': 1}
+8_D32 {'weight': 1}
+9_E3 0
+144_D11.1 3
+144_E4 {'weight': 1}
+144_E3 {'weight': 1}
+144_E2 {'weight': 1}
+144_D21 2
+144_E1 {'weight': 1}
+144_E4 {'weight': 1}
+144_D22 1
+144_E3 {'weight': 1}
+144_V30 1
+144_E2 {'weight': 1}
+144_D31 1
+144_E1 {'weight': 1}
+144_D32 1
+144_E4 {'weight': 1}
+144_E4 4
+142_D21 {'weight': 1}
+142_D22 {'weight': 1}
+142_D23 {'weight': 1}
+142_D24 {'weight': 1}
+144_E3 2
+90_D21 {'weight': 1}
+90_D22 {'weight': 1}
+144_E2 1
+146_D42 {'weight': 1}
+144_E1 0
+146_D42 2
+146_E2 {'weight': 1}
+146_E3 {'weight': 1}
+90_D21 2
+90_E4 {'weight': 1}
+90_E3 {'weight': 1}
+90_D22 1
+90_E2 {'weight': 1}
+146_D11 1
+146_E1 {'weight': 1}
+146_D12 1
+146_E2 {'weight': 1}
+146_D31 1
+146_E3 {'weight': 1}
+146_D32 1
+146_E1 {'weight': 1}
+146_E1 2
+144_D21 {'weight': 1}
+144_D22 {'weight': 1}
+146_E2 3
+70_D11 {'weight': 1}
+70_D12 {'weight': 1}
+70_D13 {'weight': 1}
+146_E3 0
+70_D11 1
+70_E4 {'weight': 1}
+70_D12 1
+70_E3 {'weight': 1}
+70_D13 1
+70_E2 {'weight': 1}
+90_V51 2
+90_E1 {'weight': 1}
+90_E4 {'weight': 1}
+90_D81 3
+90_E1 {'weight': 1}
+90_E2 {'weight': 1}
+90_E4 {'weight': 1}
+90_E1 3
+144_V30 {'weight': 1}
+144_D31 {'weight': 1}
+144_D32 {'weight': 1}
+90_E2 2
+69_D116 {'weight': 1}
+69_D115 {'weight': 1}
+90_E3 0
+90_E4 3
+8_D21 {'weight': 1}
+8_D22 {'weight': 1}
+8_D51 {'weight': 1}
+69_D116 1
+69_E2 {'weight': 1}
+69_D115 1
+69_E3 {'weight': 1}
+69_V51 1
+69_E4 {'weight': 1}
+69_V52 1
+69_E3 {'weight': 1}
+69_V84 1
+69_E4 {'weight': 1}
+69_V83 1
+69_E2 {'weight': 1}
+69_E2 2
+70_D42 {'weight': 1}
+70_D41 {'weight': 1}
+69_E3 0
+69_E4 1
+90_V51 {'weight': 1}
+70_D42 1
+70_E1 {'weight': 1}
+70_D41 2
+70_E2 {'weight': 1}
+70_E3 {'weight': 1}
+70_D21 2
+70_E1 {'weight': 1}
+70_E4 {'weight': 1}
+70_D22 1
+70_E3 {'weight': 1}
+70_D31 1
+70_E2 {'weight': 1}
+70_D32 1
+70_E1 {'weight': 1}
+70_E1 2
+146_D31 {'weight': 1}
+146_D32 {'weight': 1}
+70_E2 0
+70_E3 0
+70_E4 1
+69_V51 {'weight': 1}
