@@ -198,7 +198,7 @@ function optim_day(measurements)
             0.5 * norm_1(Dp * x - (y2-y1)) +
             norm_1(-Dp * (x-p) + ym1) + 
             norm_1(-Dm * (x+s) + ym2) +
-            μ * (norm_1(x) + 10*norm_1(s) + 10*norm_1(p))
+            μ * (norm_1(x) + norm_1(s) + norm_1(p))
         )
         solve!(problem2, Gurobi.Optimizer(), verbose = false, warmstart = true)
         x_val[:, k] = x.value

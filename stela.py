@@ -1,5 +1,7 @@
 import numpy as np
 import time
+import matplotlib.pyplot as plt
+from scipy.special import huber as hb
 
 
 def soft_thresholding(q, t, K):
@@ -19,12 +21,22 @@ def soft_thresholding_pos(q, t, K):
     x = np.maximum(q - t, np.zeros(K))
     return x
 
+def huber_thresholing(q,l,delta=1):
+    return delta* np.divide((np.divide(q, delta) + l*np.maximum(np.abs(np.divide(q,delta)) - l*np.ones_like(q) - np.ones_like(q),np.zeros_like(q))), l*np.ones_like(q) + np.ones_like(q))
+
 
 def capped_thresholding(q,t):
     return np.maximum(q - t*np.ones_like(q) + np.minimum(q, t*np.ones_like(q)), np.zeros_like(q))
 
 
-def stela_lasso(A, y, mu, MaxIter=1000):
+def huber_loss(q,delta=1):
+    if np.less_equal(np.abs(q), delta*np.ones_like(q)):
+        return 0.5*q*q
+    else:
+        return delta * (np.abs(q) - 0.5*delta)
+
+
+def stela_lasso(A, y, mu, MaxIter=1000,mode="ls"):
     """
     STELA algorithm solves the following optimization problem:
         min_x 0.5*||y - A * x||^2 + mu * ||x||_1
@@ -72,9 +84,9 @@ def stela_lasso(A, y, mu, MaxIter=1000):
     '''The 0-th iteration'''
     CPU_time[0] = time.time()
     residual = np.dot(A, x) - y  # residual = A * x - y
-    print(residual.shape)
+    #print(residual.shape)
     f_gradient = np.dot(residual, A)  # gradient of f
-    print(f_gradient.shape)
+    #print(f_gradient.shape)
     CPU_time[0] = time.time() - CPU_time[0]
 
     f = 1 / 2 * np.dot(residual, residual)
@@ -96,7 +108,10 @@ def stela_lasso(A, y, mu, MaxIter=1000):
 
         '''approximate problem, cf. (49) of reference'''
         #Bx = soft_thresholding(x - np.divide(f_gradient, AtA_diag), mu_vec_normalized, K)
-        Bx = soft_thresholding_pos(x - np.divide(f_gradient, AtA_diag), mu_vec_normalized, K)
+        if mode == "ls":
+            Bx = soft_thresholding(x - np.divide(f_gradient, AtA_diag), mu_vec_normalized, K)
+        elif mode == "huber":
+            Bx = huber_thresholing(x - np.divide(f_gradient, AtA_diag),mu,0.05)
         x_dif = Bx - x
         Ax_dif = np.dot(A, x_dif)  # A * (Bx - x)
 
@@ -106,21 +121,27 @@ def stela_lasso(A, y, mu, MaxIter=1000):
         stepsize = np.maximum(np.minimum(stepsize_numerator / stepsize_denominator, 1), 0)
 
         '''variable update'''
-        x = x + stepsize * x_dif;
-
-        residual = residual + stepsize * Ax_dif;
+        x = x + stepsize * x_dif
+        residual = residual + stepsize * Ax_dif
         f_gradient = np.dot(residual, A)
 
         CPU_time[t + 1] = time.time() - CPU_time[t + 1] + CPU_time[t]
+        if mode == "ls":
+            f = 1 / 2 * np.dot(residual, residual)
+        elif mode == "huber":
+            f = 1/2 * np.sum(hb(0.05,residual))
 
-        f = 1 / 2 * np.dot(residual, residual)
         g = mu * np.linalg.norm(x, 1)
         objval[t + 1] = f + g
-        error[t + 1] = np.linalg.norm(np.absolute(f_gradient - np.minimum(np.maximum(f_gradient - x, -mu_vec), mu_vec)),
+        if mode == "huber":
+            error[t + 1] = np.abs(stepsize_numerator)
+        else:
+            error[t + 1] = np.linalg.norm(np.absolute(f_gradient - np.minimum(np.maximum(f_gradient - x, -mu_vec), mu_vec)),
                                       np.inf)
         
+
         '''print intermediate results'''
-        print(IterationOutput.format(t + 1, format(stepsize, '.4f'), format(objval[t + 1], '.7f'),
+        print(IterationOutput.format(t + 1, format(stepsize, '.7f'), format(objval[t + 1], '.7f'),
                                      format(error[t + 1], '.7f'), format(CPU_time[t + 1], '.7f')))
 
         '''check stop criterion'''
@@ -241,7 +262,7 @@ def stela_cappedL1(A, y, mu, theta, maxiter=1000):
                                      format(error[t + 1], '.8f'), format(CPU_time[t + 1], '.4f')))
 
         '''check stop criterion'''
-        if error[t + 1] < 1e-8:
+        if error[t + 1] < 1e-6:
             objval = objval[0: t + 2]
             CPU_time = CPU_time[0: t + 2]
             error = error[0: t + 2]
@@ -252,3 +273,40 @@ def stela_cappedL1(A, y, mu, theta, maxiter=1000):
             print('Status: desired precision is not achieved. More iterations are needed.')
     
     return objval, x, error
+
+A = np.random.normal(0,0.1,(1000,1000))
+x0 = np.zeros(1000)
+x0_pos = np.random.choice(np.arange(1000),int(1000*0.8),replace=False)
+x0[x0_pos] = np.random.normal(0,1,int(1000*0.8))
+sigma = 0.05
+v = np.random.normal(0,sigma,1000)
+y = np.dot(A,x0) + v 
+mu = 0.001*np.linalg.norm(np.dot(y,A),np.inf)
+
+objval_ls,x_ls,err_ls = stela_lasso(A,y,mu,1000,mode="ls")
+objval_hb,x_hb,err_hb = stela_lasso(A,y,mu,1000,mode="huber")
+
+
+
+plt.plot(np.linspace(1, 1000, 1000), x0, 'bx', label = "original signal")
+plt.plot(np.linspace(1, 1000, 1000), x_ls, 'ro', label = "estimated signal ls")
+plt.plot(np.linspace(1, 1000, 1000), x_hb, 'g-.', label = "estimated signal hb")
+plt.legend(bbox_to_anchor = (1.05, 1), loc = 1, borderaxespad = 0.)
+plt.xlabel("index")
+plt.ylabel("coefficient")
+plt.show()
+
+plt.plot(np.linspace(0, objval_ls.size-1, objval_ls.size), objval_ls, 'r-x',label="Least")
+plt.plot(np.linspace(0, objval_hb.size-1, objval_hb.size), objval_hb, 'g-.',label="Huber")
+plt.legend(bbox_to_anchor = (1.05, 1), loc = 1, borderaxespad = 0.)
+plt.xlabel("number of iterations")
+plt.ylabel("objective function value")
+plt.show()
+
+plt.plot(np.linspace(0, err_ls.size-1, err_ls.size), err_ls, 'r-x',label="Least")
+plt.plot(np.linspace(0, err_hb.size-1, err_hb.size), err_hb, 'g-.',label="Huber")
+plt.legend(bbox_to_anchor = (1.05, 1), loc = 1, borderaxespad = 0.)
+plt.xlabel("number of iterations")
+plt.ylabel("error")
+plt.yscale('log')
+plt.show()
