@@ -5,7 +5,7 @@ import numpy as np
 with open('.\\Darmstadt_verkehr\\sensor_config.json') as f:
     sensors = json.load(f)
 
-flag = "Big"
+flag = "Small"
 knoten = ["A003", "A004", "A005", "A006", "A007", "A023", "A022", "A028", "A029", "A045", "A030", "A139", "A102", "A104"]
 knoten_darmstadt = ["A160","A161","A075","A174","A046","A012","A059","A110","A111","A173","A037","A162","A163","A104","A023","A028",
                     "A029","A030","A031","A032","A033","A001","A002","A007","A003","A004","A005","A006","A034","A036","A035","A141",
@@ -237,7 +237,7 @@ if flag == "Big":
             new_sensors[j]["signals"] = np.empty((1440,len(new_sensors[j]["detectors"])))
             new_sensors[j]["signals"][:] = np.nan 
 
-date = {'year':2020,'month':1,'day':16}
+date = {'year':2020,'month':1,'day':2}
 
 for k in trange(1440):
     data_csv = '.\\Darmstadt_verkehr\\{}_{}_{}_darmstadtUI\\{}.csv'.format(date["year"],date["month"],date["day"],k)
