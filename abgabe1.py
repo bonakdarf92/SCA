@@ -15,7 +15,7 @@ plt.rcParams.update({'font.size':18})
 geo = dict(north=49.874, south=49.8679, west=8.6338, east=8.6517)
 D_city = DarmstadtNetwork(geo, "Abgabe")
 D_city.load_darmstadt(show=False)
-settings = dict(bgcolor="white", equal_aspect=False, node_size=30, node_edgecolor="none", node_zorder=2, axis_off=False, edge_color="white",edge_linewidth=0,edge_alpha=0,show=False,close=False,save=False)
+settings = dict(bgcolor="white", equal_aspect=False, node_size=30, node_edgecolor="black", node_zorder=2, axis_off=False, edge_color="white",edge_linewidth=0,edge_alpha=0,show=False,close=False,save=False)
 xs, ys, ids = D_city.get_ids()
 posi = dict(zip(ids, zip(xs, ys)))
 
@@ -74,15 +74,16 @@ def gen_signal(Graph, sigma=0.1, kind="ball", size="big"):
     elif kind == "idk":
         sources = [19, 42, 45, 46, 66, 68, 70, 57, 15, 30, 65, 71]
     signal = np.zeros(Graph.n_vertices)
-    signal[sources] = np.random.randint(20, 40, (np.shape(sources)))#1
+    signal[sources] = 1#np.random.randint(20, 40, (np.shape(sources)))#1
     np.random.seed(43)
     noise = np.random.normal(0, sigma, Graph.n_vertices)
     #noise[noise <= 0] = 0
-    noise = np.arange(-15, 16)
+    #noise = np.arange(-15, 16)
     noiseU, noiseL = noise + 0.5, noise - 0.5
     prob = ss.norm.cdf(noiseU, scale=9) - ss.norm.cdf(noiseL, scale=9)
     prob = prob/prob.sum()
-    noisy = signal + np.random.choice(noise, size=Graph.n_vertices, p=prob) #np.random.normal(0, sigma, Graph.n_vertices)
+    #noisy = signal + np.random.choice(noise, size=Graph.n_vertices, p=prob) 
+    noisy = signal + np.random.normal(0, sigma, Graph.n_vertices)
     noisy[noisy <= 0] = 0
     return noisy, sources, signal
 
@@ -97,8 +98,8 @@ def path_based1(y, Graph, tp):
 fig2, ax2 = plt.subplots(1,1,figsize=(12,8))
 plt.set_cmap('rainbow')
 plt.tight_layout()
-sigma = 0.9
-noisy, sources, signal = gen_signal(G2, kind="line", sigma=sigma)
+sigma = 0.3
+noisy, sources, signal = gen_signal(G2, kind="ball", sigma=sigma)
 
 
 # x2.value[x2.value <= 0.1] = 0
@@ -144,7 +145,11 @@ def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
     elif solver == "path_real":
         # TODO check for tp
         for kk in tqdm(lambdas):
-            x_star, l_star, problem_cut = path_real(noisy, G2, kk)
+            #x_star, l_star, problem_cut = path_real(noisy, G2, kk)
+            k = kk 
+            solv_obj.lambd = k 
+            solv_obj.glap_binary()
+            x_star, l_star, problem_cut = solv_obj.variable, solv_obj.lambd, solv_obj.problem #path_binary(noisy, G2, kk)
             errors.append(mse(signal, x_star.value))
             performance.append(problem_cut.value)
     elif solver == "path":
@@ -193,7 +198,7 @@ def lambda_error_plot(y, solv_obj, k=30, solver="cut"):
     plt.show()
     return x_star, l_star, problem_star
 
-x_star, l_star, _ = lambda_error_plot(noisy, c, k=30, solver="path")
+x_star, l_star, _ = lambda_error_plot(noisy, c, k=30, solver="path_real")
 c.lambd = l_star
 
 
@@ -233,6 +238,7 @@ def compare_solvers(sig1, sig2, sig3=None):
 #c.path_based(threshold=True)
 #x_sub = c.variable
 def s_t_graph(Graph,show=False):
+    fig,ax = plt.subplots(1,1)
     GGG = Graph.copy()
     GGG.add_node('s')
     GGG.add_node('t')
@@ -249,21 +255,27 @@ def s_t_graph(Graph,show=False):
     yys = [y for _, y in GGG.nodes(data='y')]
     xyids = [ID for ID,_ in GGG.nodes(data='osmid')]
     posi2 = dict(zip(xyids,zip(xxs,yys)))
-    labels_nodes = dict(zip(GGG.nodes(),range(GGG.number_of_nodes())))
+    #labels_nodes = dict(zip(GGG.nodes(),range(GGG.number_of_nodes())))
+    labels_nodes = dict()
     labels_nodes['s'] = 's'
     labels_nodes['t'] = 't'
     if show:
-        nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=GGG.nodes(), with_labels=False, node_size=30)
-        nx.draw_networkx_labels(GGG, pos=posi2, labels=labels_nodes, font_size=18)
-        nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=['s','t'], node_color=["red","green"], with_labels=False, node_size=30)
-        nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if k[2] != None], arrows=True)
-        col = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[0] == 's')], edge_color="red", alpha=0.2, arrowsize=20)
+        nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=GGG.nodes(),node_color="#a142f5",node_edge_color="black", with_labels=False, node_size=30, edge_color="gray",edge_linewidth=3,edge_alpha=0.5,ax=ax)
+        nx.draw_networkx_labels(GGG, pos=posi2, labels=labels_nodes, font_size=18,ax=ax)
+        nx.draw_networkx_nodes(GGG, pos=posi2, nodelist=['s','t'], node_color=["red","blue"], with_labels=False, node_size=50, node_edge_color="black",ax=ax)
+        nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if k[2] != None],edge_color="gray", alpha=0.5, arrows=True,ax=ax)
+        col = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[0] == 's')], edge_color="red", alpha=0.2, arrowsize=20,ax=ax)
         for patch in col:
             patch.set_linestyle('dotted')
-        col2 = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[1] == 't')], edge_color="green", alpha=0.2, arrowsize=20)
+        col2 = nx.draw_networkx_edges(GGG, pos=posi2, edgelist=[k for k in GGG.edges(data='name') if (k[2] == None and k[1] == 't')], edge_color="blue", alpha=0.2, arrowsize=20,ax=ax)
         for patch in col2:
             patch.set_linestyle('dotted')
-        plt.margins(x=-0.1,y=-0.1)
+        plt.margins(x=-0.18,y=-0.2)
+        ax.spines['left'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.set_title("ST Graph of Darmstadt City")
         plt.tight_layout()
         plt.show()
     else:
@@ -291,9 +303,9 @@ def boykov_kolmogorov_maxcut(y,st_Graph):
     flow_value = R.graph['flow_value']
     return results
 
-st_graph = s_t_graph(D_city.Graph)
+st_graph = s_t_graph(D_city.Graph,show=False)
 results = boykov_kolmogorov_maxcut(noisy, st_graph)
-compare_solvers(x_star, signal, results )
+compare_solvers(x_star, signal, results)
 
 th = np.max(signal)/2.25
 d = Solver("Bully",noisy,G2)
@@ -301,14 +313,87 @@ d.lambd = l_star
 d.path_based2(st_graph, verbose=True, threshold=th, dictionary=True, save=False)
 plt.set_cmap('rainbow')
 d.optim_stela(0.0017235714190248091)
-G2.plot(np.zeros((75,)), highlight=sources)
+from stela import stela_lasso
+
+plt.show()
+G2.compute_laplacian('normalized')
+G2.compute_differential_operator()
+fig,ax=plt.subplots(1,1)
+label_signal = np.copysign(np.ones(G2.N),G2.U[:,17])
+M = rs.rand(G2.N)
+M = (M > 0.4).astype(float)
+sigma1 = 0.05
+subsampled_noisy_label_signal = M * (label_signal + sigma * rs.standard_normal(G2.N))
+
+G2.plot(label_signal,ax=ax,title="Label Signal")
+ax.set_axis_off()
+ax.margins(x=-0.25,y=-0.3)
+plt.tight_layout()
+plt.show()
+fig,ax=plt.subplots(1,1)
+
+G2.plot(subsampled_noisy_label_signal,ax=ax,title=r'Measured Signal with\n $60\%$ blind vertices')
+ax.set_axis_off()
+ax.margins(x=-0.25,y=-0.3)
+plt.tight_layout()
+plt.show()
+fig,ax=plt.subplots(1,1)
+
+import pyunlocbox
+dd = pyunlocbox.functions.dummy()
+r = pyunlocbox.functions.norm_l1()
+f = pyunlocbox.functions.norm_l2(w=M, y=subsampled_noisy_label_signal,lambda_=3)
+L = G2.D.T.toarray()
+step = 0.999 / (1 + np.linalg.norm(L))
+solverPy = pyunlocbox.solvers.mlfbf(L=L, step=step)
+x0 = subsampled_noisy_label_signal.copy()
+prob1 = pyunlocbox.solvers.solve([dd, r, f], solver=solverPy, x0=x0, rtol=0, maxit=1000)
+
+G2.plot(prob1['sol'],ax=ax,title="Recovered Signal")
+
+ax.set_axis_off()
+ax.margins(x=-0.25,y=-0.3)
+plt.tight_layout()
+plt.show()
+
+fig, axes = plt.subplots(1, 2)
+for i, ax in enumerate(axes):
+    _ = G2.plot(G2.U[:, i+1], vertex_size=50, ax=ax)
+    _ = ax.set_title('Eigenvector {}'.format(i+2))
+    ax.set_axis_off()
+    ax.margins(x=-0.25,y=-0.3)
+plt.tight_layout()
+plt.show()
+
+fig,axes= plt.subplots(1,1)
+g_filt = ps.filters.Filter(G2,1)
+g_filt.plot(eigenvalues=True,title="Impuls Response of Graph")
+plt.show()
+
+#_,sources,_ = gen_signal(G2, kind="ball", sigma=sigma)
+fig,ax = G2.plot(vertex_color='#a142f5',highlight=sources)
+#G2.plotting['vertex_color'] = "#a142f5"  vertex_color=((0.34, 0.73, 0, 0.04))
+plt.axis('off')
+ax.set_title("Ground truth ball")
+ax.spines['left'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+plt.margins(x=-0.18,y=-0.3)
+plt.tight_layout()
+plt.show()
 #plt.title("GLap with $\lambda = \lambda^* \, {0} \, \sigma = {1}$".format(" at  ",sigma))
 #plt.tight_layout()
 #plt.show()
 fig4,ax4 = plt.subplots(2,1,figsize=(12,8))
-ax4[0].plot(d.variable.value,color='b')
-ax4[1].plot(cp.sum(d.recons[:]),marker='x',color='r')
-ax4[1].axhline(th)#np.var(noisy))
+ax4[0].plot(d.variable.value,color='#a142f5')
+ax4[0].set_title(r'Optimization variable $\mathbf{x}$')
+ax4[0].set_xlabel(r'Vector Index $k$')
+ax4[0].set_ylabel(r'Magnitude of $\mathbf{x}_k$')
+ax4[0].set_xlim(xmin=0, xmax=len(d.variable.value))
+ax4[1].plot(cp.sum(d.recons[:]),marker='x',color='#a142f5',label=r'mobility patterns of $\mathbf{D} \mathbf{x}_{mob}$')
+ax4[1].axhline(th,label=r'$\tau_{dic} = \max(\mathbf{y}) / 2.25$')#np.var(noisy))
+ax4[1].legend()
 fig1,ax1 = plt.subplots(1,2,figsize=(12,8))
 plt.set_cmap('rainbow')
 plt.tight_layout()
@@ -354,6 +439,45 @@ for i, t in enumerate(times):
 plt.tight_layout()
 plt.show()
 from Plots import initialPlots
+fig,ax=plt.subplots(1,1)
+G2.plot(noisy,edges=True,edge_width=we,highlight=[i for i,x in enumerate(x_star.value) if x > 0.3],ax=ax,title="GLap ball pattern")
+ax.margins(x=-0.18,y=-0.3)
+ax.set_axis_off()
+plt.show()
+
+fig,ax=plt.subplots(1,1)
+G2.plot(noisy,edges=True,edge_width=we,highlight=results,ax=ax,title="Boykov-Kolmogorov ball pattern")
+ax.margins(x=-0.18,y=-0.3)
+ax.set_axis_off()
+plt.show()
+
+fig,ax=plt.subplots(1,1)
+G2.plot(noisy,edges=True,edge_width=we,highlight=d.solution.nonzero(),ax=ax,title="Dictionary ball pattern")
+ax.margins(x=-0.18,y=-0.3)
+ax.set_axis_off()
+plt.show()
+
+
+fig,ax = plt.subplots(1,1)
+G2.plot(noisy,edges=True,edge_width=we, highlight=c.variable.value.nonzero(), ax=ax, title="Path based optimization")
+axins = ax.inset_axes([0.7, 0.7, 0.3, 0.3])
+x1, x2, y1,y2 = 8.6405,8.6425,49.8727,49.8735 # line
+x1, x2, y1,y2 = 8.6405,8.6425,49.871,49.8735 # ball
+G2.plot(noisy,edges=True,edge_width=we, highlight=c.variable.value.nonzero(), ax=axins,colorbar=False)
+axins.set_ylim(y1,y2)
+axins.set_xlim(x1,x2) 
+axins.set_title("")
+axins.xaxis.set_ticks([])
+axins.yaxis.set_ticks([])
+ax.set_aspect('equal','datalim')
+ax.margins(x=-0.25,y=-0.4)
+ax.set_axis_off()
+ax.indicate_inset_zoom(axins)
+plt.tight_layout()
+plt.show()
+
+
+"""
 
 sensor_data = np.load('./Darmstadt_verkehr/SensorData_{}.npz'.format('Sensor_Small_View'),allow_pickle=True)['arr_0'].reshape((1,))[0]
 
@@ -412,7 +536,7 @@ s30 = [48]
 s45 = [49, 74]
 s102 = [32]
 s104 = [3, 7, 55, 72]
-
+"""
 """
 for t in range(700,705):
     sources = [11,23,39,43,63,19,42,45,46,66,68,15,30,57,70,65,71,27,33,44,29,0,26,4,13,37,58,67,69,12,47,48,49,74,32,3,7,55,72]

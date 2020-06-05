@@ -1,6 +1,7 @@
 import networkx as nx 
 import matplotlib.pyplot as plt 
 import numpy as np
+plt.set_cmap('rainbow')
 
 Darmstadt = nx.DiGraph()
 # A137
@@ -538,9 +539,9 @@ Darmstadt.add_edge("70_D41","70_E2",weight=1)
 Darmstadt.add_edge("70_D41","70_E3",weight=1)
 Darmstadt.add_edge("70_D42","70_E1",weight=1)
 
-nx.write_edgelist(Darmstadt,".\\TestDarmstadt.edgelist",data=['weight','signal'])
+#nx.write_edgelist(Darmstadt,".\\TestDarmstadt.edgelist",data=['weight','signal'])
 #nx.write_graphml_lxml(Darmstadt, ".\\TestDarmstadt.graphml", prettyprint=True)
-nx.write_gml(Darmstadt,".\\TestDarmstadt.gml")
+#nx.write_gml(Darmstadt,".\\TestDarmstadt.gml")
 
 """
 
@@ -978,10 +979,10 @@ Darmstadt.add_node("6_D26",pos=[],signal=26)
 #Darmstadt.add_node("81_D11")
 
 """
-"""
+
 
 import pygsp as ps 
-n_eigenvectors = 3
+n_eigenvectors = 7
 
 
 pos = nx.get_node_attributes(Darmstadt,'pos')
@@ -991,8 +992,17 @@ fig,ax = plt.subplots(1,1)
 #ax[0].spy(A)
 nx.draw(Darmstadt,pos=pos,node_size=10,ax=ax)
 #nx.draw_networkx_labels(Darmstadt,pos,font_size=10,ax=ax)
+nx.draw_networkx_nodes(Darmstadt,pos=pos,node_color='#a142f5',node_size=10,ax=ax)
+#nx.draw_networkx_labels(Darmstadt,pos=pos,font_size=14,ax=ax)
+nx.draw_networkx_edges(Darmstadt,pos=pos,edge_color="gray",alpha=0.5,ax=ax)
+#nx.draw_networkx_edge_labels(G,pos=pos,edge_labels=labels,ax=ax)
+ax.spines['left'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+plt.tight_layout()
 plt.show()
-
+"""
 fig2,ax3 = plt.subplots(1,2,figsize=(18,14))
 
 D_g = ps.graphs.Graph(A) 
@@ -1023,7 +1033,7 @@ for k in range(10):
 plt.show()
 plt.imshow(D_g.W.toarray())
 plt.show()
-
+"""
 G = nx.DiGraph()
 G.add_node("0",pos=[4,8])
 G.add_node("1",pos=[8.5,8])
@@ -1084,9 +1094,56 @@ G_s.set_coordinates([v for v in nx.get_node_attributes(G,'pos').values()])
 signal = [2.3,-1.7,2.3,-2.7,2.5,2.7,2.5,-2]
 shift_sig = [-0.391, 0.805, 1.6, 0.522, 1.258, -0.3, -1.504, 1.15]
 fig2,ax2 = plt.subplots(1,3) 
-G_s.plot(signal,ax=ax2[0])
-G_s.plot(shift_sig,ax=ax2[1])
-G_s.plot((nx.adjacency_matrix(G)**2)*signal,ax=ax2[2])
+G_s.plot(signal,limits=[-2.7,2.7],ax=ax2[0],vertex_size=100,colorbar=False)
+G_s.plot(shift_sig,limits=[-2.7,2.7],ax=ax2[1],vertex_size=100,colorbar=False)
+G_s.plot((nx.adjacency_matrix(G)**2)*signal,limits=[-2.7,2.7],ax=ax2[2],vertex_size=100,colorbar=False)
+cax = fig2.add_axes([0.1, 0.05, 0.8, 0.01])
+fig2.subplots_adjust(hspace=0.5,right=0.8)
+ax2[0].set_axis_off()
+ax2[1].set_axis_off()
+ax2[2].set_axis_off()
+ax2[0].set_title(r'$\mathbf{y}$')
+ax2[1].set_title(r'$\mathbf{A}\mathbf{y}$')
+ax2[2].set_title(r'$\mathbf{A}^2\mathbf{y}$')
+cbar = fig2.colorbar(ax2[0].collections[0],cax=cax,orientation='horizontal')
+cbar.minorticks_on()
+cbar.ax.set_xticklabels([-2.7,-1.62,-0.54,0.54,1.62,2.7])
+plt.show()
+
+G_s.compute_laplacian('normalized')
+fig2,ax2 = plt.subplots(1,1)
+G_s.plot(eigenvalues=True,ax=ax2)
+plt.show()
+
+
+fig2,ax2=plt.subplots(2,4)
+signal2 = signal# / np.linalg.norm(signal)
+shift_sig = (nx.adjacency_matrix(G)*signal2) #/ np.linalg.norm(nx.adjacency_matrix(G)*signal2)
+doubleshift = (nx.adjacency_matrix(G)**2)*signal2 #/ np.linalg.norm((nx.adjacency_matrix(G)**2)*signal2)
+G_s.plot(signal2,ax=ax2[0,0],vertex_size=100)
+x = G_s.gft(signal2)
+ax2[0,0].set_title(r'$x^T L x = {:.2f}$'.format(G_s.dirichlet_energy(x)))
+ax2[0,0].set_axis_off()
+ax2[1,0].plot(G_s.e, np.abs(x), '.-')
+ax2[1,0].set_xlabel(r'graph frequency $\lambda$')
+
+G_s.plot(shift_sig,ax=ax2[0,1],vertex_size=100)
+x = G_s.gft(shift_sig)
+ax2[0,1].set_title(r'$x^T L x = {:.2f}$'.format(G_s.dirichlet_energy(x)))
+ax2[0,1].set_axis_off()
+ax2[1,1].plot(G_s.e, np.abs(x), '.-')
+ax2[1,1].set_xlabel(r'graph frequency $\lambda$')
+
+G_s.plot(doubleshift,ax=ax2[0,2],vertex_size=100)
+x = G_s.gft(doubleshift)
+ax2[0,2].set_title(r'$x^T L x = {:.2f}$'.format(G_s.dirichlet_energy(x)))
+ax2[0,2].set_axis_off()
+ax2[1,2].plot(G_s.e, np.abs(x), '.-')
+ax2[1,2].set_xlabel(r'graph frequency $\lambda$')
+
 
 plt.show()
-"""
+
+
+
+
