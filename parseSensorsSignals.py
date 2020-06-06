@@ -5,7 +5,7 @@ import numpy as np
 with open('.\\Darmstadt_verkehr\\sensor_config.json') as f:
     sensors = json.load(f)
 
-flag = "Small"
+flag = "Big"
 knoten = ["A003", "A004", "A005", "A006", "A007", "A023", "A022", "A028", "A029", "A045", "A030", "A139", "A102", "A104"]
 knoten_darmstadt = ["A160","A161","A075","A174","A046","A012","A059","A110","A111","A173","A037","A162","A163","A104","A023","A028",
                     "A029","A030","A031","A032","A033","A001","A002","A007","A003","A004","A005","A006","A034","A036","A035","A141",
@@ -14,7 +14,7 @@ knoten_darmstadt = ["A160","A161","A075","A174","A046","A012","A059","A110","A11
                     "A014","A021","A100","A066","A057","A048","A020","A103","A015","A151","A083",
                     "A067","A155","A154","A128","A137","A170","A169","A147","A142","A144","A146","A136","A095",
                     "A096","A097","A010","A089","A008","A080","A090","A069","A070","A126","A076","A011",
-                    "A150","A061","A150","A024"]
+                    "A150","A061","A024"]
 new_sensors = {item["ID"]:item for item in sensors}
 
 if flag == "Small":
@@ -53,9 +53,9 @@ if flag == "Big":
         elif j == "A160":
             new_sensors[j]["signals"] = np.empty((1440,17))
             new_sensors[j]["signals"][:] = np.nan 
-        elif j == "A161":
-            new_sensors[j]["signals"] = np.empty((1440,26))
-            new_sensors[j]["signals"][:] = np.nan
+        #elif j == "A161":
+        #    new_sensors[j]["signals"] = np.empty((1440,26))
+        #    new_sensors[j]["signals"][:] = np.nan
         elif j == "A075":
             new_sensors[j]["signals"] = np.empty((1440,46))
             new_sensors[j]["signals"][:] = np.nan
@@ -72,7 +72,7 @@ if flag == "Big":
             new_sensors[j]["signals"] = np.empty((1440,24))
             new_sensors[j]["signals"][:] = np.nan
         elif j == "A110":                                                   # abfangen
-            new_sensors[j]["signals"] = np.empty((1440,13))
+            new_sensors[j]["signals"] = np.empty((1440,14))
             new_sensors[j]["signals"][:] = np.nan
         elif j == "A111":
             new_sensors[j]["signals"] = np.empty((1440,7))
@@ -234,10 +234,11 @@ if flag == "Big":
             new_sensors[j]["signals"] = np.empty((1440,21))
             new_sensors[j]["signals"][:] = np.nan
         else:
+            print("Else Block")
             new_sensors[j]["signals"] = np.empty((1440,len(new_sensors[j]["detectors"])))
             new_sensors[j]["signals"][:] = np.nan 
 
-date = {'year':2020,'month':1,'day':2}
+date = {'year':2020,'month':2,'day':2}
 
 for k in trange(1440):
     data_csv = '.\\Darmstadt_verkehr\\{}_{}_{}_darmstadtUI\\{}.csv'.format(date["year"],date["month"],date["day"],k)
