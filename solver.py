@@ -10,13 +10,14 @@ import pygsp as ps
 
 class Solver:
 
-    def __init__(self, solver_type, signal, Graph):
+    def __init__(self, solver_type, signal, Graph,signal2=None):
         self.type = solver_type
         #self.solution = None
         #self.cost = None 
         #self.settigns = None 
         #self.variable = None 
         self.signals = signal
+        self.signal2 = signal2
         self.Graph = Graph
         #self.problem = None 
         self.lambd = 2*np.max(self.signals) - 1
@@ -177,3 +178,8 @@ class Solver:
         #self.stela_sol =
 
 
+    def reconstruct(self):
+        yd = self.signal2-self.signals
+        ym = np.copy(self.signals)
+        ys = np.copy(self.signal2)
+        Dp = self.Graph

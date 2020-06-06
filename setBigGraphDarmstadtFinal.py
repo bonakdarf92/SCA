@@ -5,11 +5,11 @@ plt.set_cmap('rainbow')
 
 Darmstadt = nx.DiGraph()
 # A137
-Darmstadt.add_node("137_D1115", pos=[30,2000],signal=23)
-Darmstadt.add_node("137_D1114", pos=[29.5,1997],signal=22)
-Darmstadt.add_node("137_D1113", pos=[29,1994],signal=21)
-Darmstadt.add_node("137_D1112", pos=[28.5,1991],signal=20)
-Darmstadt.add_node("137_D1111", pos=[28,1988],signal=19)
+Darmstadt.add_node("137_D1115", pos=[30,2000],signal=23,starter=True)
+Darmstadt.add_node("137_D1114", pos=[29.5,1997],signal=22,starter=True)
+Darmstadt.add_node("137_D1113", pos=[29,1994],signal=21,starter=True)
+Darmstadt.add_node("137_D1112", pos=[28.5,1991],signal=20,starter=True)
+Darmstadt.add_node("137_D1111", pos=[28,1988],signal=19,starter=True)
 Darmstadt.add_node("137_D912",  pos=[36,1970],signal=18)
 Darmstadt.add_node("137_D911",  pos=[38,1970],signal=17)
 Darmstadt.add_node("137_D71",   pos=[40,1970],signal=16)
@@ -19,22 +19,22 @@ Darmstadt.add_node("137_D112",  pos=[49.3,1980],signal=13)
 Darmstadt.add_node("137_D111",  pos=[49.2,1977.5],signal=12)
 Darmstadt.add_node("137_D102",  pos=[49.1,1975],signal=11)
 Darmstadt.add_node("137_D101",  pos=[49,1972.5],signal=10)
-Darmstadt.add_node("137_D511",  pos=[45,2006],signal=33)
-Darmstadt.add_node("137_D512",  pos=[44.7,2003],signal=34)
-Darmstadt.add_node("137_D61",   pos=[44.4,2000],signal=35)
+Darmstadt.add_node("137_D511",  pos=[45,2006],signal=33,ende=True)
+Darmstadt.add_node("137_D512",  pos=[44.7,2003],signal=34,ende=True)
+Darmstadt.add_node("137_D61",   pos=[44.4,2000],signal=35,ende=True)
 Darmstadt.add_node("137_D92",   pos=[57,1965],signal=9)
 Darmstadt.add_node("137_D91",   pos=[59,1965],signal=8)
 Darmstadt.add_node("137_D81",   pos=[61,1965],signal=7)
-Darmstadt.add_node("137_D11",   pos=[61.5,2015],signal=1)
-Darmstadt.add_node("137_D21",   pos=[59,2006],signal=2)
-Darmstadt.add_node("137_D22",   pos=[61,2006],signal=3)
+Darmstadt.add_node("137_D11",   pos=[61.5,2015],signal=1,starter=True)
+Darmstadt.add_node("137_D21",   pos=[59,2006],signal=2,starter=True)
+Darmstadt.add_node("137_D22",   pos=[61,2006],signal=3,starter=True)
 Darmstadt.add_node("137_D51",   pos=[68.5,1988],signal=5)
 Darmstadt.add_node("137_D52",   pos=[68,1985],signal=6)
 Darmstadt.add_node("137_D41",   pos=[69.5,1991],signal=4)
-Darmstadt.add_node("137_E1",    pos=[33,2005])
-Darmstadt.add_node("137_E2",    pos=[34,1965])
+Darmstadt.add_node("137_E1",    pos=[33,2005],ende=True)
+Darmstadt.add_node("137_E2",    pos=[34,1965],ende=True)
 Darmstadt.add_node("137_E3",    pos=[53,1960])
-Darmstadt.add_node("137_E4",    pos=[68,1977.5])
+Darmstadt.add_node("137_E4",    pos=[68,1977.5],ende=True)
 Darmstadt.add_node("137_E5",    pos=[64,2008])
 Darmstadt.add_edge("137_D1115","137_D122",weight=1)
 Darmstadt.add_edge("137_D1115","137_D121",weight=1)
@@ -70,10 +70,10 @@ Darmstadt.add_edge("137_D71","137_D101",weight=1)
 Darmstadt.add_node("170_D111",pos=[368,1977.5],signal=11)
 Darmstadt.add_node("170_D61.1",pos=[374,1978.5],signal=3)
 Darmstadt.add_node("170_D51",pos=[374,1979],signal=1)
-Darmstadt.add_node("170_D71",pos=[372,1975],signal=6)
-Darmstadt.add_node("170_D91.1",pos=[371,1975],signal=8)
+Darmstadt.add_node("170_D71",pos=[372,1975],signal=6)#starter = True
+Darmstadt.add_node("170_D91.1",pos=[371,1975],signal=8)#starter=True
 Darmstadt.add_node("170_E1",pos=[368,1979])
-Darmstadt.add_node("170_E2",pos=[370,1975])
+Darmstadt.add_node("170_E2",pos=[370,1975]) # ende=True
 Darmstadt.add_node("170_E3",pos=[376,1977.5])
 Darmstadt.add_edge("137_E4","170_D111",weight=1)
 Darmstadt.add_edge("170_E1","137_D51",weight=1)
@@ -85,6 +85,7 @@ Darmstadt.add_edge("170_D51","170_E1",weight=1)
 Darmstadt.add_edge("170_D61.1","170_E2",weight=1)
 Darmstadt.add_edge("170_D91.1","170_E1",weight=1)
 Darmstadt.add_edge("170_D71","170_E3",weight=1)
+#Darmstadt.add_edge("170_E2","136",weight=1)
 
 
 #169
@@ -98,18 +99,18 @@ Darmstadt.add_edge("169_D51","170_D61.1",weight=1)
 Darmstadt.add_node("147_D121",pos=[825,2012.5],signal=25)
 Darmstadt.add_node("147_D112",pos=[825,2011.5],signal=22)
 Darmstadt.add_node("147_D111",pos=[825,2010.5],signal=21)
-Darmstadt.add_node("147_D91.1",pos=[840,2001.5],signal=18)
-Darmstadt.add_node("147_D82",pos=[841,2001.5],signal=15)
-Darmstadt.add_node("147_D81",pos=[842,2001.5],signal=14)
+Darmstadt.add_node("147_D91.1",pos=[840,2001.5],signal=18,starter=True)
+Darmstadt.add_node("147_D82",pos=[841,2001.5],signal=15,starter=True)
+Darmstadt.add_node("147_D81",pos=[842,2001.5],signal=14,starter=True)
 Darmstadt.add_node("147_D61",pos=[856,2019.5],signal=12)
 Darmstadt.add_node("147_D53",pos=[856,2020.5],signal=8)
 Darmstadt.add_node("147_D52",pos=[856,2021.5],signal=7)
 Darmstadt.add_node("147_D51",pos=[856,2022.5],signal=6)
-Darmstadt.add_node("147_D31.1",pos=[839.5,2030],signal=3)
-Darmstadt.add_node("147_D21",pos=[838.5,2030],signal=1)
-Darmstadt.add_node("147_E1",pos=[841,2030])
+Darmstadt.add_node("147_D31.1",pos=[839.5,2030],signal=3,starter=True)
+Darmstadt.add_node("147_D21",pos=[838.5,2030],signal=1,starter=True)
+Darmstadt.add_node("147_E1",pos=[841,2030],ende=True)
 Darmstadt.add_node("147_E2",pos=[858,2016.5])
-Darmstadt.add_node("147_E3",pos=[838,1999.5])
+Darmstadt.add_node("147_E3",pos=[838,1999.5],ende=True)
 Darmstadt.add_edge("147_D52","169_D51",weight=1)
 Darmstadt.add_edge("147_D53","169_D51",weight=1)
 Darmstadt.add_edge("147_D51","147_E1",weight=1)
@@ -165,12 +166,12 @@ Darmstadt.add_node("142_D24",pos=[1247.5,2135.5],signal=8)
 Darmstadt.add_node("142_D23",pos=[1247.5,2137],signal=7)
 Darmstadt.add_node("142_D22",pos=[1247.5,2138.5],signal=6)
 Darmstadt.add_node("142_D21",pos=[1247.5,2140],signal=5)
-Darmstadt.add_node("142_D11",pos=[1224.5,2155.5],signal=1)
-Darmstadt.add_node("142_D12",pos=[1226,2155],signal=2)
-Darmstadt.add_node("142_D13",pos=[1227.5,2154.5],signal=3)
-Darmstadt.add_node("142_D15",pos=[1227.5,2144],signal=4)
+Darmstadt.add_node("142_D11",pos=[1224.5,2155.5],signal=1,starter=True)
+Darmstadt.add_node("142_D12",pos=[1226,2155],signal=2,starter=True)
+Darmstadt.add_node("142_D13",pos=[1227.5,2154.5],signal=3,starter=True)
+Darmstadt.add_node("142_D15",pos=[1227.5,2144],signal=4,starter=True)
 Darmstadt.add_node("142_E1",pos=[1216.5,2132])
-Darmstadt.add_node("142_E2",pos=[1237,2144])
+Darmstadt.add_node("142_E2",pos=[1237,2144],ende=True)
 Darmstadt.add_node("142_E3",pos=[1247.5,2132.5])
 Darmstadt.add_node("142_E4",pos=[1223,2120.5])
 Darmstadt.add_edge("142_E1","147_D51",weight=1)
@@ -255,15 +256,15 @@ Darmstadt.add_node("10_D13",pos=[843,1484.5],signal=3)
 Darmstadt.add_node("10_D14",pos=[842,1472],signal=4)
 Darmstadt.add_node("10_D21",pos=[849.5,1458],signal=5)
 Darmstadt.add_node("10_D22",pos=[849,1456.5],signal=6)
-Darmstadt.add_node("10_D31",pos=[807,1431.5],signal=7)
-Darmstadt.add_node("10_D32",pos=[805.5,1432.5],signal=8)
-Darmstadt.add_node("10_D33",pos=[808.5,1440.5],signal=9)
+Darmstadt.add_node("10_D31",pos=[807,1431.5],signal=7,starter=True)
+Darmstadt.add_node("10_D32",pos=[805.5,1432.5],signal=8,starter=True)
+Darmstadt.add_node("10_D33",pos=[808.5,1440.5],signal=9,starter=True)
 Darmstadt.add_node("10_D41",pos=[808.5,1463],signal=10)
 Darmstadt.add_node("10_D42",pos=[809,1464.5],signal=11)
-Darmstadt.add_node("10_D43",pos=[797,1463.5],signal=16)
+Darmstadt.add_node("10_D43",pos=[797,1463.5]) #signal 16
 Darmstadt.add_node("10_E1",pos=[846,1472])
 Darmstadt.add_node("10_E2",pos=[849,1455])
-Darmstadt.add_node("10_E3",pos=[805,1440.5])
+Darmstadt.add_node("10_E3",pos=[805,1440.5],ende=True)
 Darmstadt.add_node("10_E4",pos=[809,1466])
 Darmstadt.add_edge("10_D11","10_E4",weight=1)
 Darmstadt.add_edge("10_D12","10_E3",weight=1)
@@ -292,15 +293,15 @@ Darmstadt.add_edge("10_E2","134_A4",weight=1)
 Darmstadt.add_node("97_D51",pos=[700,1526],signal=4)
 Darmstadt.add_node("97_D52",pos=[700,1524.5],signal=5)
 Darmstadt.add_node("97_D61.1",pos=[700,1523],signal=8)
-Darmstadt.add_node("97_D81",pos=[687,1512],signal=12)
-Darmstadt.add_node("97_D82.1",pos=[685,1512.5],signal=13)
+Darmstadt.add_node("97_D81",pos=[687,1512],signal=12,starter=True)
+Darmstadt.add_node("97_D82.1",pos=[685,1512.5],signal=13,starter=True)
 Darmstadt.add_node("97_D111",pos=[666,1524.5],signal=17)
 Darmstadt.add_node("97_D112",pos=[667,1527],signal=18)
 Darmstadt.add_node("97_D121.1",pos=[668,1529],signal=22)
-Darmstadt.add_node("97_D21.1",pos=[682,1539.5],signal=1)
-Darmstadt.add_node("97_E1",pos=[684.5,1539.5])
+Darmstadt.add_node("97_D21.1",pos=[682,1539.5],signal=1,starter=True)
+Darmstadt.add_node("97_E1",pos=[684.5,1539.5],ende=True)
 Darmstadt.add_node("97_E2",pos=[700,1526.5])
-Darmstadt.add_node("97_E3",pos=[682.5,1512.5])
+Darmstadt.add_node("97_E3",pos=[682.5,1512.5],ende=True)
 Darmstadt.add_node("97_E4",pos=[668,1532])
 Darmstadt.add_edge("97_D51","97_E4",weight=1)
 Darmstadt.add_edge("97_D51","97_E1",weight=1)
@@ -325,9 +326,9 @@ Darmstadt.add_edge("97_E4","96_D22",weight=1)
 # 96
 Darmstadt.add_node("96_D21",pos=[488,1581.5],signal=1)
 Darmstadt.add_node("96_D22",pos=[487,1579.5],signal=2)
-Darmstadt.add_node("96_D31",pos=[459.5,1572.5],signal=3)
-Darmstadt.add_node("96_D32",pos=[457.5,1573.5],signal=4)
-Darmstadt.add_node("96_D33",pos=[455.5,1574.5],signal=5)
+Darmstadt.add_node("96_D31",pos=[459.5,1572.5],signal=3,starter=True)
+Darmstadt.add_node("96_D32",pos=[457.5,1573.5],signal=4,starter=True)
+Darmstadt.add_node("96_D33",pos=[455.5,1574.5],signal=5,starter=True)
 Darmstadt.add_node("96_D41",pos=[424.5,1590],signal=6)
 Darmstadt.add_node("96_D42",pos=[425.5,1592],signal=7)
 Darmstadt.add_node("96_E2",pos=[487,1576])
@@ -351,9 +352,9 @@ Darmstadt.add_node("95_D12",pos=[325.5,1643.5],signal=2)
 Darmstadt.add_node("95_D20",pos=[364.5,1615],signal=3)
 Darmstadt.add_node("95_D21",pos=[364,1613],signal=4)
 Darmstadt.add_node("95_D22",pos=[349,1616.5],signal=5)
-Darmstadt.add_node("95_V42",pos=[311.5,1624],signal=14)
-Darmstadt.add_node("95_E3",pos=[324,1607])
-Darmstadt.add_node("95_E4",pos=[311.5,1626])
+Darmstadt.add_node("95_V42",pos=[311.5,1624],signal=14,starter=True)
+Darmstadt.add_node("95_E3",pos=[324,1607],ende=True)
+Darmstadt.add_node("95_E4",pos=[311.5,1626],ende=True)
 Darmstadt.add_edge("95_D12","96_D41",weight=1)
 Darmstadt.add_edge("95_D12","96_D42",weight=1)
 Darmstadt.add_edge("95_D20","136_D21",weight=1)
@@ -365,8 +366,8 @@ Darmstadt.add_edge("95_D21","95_E4",weight=1)
 
 # 134
 Darmstadt.add_node("134_E4",pos=[947,1428])
-Darmstadt.add_node("134_D11",pos=[955.5,1435],signal=1)
-Darmstadt.add_node("134_D31",pos=[954,1411],signal=2)
+Darmstadt.add_node("134_D11",pos=[955.5,1435],signal=1,starter=True)
+Darmstadt.add_node("134_D31",pos=[954,1411],signal=2,starter=True)
 Darmstadt.add_node("134_E2",pos=[966,1423])
 Darmstadt.add_node("134_A4",pos=[946,1426.5])
 Darmstadt.add_node("134_A2",pos=[965,1424.5])
@@ -384,12 +385,12 @@ Darmstadt.add_edge("134_E2","9_D41",weight=1)
 
 Darmstadt.add_node("9_E4",pos=[1097,1391])
 Darmstadt.add_node("9_D41",pos=[1098,1389],signal=2)
-Darmstadt.add_node("9_D21",pos=[1121,1387.5],signal=1)
-Darmstadt.add_node("9_E2",pos=[1120.5,1385.5])
+Darmstadt.add_node("9_D21",pos=[1121,1387.5],signal=1,starter=True)
+Darmstadt.add_node("9_E2",pos=[1120.5,1385.5],ende=True)
 Darmstadt.add_node("9_D11",pos=[1108.5,1399.5])
 Darmstadt.add_node("9_D31",pos=[1109.5,1377])
 Darmstadt.add_node("9_E1",pos=[1110,1399])
-Darmstadt.add_node("9_E3",pos=[1108,1376])
+Darmstadt.add_node("9_E3",pos=[1108,1376],ende=True)
 Darmstadt.add_edge("9_D41","9_E2",weight=1)
 Darmstadt.add_edge("9_D21","9_E4",weight=1)
 Darmstadt.add_edge("9_D41","9_E1",weight=1)
@@ -408,7 +409,7 @@ Darmstadt.add_edge("9_E1","8_D31",weight=1)
 Darmstadt.add_edge("9_E1","8_D32",weight=1)
 
 # 144
-Darmstadt.add_node("144_D11.1",pos=[1667.5,2335],signal=1)
+Darmstadt.add_node("144_D11.1",pos=[1667.5,2335],signal=1,starter=True)
 Darmstadt.add_node("144_D21",pos=[1694.5,2347],signal=2)
 Darmstadt.add_node("144_D22",pos=[1684,2335],signal=4) 
 Darmstadt.add_node("144_V30",pos=[1690.5,2320.5],signal=6)#1703.5,2326.5
@@ -419,7 +420,7 @@ Darmstadt.add_node("144_D42",pos=[1666.5,2326],signal=12)#1676.5,2331
 Darmstadt.add_node("144_E4",pos=[1663,2326])
 Darmstadt.add_node("144_E3",pos=[1685,2320.5])
 Darmstadt.add_node("144_E2",pos=[1690,2335])
-Darmstadt.add_node("144_E1",pos=[1669,2336])
+Darmstadt.add_node("144_E1",pos=[1669,2336],ende=True)
 Darmstadt.add_edge("144_D11.1","144_E4",weight=1)
 Darmstadt.add_edge("144_D11.1","144_E3",weight=1)
 Darmstadt.add_edge("144_D11.1","144_E2",weight=1)
@@ -442,13 +443,13 @@ Darmstadt.add_edge("144_E3","90_D22",weight=1)
 
 # 146
 Darmstadt.add_node("146_D42",pos=[2373,2335],signal=12)
-Darmstadt.add_node("146_D11",pos=[2391.5,2343.5],signal=1)
-Darmstadt.add_node("146_D12",pos=[2400.5,2352.5],signal=4)
+Darmstadt.add_node("146_D11",pos=[2391.5,2343.5],signal=1,starter=True)
+Darmstadt.add_node("146_D12",pos=[2400.5,2352.5],signal=4,starter=True)
 Darmstadt.add_node("146_D31",pos=[2376,2326.5],signal=7)
 Darmstadt.add_node("146_D32",pos=[2374,2327.5],signal=9)
 Darmstadt.add_node("146_E1",pos=[2375.5,2338])
 Darmstadt.add_node("146_E2",pos=[2372,2328.5])
-Darmstadt.add_node("146_E3",pos=[2395.5,2343.5])
+Darmstadt.add_node("146_E3",pos=[2395.5,2343.5],ende=True)
 Darmstadt.add_edge("146_D11","146_E1",weight=1)
 Darmstadt.add_edge("146_D12","146_E2",weight=1)
 Darmstadt.add_edge("146_D31","146_E3",weight=1)
@@ -465,12 +466,12 @@ Darmstadt.add_edge("146_E2","70_D13",weight=1)
 Darmstadt.add_node("90_D21",pos=[1476.5,1616.5],signal=1)
 Darmstadt.add_node("90_D22",pos=[1479,1620],signal=2)
 Darmstadt.add_node("90_V51",pos=[1496.5,1600],signal=5)
-Darmstadt.add_node("90_D81",pos=[1471.5,1594.5],signal=6)
+Darmstadt.add_node("90_D81",pos=[1471.5,1594.5],signal=6,starter=True)
 Darmstadt.add_node("90_V112",pos=[1453,1609],signal=1)
 Darmstadt.add_node("90_V111",pos=[1452.5,1608],signal=1)
 Darmstadt.add_node("90_E1",pos=[1481.5,1616.5])
 Darmstadt.add_node("90_E2",pos=[1496.5,1597.5])
-Darmstadt.add_node("90_E3",pos=[1469,1594.5])#1695
+Darmstadt.add_node("90_E3",pos=[1469,1594.5],ende=True)#1695
 Darmstadt.add_node("90_E4",pos=[1453,1611])
 Darmstadt.add_edge("90_E4","8_D21",weight=1)
 Darmstadt.add_edge("90_E4","8_D22",weight=1)
@@ -497,10 +498,10 @@ Darmstadt.add_node("69_D116",pos=[1624,1572.5],signal=13)
 Darmstadt.add_node("69_D115",pos=[1623,1569.5],signal=14)
 Darmstadt.add_node("69_V51",pos=[1674.5,1557.5],signal=1)
 Darmstadt.add_node("69_V52",pos=[1673,1556],signal=2)
-Darmstadt.add_node("69_V84",pos=[1652.5,1537],signal=6)
-Darmstadt.add_node("69_V83",pos=[1654,1537],signal=7)
+Darmstadt.add_node("69_V84",pos=[1652.5,1537],signal=6,starter=True)
+Darmstadt.add_node("69_V83",pos=[1654,1537],signal=7,starter=True)
 Darmstadt.add_node("69_E2",pos=[1671.5,1554.5])
-Darmstadt.add_node("69_E3",pos=[1650,1537])
+Darmstadt.add_node("69_E3",pos=[1650,1537],ende=True)
 Darmstadt.add_node("69_E4",pos=[1625,1575])
 Darmstadt.add_edge("69_E4","90_V51",weight=1)
 Darmstadt.add_edge("69_D115","69_E3",weight=1)
@@ -519,13 +520,13 @@ Darmstadt.add_node("70_D12",pos=[1962.5,1469.5],signal=2)
 Darmstadt.add_node("70_D13",pos=[1964,1469],signal=3)
 Darmstadt.add_node("70_D21",pos=[1982,1443.5],signal=4)
 Darmstadt.add_node("70_D22",pos=[1971,1447.5],signal=5)
-Darmstadt.add_node("70_D31",pos=[1957,1441],signal=6)
-Darmstadt.add_node("70_D32",pos=[1955.5,1441.5],signal=7)
+Darmstadt.add_node("70_D31",pos=[1957,1441],signal=6,starter=True)
+Darmstadt.add_node("70_D32",pos=[1955.5,1441.5],signal=7,starter=True)
 Darmstadt.add_node("70_D41",pos=[1937,1460],signal=8)
 Darmstadt.add_node("70_D42",pos=[1949,1457],signal=9)
 Darmstadt.add_node("70_E1",pos=[1967,1470])
-Darmstadt.add_node("70_E2",pos=[1971,1445])
-Darmstadt.add_node("70_E3",pos=[1954,1442])
+Darmstadt.add_node("70_E2",pos=[1971,1445],ende=True)
+Darmstadt.add_node("70_E3",pos=[1954,1442],ende=True)
 Darmstadt.add_node("70_E4",pos=[1937,1464])
 Darmstadt.add_edge("70_E4","69_V51",weight=1)
 Darmstadt.add_edge("70_E4","69_V52",weight=1)
@@ -542,26 +543,43 @@ Darmstadt.add_edge("70_D32","70_E1",weight=1)
 Darmstadt.add_edge("70_D41","70_E2",weight=1)
 Darmstadt.add_edge("70_D41","70_E3",weight=1)
 Darmstadt.add_edge("70_D42","70_E1",weight=1)
+Darmstadt.add_edge("70_E2","37_D21",weight=1)
+Darmstadt.add_edge("70_E2","37_D22.1",weight=1)
+
 
 #nx.write_edgelist(Darmstadt,".\\TestDarmstadt.edgelist",data=['weight','signal'])
 #nx.write_graphml_lxml(Darmstadt, ".\\TestDarmstadt.graphml", prettyprint=True)
 #nx.write_gml(Darmstadt,".\\TestDarmstadt.gml")
 
-"""
 
 # 37
-Darmstadt.add_node("37_D111",pos=[],signal=16)
-Darmstadt.add_node("37_D112",pos=[],signal=17)
-Darmstadt.add_node("37_D21",pos=[],signal=9)
-Darmstadt.add_node("37_D22.1",pos=[],signal=10)
-Darmstadt.add_node("37_D51",pos=[],signal=20)
-Darmstadt.add_node("37_D52",pos=[],signal=21)
-Darmstadt.add_node("37_D81",pos=[],signal=13)
-Darmstadt.add_node("37_D82.1",pos=[],signal=14)
-Darmstadt.add_node("37_E1",pos=[])
-Darmstadt.add_node("37_E2",pos=[])
-Darmstadt.add_node("37_E3",pos=[])
-Darmstadt.add_node("37_E4",pos=[])
+Darmstadt.add_node("37_D111",pos=[2122.5,1311],signal=16)
+Darmstadt.add_node("37_D112",pos=[2121,1312.5],signal=17)
+Darmstadt.add_node("37_D21",pos=[2126.5,1325.5],signal=9)
+Darmstadt.add_node("37_D22.1",pos=[2128.5,1326.5],signal=10)
+Darmstadt.add_node("37_D51",pos=[2146.5,1325.5],signal=20,starter=True)
+Darmstadt.add_node("37_D52",pos=[2146.5,1323.5],signal=21,starter=True)
+Darmstadt.add_node("37_D81",pos=[2137.5,1307],signal=13,starter=True)
+Darmstadt.add_node("37_D82.1",pos=[2136,1306],signal=14,starter=True)
+Darmstadt.add_node("37_E1",pos=[2128.5,1326.5])
+Darmstadt.add_node("37_E2",pos=[2146.5,1321.5],ende=True)
+Darmstadt.add_node("37_E3",pos=[2134.5,1306],ende=True)
+Darmstadt.add_node("37_E4",pos=[2120,1314],ende=True)
+Darmstadt.add_edge("37_D112","37_E1",weight=1)
+Darmstadt.add_edge("37_D111","37_E2",weight=1)
+Darmstadt.add_edge("37_D111","37_E3",weight=1)
+Darmstadt.add_edge("37_D82.1","37_E4",weight=1)
+Darmstadt.add_edge("37_D81","37_E1",weight=1)
+Darmstadt.add_edge("37_D81","37_E2",weight=1)
+Darmstadt.add_edge("37_D52","37_E3",weight=1)
+Darmstadt.add_edge("37_D51","37_E1",weight=1)
+Darmstadt.add_edge("37_D51","37_E4",weight=1)
+Darmstadt.add_edge("37_D21","37_E3",weight=1)
+Darmstadt.add_edge("37_D21","37_E4",weight=1)
+Darmstadt.add_edge("37_D22.1","37_E2",weight=1)
+Darmstadt.add_edge("37_E1","70_D21",weight=1)
+Darmstadt.add_edge("37_E1","70_D21",weight=1)
+"""
 
 # 61
 Darmstadt.add_node("61_D23",pos=[],signal=3)
@@ -981,10 +999,9 @@ Darmstadt.add_node("6_D26",pos=[],signal=26)
 
 # 81
 #Darmstadt.add_node("81_D11")
-
 """
 
-
+import re
 import pygsp as ps 
 n_eigenvectors = 7
 
@@ -1006,7 +1023,7 @@ ax.spines['top'].set_visible(False)
 ax.spines['bottom'].set_visible(False)
 plt.tight_layout()
 plt.show()
-"""
+
 fig2,ax3 = plt.subplots(1,2,figsize=(18,14))
 
 D_g = ps.graphs.Graph(A) 
@@ -1037,6 +1054,161 @@ for k in range(10):
 plt.show()
 plt.imshow(D_g.W.toarray())
 plt.show()
+
+import scipy.stats as ss
+
+def gen_signal(Graph, sigma=0.1, kind="ball", size="big"):
+    if kind == "ball" and size == "big":
+        #sources = [2, 6, 74, 41, 20, 32, 31, 9, 10, 56, 17, 16, 18]
+        sources = np.random.randint(0,220,(int(Graph.n_vertices*0.69)))
+    elif kind == "line" and size == "big":
+        sources = [20, 41, 74, 6, 16, 45, 68, 57, 15, 30, 11, 23, 43, 24]#,
+                   #48, 12, 21, 13, 69, 37, 7, 3, 63]
+    elif kind == "idk":
+        sources = [19, 42, 45, 46, 66, 68, 70, 57, 15, 30, 65, 71]
+    signal = np.zeros(Graph.n_vertices)
+    signal[sources] = np.random.randint(0, 20, (np.shape(sources)))#1
+    np.random.seed(43)
+    noise = np.random.normal(0, sigma, Graph.n_vertices)
+    #noise[noise <= 0] = 0
+    #noise = np.arange(-15, 16)
+    noiseU, noiseL = noise + 0.5, noise - 0.5
+    prob = ss.norm.cdf(noiseU, scale=9) - ss.norm.cdf(noiseL, scale=9)
+    prob = prob/prob.sum()
+    noisy = signal + np.random.choice(noise, size=Graph.n_vertices, p=prob) 
+    #noisy = signal + np.random.normal(0, sigma, Graph.n_vertices)
+    noisy[noisy <= 0] = 0
+    return noisy, sources, signal
+
+
+nosilent = nx.get_node_attributes(Darmstadt,'signal')
+sigIndx = [k for k,i in enumerate(Darmstadt.nodes().keys()) if i in nosilent]
+silent = [k for k in range(D_g.n_vertices) if k not in sigIndx]
+blind_spots = np.zeros(D_g.n_vertices)
+blind_spots[silent] = 1
+mask = np.ones(D_g.n_vertices)
+mask[silent] = 0
+
+ende = nx.get_node_attributes(Darmstadt,'ende')
+sigIEnde = [k for k,i in enumerate(Darmstadt.nodes().keys()) if i  in ende]
+
+starter = nx.get_node_attributes(Darmstadt,'starter')
+sigIStart = [k for k,i in enumerate(Darmstadt.nodes().keys()) if i in starter]
+
+
+
+def makeSignal(day, signalDictionary, signalList, Graph):
+    y = np.zeros((Graph.n_vertices,1440))
+    data = np.load('./Darmstadt_verkehr/SensorData_Sensor_Big_{}_Counts.npz'.format(day),allow_pickle=True)['arr_0'].reshape((1,))[0]
+    for k, i in enumerate(signalDictionary):
+        strID = re.split('_',i)[0]
+        if len(strID) < 2:
+            strID = 'A00' + strID
+        elif len(strID) < 3:
+            strID = 'A0' + strID
+        else: 
+            strID = 'A' + strID
+        y[signalList[k],:] = data[strID]['signals'][:,signalDictionary[i]-1]
+    return y 
+
+sigma = 0.1
+tim = 720
+
+datasigns = makeSignal('16_1_2020', nosilent, sigIndx, D_g)
+#n_max=np.amax(datasigns[:,tim:tim+1])
+measure_k = datasigns[:,tim] #/n_max
+measure_k1 = datasigns[:,tim+1]#/n_max
+
+ym0 = np.copy(measure_k)
+ys0 = np.copy(measure_k1) 
+yd = measure_k1 - measure_k
+
+DD = nx.incidence_matrix(Darmstadt,oriented=True)
+Dm = np.maximum(DD.todense(),np.zeros((D_g.n_vertices,D_g.n_edges)))
+Dp = -np.minimum(DD.todense(),np.zeros((D_g.n_vertices,D_g.n_edges)))
+Dx = np.row_stack((Dm,Dp,Dp,-Dp,-Dm))
+Ds = np.row_stack((np.zeros((3*D_g.n_vertices,D_g.n_edges)),Dp,-Dm))
+
+import cvxpy as cp 
+x = cp.Variable(D_g.n_edges)
+s = cp.Variable(D_g.n_edges)
+ym0[sigIEnde] = 0
+ys0[sigIStart] = 0
+y_bar = np.hstack((measure_k1,measure_k,yd,-ym0,-ys0))
+problem = cp.Minimize(cp.norm1(Dx*x + Ds*s - y_bar) + 0.001*cp.norm1(x) + 0.005*cp.norm1(s))
+prob = cp.Problem(problem)
+prob.solve(solver=cp.GUROBI,verbose=True)
+original_signal = np.squeeze(np.asarray(np.dot(Dp,x.value-s.value))) + np.squeeze(np.asarray(np.dot(-Dm,s.value)))*blind_spots
+
+np.random.seed(43)
+noise = np.random.normal(0, sigma, D_g.n_vertices)
+noiseU, noiseL = noise + 0.5, noise - 0.5
+prob = ss.norm.cdf(noiseU, scale=9) - ss.norm.cdf(noiseL, scale=9)
+prob = prob/prob.sum()
+noisy = original_signal + noise#np.random.choice(noise, size=D_g.n_vertices, p=prob) 
+    
+
+y1 = np.copy(measure_k) + np.random.normal(0, sigma, D_g.n_vertices)
+y2 = np.copy(measure_k1) + np.random.normal(0, sigma, D_g.n_vertices)
+y1[y1<0] = 0
+y2[y2<0] = 0
+yd = y2 - y1
+ym = np.copy(y1)
+ys = np.copy(y2)
+ym[sigIEnde] = 0
+ys[sigIStart] = 0
+x1 = cp.Variable(D_g.n_edges)
+s1 = cp.Variable(D_g.n_edges)
+
+y_bar = np.hstack((y2,y1,yd,-ym,-ys))
+problem2 = cp.Minimize(cp.norm1(Dx*x1 + Ds*s1 - y_bar) + 0.001*cp.norm1(x1) + 0.005*cp.norm1(s1))
+prob2 = cp.Problem(problem2)
+prob2.solve(solver=cp.GUROBI,verbose=True)
+
+original_signal2 = np.squeeze(np.asarray(np.dot(Dp,x1.value-s1.value))) + np.squeeze(np.asarray(np.dot(-Dm,s1.value)))*blind_spots
+
+import pyunlocbox 
+gamma = 3 
+dd = pyunlocbox.functions.dummy()
+rr = pyunlocbox.functions.norm_l1()
+ff = pyunlocbox.functions.norm_l2(w=mask,y=y1, lambda_=gamma)
+LL = D_g.D.T.toarray()
+step = 0.999 / (1 + np.linalg.norm(LL))
+solver= pyunlocbox.solvers.mlfbf(L=LL,step=step)
+x0 = y1.copy() 
+prob1 = pyunlocbox.solvers.solve([dd,rr,ff],solver=solver,x0=x0,rtol=0,maxit=1000)
+
+
+def sigplot():
+    fig,ax=plt.subplots(2,1)
+    ax[0].plot(original_signal,marker="x",linestyle=":",label=r'$\mathbf{y}_{original}$')
+    ax[0].plot(noisy,marker=".",linestyle=":",label=r'$\mathbf{y} + \sigma^2$')
+    ax[0].plot(original_signal2,marker=".",linestyle="-",label=r'$\hat{\mathbf{y}}$')
+    ax[0].plot(prob1['sol'],marker="o",linestyle="-",label=r'$\hat{\mathbf{y}}_{Lap}$')
+    #ax[0].plot(np.squeeze(np.asarray(np.dot(Dp,x.value-s.value))),marker=".",label=r'$\mathbf{D}_x \mathbf{x}-\mathbf{s}$')
+    #ax[0].plot(np.squeeze(np.asarray(np.dot(-Dp,s.value*silent))),marker="s",label=r'$\mathbf{D}_x \mathbf{x}')
+    #plt.plot(np.squeeze(np.asarray(np.dot(Dp,x.value+s.value))),marker="v")
+    #plt.show()
+    ax[1].plot(x.value,marker="x")
+    ax[1].plot(s.value,marker=".")
+    fig.legend()
+    fig.tight_layout()
+    plt.show()
+
+#
+
+sigplot()
+
+fig,ax = plt.subplots(2,1)
+D_g.plot(original_signal,vertex_size=30,ax=ax[0],title="Ground truth signal")
+ax[0].set_axis_off()
+ax[1].plot(original_signal,marker="x",color='#a142f5',label=r'$\mathbf{y}_{original}$')
+ax[1].spines['right'].set_visible(False)
+ax[1].spines['top'].set_visible(False)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
 """
 G = nx.DiGraph()
 G.add_node("0",pos=[4,8])
@@ -1148,6 +1320,6 @@ ax2[1,2].set_xlabel(r'graph frequency $\lambda$')
 
 plt.show()
 
-
+"""
 
 
