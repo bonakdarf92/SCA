@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt 
 import numpy as np
 plt.set_cmap('rainbow')
-
+plt.rcParams.update({'font.size':18})
 Darmstadt = nx.DiGraph()
 # A137
 Darmstadt.add_node("137_D1115", pos=[30,2000],signal=23,starter=True)
@@ -1111,103 +1111,168 @@ def makeSignal(day, signalDictionary, signalList, Graph):
         y[signalList[k],:] = data[strID]['signals'][:,signalDictionary[i]-1]
     return y 
 
-sigma = 0.1
-tim = 720
+
+import cvxpy as cp 
+x = cp.Variable(D_g.n_edges)
+s = cp.Variable(D_g.n_edges)
+
+import pyunlocbox 
+gamma = 3 
+import tqdm 
 
 datasigns = makeSignal('16_1_2020', nosilent, sigIndx, D_g)
-#n_max=np.amax(datasigns[:,tim:tim+1])
-measure_k = datasigns[:,tim] #/n_max
-measure_k1 = datasigns[:,tim+1]#/n_max
-
-ym0 = np.copy(measure_k)
-ys0 = np.copy(measure_k1) 
-yd = measure_k1 - measure_k
-
 DD = nx.incidence_matrix(Darmstadt,oriented=True)
 Dm = np.maximum(DD.todense(),np.zeros((D_g.n_vertices,D_g.n_edges)))
 Dp = -np.minimum(DD.todense(),np.zeros((D_g.n_vertices,D_g.n_edges)))
 Dx = np.row_stack((Dm,Dp,Dp,-Dp,-Dm))
 Ds = np.row_stack((np.zeros((3*D_g.n_vertices,D_g.n_edges)),Dp,-Dm))
+mse = np.zeros((3,11))
+mae = np.zeros((3,11))
+mse_t1, mse_t2, mse_t3 = 0,0,0
+mae_t1, mae_t2, mae_t3 = 0,0,0
+noise_level = 1/(10**(np.arange(-10,45,5)/20))
+counter = 0
+for sigm in range(11):
+    sigma = noise_level[sigm]
+    print("Sigma level {}".format(sigma))
+    for t in tqdm.trange(700,750):
+        tim = t
+        #n_max=np.amax(datasigns[:,tim:tim+1])
+        measure_k = datasigns[:,tim] #/n_max
+        measure_k1 = datasigns[:,tim+1]#/n_max
+        if np.isnan(measure_k1).any():
+            break
+        ym0 = np.copy(measure_k)
+        ys0 = np.copy(measure_k1) 
+        yd = measure_k1 - measure_k
 
-import cvxpy as cp 
-x = cp.Variable(D_g.n_edges)
-s = cp.Variable(D_g.n_edges)
-ym0[sigIEnde] = 0
-ys0[sigIStart] = 0
-y_bar = np.hstack((measure_k1,measure_k,yd,-ym0,-ys0))
-problem = cp.Minimize(cp.norm1(Dx*x + Ds*s - y_bar) + 0.001*cp.norm1(x) + 0.005*cp.norm1(s))
-prob = cp.Problem(problem)
-prob.solve(solver=cp.GUROBI,verbose=True)
-original_signal = np.squeeze(np.asarray(np.dot(Dp,x.value-s.value))) + np.squeeze(np.asarray(np.dot(-Dm,s.value)))*blind_spots
+        ym0[sigIEnde] = 0
+        ys0[sigIStart] = 0
+        y_bar = np.hstack((measure_k1,measure_k,yd,-ym0,-ys0))
+        problem = cp.Minimize(cp.norm1(Dx*x + Ds*s - y_bar) + 0.001*cp.norm1(x) + 0.005*cp.norm1(s))
+        prob = cp.Problem(problem)
+        prob.solve(solver=cp.GUROBI,verbose=False,warmstart=True)
+        original_signal = np.squeeze(np.asarray(np.dot(Dp,x.value-s.value))) + np.squeeze(np.asarray(np.dot(-Dm,s.value)))*blind_spots
 
-np.random.seed(43)
-noise = np.random.normal(0, sigma, D_g.n_vertices)
-noiseU, noiseL = noise + 0.5, noise - 0.5
-prob = ss.norm.cdf(noiseU, scale=9) - ss.norm.cdf(noiseL, scale=9)
-prob = prob/prob.sum()
-noisy = original_signal + noise#np.random.choice(noise, size=D_g.n_vertices, p=prob) 
-    
+        #np.random.seed(43)
+        noise = np.random.normal(0, sigma, D_g.n_vertices)
+        #noiseU, noiseL = noise + 0.5, noise - 0.5
+        #prob = ss.norm.cdf(noiseU, scale=9) - ss.norm.cdf(noiseL, scale=9)
+        #prob = prob/prob.sum()
+        noisy = original_signal + noise#np.random.choice(noise, size=D_g.n_vertices, p=prob) 
+            
 
-y1 = np.copy(measure_k) + np.random.normal(0, sigma, D_g.n_vertices)
-y2 = np.copy(measure_k1) + np.random.normal(0, sigma, D_g.n_vertices)
-y1[y1<0] = 0
-y2[y2<0] = 0
-yd = y2 - y1
-ym = np.copy(y1)
-ys = np.copy(y2)
-ym[sigIEnde] = 0
-ys[sigIStart] = 0
-x1 = cp.Variable(D_g.n_edges)
-s1 = cp.Variable(D_g.n_edges)
+        y1 = np.copy(measure_k) + np.random.normal(0, sigma, D_g.n_vertices)
+        y2 = np.copy(measure_k1) + np.random.normal(0, sigma, D_g.n_vertices)
+        y1[y1<0] = 0
+        y2[y2<0] = 0
+        yd = y2 - y1
+        ym = np.copy(y1)
+        ys = np.copy(y2)
+        ym[sigIEnde] = 0
+        ys[sigIStart] = 0
+        x1 = cp.Variable(D_g.n_edges)
+        s1 = cp.Variable(D_g.n_edges)
 
-y_bar = np.hstack((y2,y1,yd,-ym,-ys))
-problem2 = cp.Minimize(cp.norm1(Dx*x1 + Ds*s1 - y_bar) + 0.001*cp.norm1(x1) + 0.005*cp.norm1(s1))
-prob2 = cp.Problem(problem2)
-prob2.solve(solver=cp.GUROBI,verbose=True)
+        y_bar = np.hstack((y2,y1,yd,-ym,-ys))
+        problem2 = cp.Minimize(cp.norm1(Dx*x1 + Ds*s1 - y_bar) + 0.001*cp.norm1(x1) + 0.005*cp.norm1(s1))
+        prob2 = cp.Problem(problem2)
+        prob2.solve(solver=cp.GUROBI,verbose=False,warmstart=True)
 
-original_signal2 = np.squeeze(np.asarray(np.dot(Dp,x1.value-s1.value))) + np.squeeze(np.asarray(np.dot(-Dm,s1.value)))*blind_spots
+        original_signal2 = np.squeeze(np.asarray(np.dot(Dp,x1.value-s1.value))) + np.squeeze(np.asarray(np.dot(-Dm,s1.value)))*blind_spots
 
-import pyunlocbox 
-gamma = 3 
-dd = pyunlocbox.functions.dummy()
-rr = pyunlocbox.functions.norm_l1()
-ff = pyunlocbox.functions.norm_l2(w=mask,y=y1, lambda_=gamma)
-LL = D_g.D.T.toarray()
-step = 0.999 / (1 + np.linalg.norm(LL))
-solver= pyunlocbox.solvers.mlfbf(L=LL,step=step)
-x0 = y1.copy() 
-prob1 = pyunlocbox.solvers.solve([dd,rr,ff],solver=solver,x0=x0,rtol=0,maxit=1000)
+        dd = pyunlocbox.functions.dummy()
+        rr = pyunlocbox.functions.norm_l1()
+        ff = pyunlocbox.functions.norm_l2(w=mask,y=y1, lambda_=gamma)
+        LL = D_g.D.T.toarray()
+        step = 0.999 / (1 + np.linalg.norm(LL))
+        solver= pyunlocbox.solvers.mlfbf(L=LL,step=step)
+        x0 = y1.copy() 
+        prob1 = pyunlocbox.solvers.solve([dd,rr,ff],solver=solver,x0=x0,rtol=0,maxit=1000,verbosity='NONE')
 
+        rr = pyunlocbox.functions.norm_l2(A=LL, tight=False)
+        step = 0.999 / np.linalg.norm(np.dot(LL.T, LL) + gamma * np.diag(mask), 2)
+        solver = pyunlocbox.solvers.gradient_descent(step=step)
+        x0 = y1.copy()
+        prob2 = pyunlocbox.solvers.solve([rr, ff], solver=solver,x0=x0, rtol=0, maxit=1000,verbosity='NONE')
+        mse_t1 += (np.square(original_signal - prob1['sol'])).mean()
+        mse_t2 += (np.square(original_signal - original_signal2)).mean()
+        mse_t3 += (np.square(original_signal - prob2['sol'])).mean()
+        mae_t1 += np.sum(np.absolute(original_signal - prob1['sol']))
+        mae_t2 += np.sum(np.absolute(original_signal - original_signal2))
+        mae_t3 += np.sum(np.absolute(original_signal - prob2['sol']))
 
-def sigplot():
-    fig,ax=plt.subplots(2,1)
-    ax[0].plot(original_signal,marker="x",linestyle=":",label=r'$\mathbf{y}_{original}$')
-    ax[0].plot(noisy,marker=".",linestyle=":",label=r'$\mathbf{y} + \sigma^2$')
-    ax[0].plot(original_signal2,marker=".",linestyle="-",label=r'$\hat{\mathbf{y}}$')
-    ax[0].plot(prob1['sol'],marker="o",linestyle="-",label=r'$\hat{\mathbf{y}}_{Lap}$')
-    #ax[0].plot(np.squeeze(np.asarray(np.dot(Dp,x.value-s.value))),marker=".",label=r'$\mathbf{D}_x \mathbf{x}-\mathbf{s}$')
-    #ax[0].plot(np.squeeze(np.asarray(np.dot(-Dp,s.value*silent))),marker="s",label=r'$\mathbf{D}_x \mathbf{x}')
-    #plt.plot(np.squeeze(np.asarray(np.dot(Dp,x.value+s.value))),marker="v")
-    #plt.show()
-    ax[1].plot(x.value,marker="x")
-    ax[1].plot(s.value,marker=".")
-    fig.legend()
-    fig.tight_layout()
-    plt.show()
-
-#
-
-sigplot()
-
+        counter += 1
+    mse[0,sigm] = mse_t1 / counter
+    mse[1,sigm] = mse_t2 / counter
+    mse[2,sigm] = mse_t3 / counter
+    mae[0,sigm] = mae_t1 / counter
+    mae[1,sigm] = mae_t2 / counter
+    mae[2,sigm] = mae_t3 / counter
+    mse_t1, mse_t2, mse_t3 = 0,0,0
+    mae_t1, mae_t2, mae_t3 = 0,0,0
+    counter = 0
 fig,ax = plt.subplots(2,1)
-D_g.plot(original_signal,vertex_size=30,ax=ax[0],title="Ground truth signal")
-ax[0].set_axis_off()
-ax[1].plot(original_signal,marker="x",color='#a142f5',label=r'$\mathbf{y}_{original}$')
-ax[1].spines['right'].set_visible(False)
-ax[1].spines['top'].set_visible(False)
-plt.legend()
-plt.tight_layout()
+ax[0].plot(np.arange(-10,45,5),mse[0,:],label="Total")
+ax[0].plot(np.arange(-10,45,5),mse[1,:],label="Proposed")
+ax[0].plot(np.arange(-10,45,5),mse[2,:],label="Laplacian")
+ax[1].plot(np.arange(-10,45,5),mae[0,:],label="Total")
+ax[1].plot(np.arange(-10,45,5),mae[1,:],label="Proposed")
+ax[1].plot(np.arange(-10,45,5),mae[2,:],label="Laplacian")
 plt.show()
+
+# def sigplot():
+#     fig,ax=plt.subplots(3,1)
+#     ax[0].plot(original_signal,marker="o",color='#a142f5',linestyle=":",label=r'$\mathbf{y}_{original}$')
+#     ax[0].plot(prob2['sol'],marker=".",color="green",label=r'$\hat{\mathbf{y}}_{TV} $')
+#     ax[1].plot(original_signal,marker="o",color='#a142f5',linestyle=":",label=r'$\mathbf{y}_{original}$')
+#     ax[1].plot(original_signal2,marker="x",color="gold",label=r'$\hat{\mathbf{y}}_{prop}$')
+#     ax[2].plot(original_signal,marker="o",color='#a142f5',linestyle=":",label=r'$\mathbf{y}_{original}$')
+#     ax[2].plot(prob1['sol'],marker="s",color="red",label=r'$\hat{\mathbf{y}}_{Lap}$')
+#     #ax[0].plot(np.squeeze(np.asarray(np.dot(Dp,x.value-s.value))),marker=".",label=r'$\mathbf{D}_x \mathbf{x}-\mathbf{s}$')
+#     #ax[0].plot(np.squeeze(np.asarray(np.dot(-Dp,s.value*silent))),marker="s",label=r'$\mathbf{D}_x \mathbf{x}')
+#     #plt.plot(np.squeeze(np.asarray(np.dot(Dp,x.value+s.value))),marker="v")
+#     #plt.show()
+#     #ax[1].plot(x.value,marker="x")
+#     #ax[1].plot(s.value,marker=".")
+#     ax[0].spines['right'].set_visible(False)
+#     ax[0].spines['top'].set_visible(False)
+#     ax[0].spines['bottom'].set_visible(False)
+#     ax[1].spines['right'].set_visible(False)
+#     ax[1].spines['top'].set_visible(False)
+#     ax[1].spines['bottom'].set_visible(False)
+#     ax[2].spines['right'].set_visible(False)
+#     ax[2].spines['top'].set_visible(False)
+#     for k,i in enumerate(mask):
+#         if i == 0:
+#             ax[0].axvline(k, ymin=0,ymax=14,color="black",linestyle="-.",alpha=0.3)
+#             ax[1].axvline(k, ymin=0,ymax=14,color="black",linestyle="-.",alpha=0.3)
+#             ax[2].axvline(k, ymin=0,ymax=14,color="black",linestyle="-.",alpha=0.3)
+#     ax[0].set_xlim(0,233)
+#     ax[1].set_xlim(0,233)
+#     ax[2].set_xlim(0,233)
+#     ax[2].set_xlabel("Vertex index k")
+#     ax[1].set_ylabel("Measured cars")
+#     ax[0].legend()
+#     ax[1].legend()
+#     ax[2].legend()
+#     fig.suptitle("Comparison graph reconstruction")
+#     fig.tight_layout()
+#     plt.show()
+
+# #
+
+# sigplot()
+
+# fig,ax = plt.subplots(2,1)
+# D_g.plot(original_signal,vertex_size=30,ax=ax[0],title="Ground truth signal")
+# ax[0].set_axis_off()
+# ax[1].plot(original_signal,marker="x",color='#a142f5',label=r'$\mathbf{y}_{original}$')
+# ax[1].spines['right'].set_visible(False)
+# ax[1].spines['top'].set_visible(False)
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
 
 """
 G = nx.DiGraph()
