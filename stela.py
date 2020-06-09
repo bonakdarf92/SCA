@@ -36,7 +36,7 @@ def huber_loss(q,delta=1):
         return delta * (np.abs(q) - 0.5*delta)
 
 
-def stela_lasso(A, y, mu, MaxIter=1000,mode="ls"):
+def stela_lasso(A, y, mu, MaxIter=1000,mode="ls",verbosity=True):
     """
     STELA algorithm solves the following optimization problem:
         min_x 0.5*||y - A * x||^2 + mu * ||x||_1
@@ -96,11 +96,12 @@ def stela_lasso(A, y, mu, MaxIter=1000,mode="ls"):
         np.absolute(f_gradient - np.minimum(np.maximum(f_gradient - x, -mu * np.ones(K)), mu * np.ones(K))),
         np.inf)  # cf. (53) of reference
 
-    '''print initial results'''
-    IterationOutput = "{0:9}|{1:10}|{2:15}|{3:15}|{4:15}"
-    print(IterationOutput.format("Iteration", "stepsize", "objval", "error", "CPU time"))
-    print(
-        IterationOutput.format(0, 'N/A', format(objval[0], '.7f'), format(error[0], '.7f'), format(CPU_time[0], '.7f')))
+    if verbosity:
+        '''print initial results'''
+        IterationOutput = "{0:9}|{1:10}|{2:15}|{3:15}|{4:15}"
+        print(IterationOutput.format("Iteration", "stepsize", "objval", "error", "CPU time"))
+        print(
+            IterationOutput.format(0, 'N/A', format(objval[0], '.7f'), format(error[0], '.7f'), format(CPU_time[0], '.7f')))
 
     '''formal iterations'''
     for t in range(0, MaxIter):
@@ -136,24 +137,27 @@ def stela_lasso(A, y, mu, MaxIter=1000,mode="ls"):
         if mode == "huber":
             error[t + 1] = np.abs(stepsize_numerator)
         else:
-            error[t + 1] = np.linalg.norm(np.absolute(f_gradient - np.minimum(np.maximum(f_gradient - x, -mu_vec), mu_vec)),
-                                      np.inf)
+            #error[t + 1] = np.linalg.norm(np.absolute(f_gradient - np.minimum(np.maximum(f_gradient - x, -mu_vec), mu_vec)),
+            #                          np.inf)
+            error[t+1] = np.abs( np.dot(x_dif.T,f_gradient) + mu* np.linalg.norm(Bx,1) - g)
         
-
-        '''print intermediate results'''
-        print(IterationOutput.format(t + 1, format(stepsize, '.7f'), format(objval[t + 1], '.7f'),
-                                     format(error[t + 1], '.7f'), format(CPU_time[t + 1], '.7f')))
+        if verbosity:
+            '''print intermediate results'''
+            print(IterationOutput.format(t + 1, format(stepsize, '.7f'), format(objval[t + 1], '.7f'),
+                                        format(error[t + 1], '.7f'), format(CPU_time[t + 1], '.7f')))
 
         '''check stop criterion'''
         if error[t + 1] < 1e-6:
             objval = objval[0: t + 2]
             CPU_time = CPU_time[0: t + 2]
             error = error[0: t + 2]
-            print('Status: successful')
+            if verbosity:
+                print('Status: successful')
             break
 
         if t == MaxIter - 1:
-            print('Status: desired precision is not achieved. More iterations are needed.')
+            if verbosity:
+                print('Status: desired precision is not achieved. More iterations are needed.')
 
 
     return objval, x, error
@@ -194,7 +198,7 @@ def stela_cappedL1(A, y, mu, theta, maxiter=1000):
 
     '''precomputation'''
     K = A.shape[1]
-    AtA_diag = np.sum(np.multiply(A, A), axis=0)  # diagonal elements of A'*A
+    AtA_diag = np.diag(np.dot(A.T,A))#np.sum(np.multiply(A, A), axis=0)  # diagonal elements of A'*A
     mu_vec = mu * np.ones(K)
     mu_vec_normalized = np.divide(mu_vec, AtA_diag)
     theta_vec = theta * np.ones(K)
@@ -274,14 +278,14 @@ def stela_cappedL1(A, y, mu, theta, maxiter=1000):
     
     return objval, x, error
 
-A = np.random.normal(0,0.1,(1000,1000))
+A = np.random.normal(0,0.1,(100,1000))
 x0 = np.zeros(1000)
-x0_pos = np.random.choice(np.arange(1000),int(1000*0.8),replace=False)
-x0[x0_pos] = np.random.normal(0,1,int(1000*0.8))
-sigma = 0.05
-v = np.random.normal(0,sigma,1000)
+x0_pos = np.random.choice(np.arange(1000),int(1000*0.01),replace=False)
+x0[x0_pos] = np.random.normal(0,1,int(1000*0.01))
+sigma = 0.01
+v = np.random.normal(0,sigma,100)
 y = np.dot(A,x0) + v 
-mu = 0.001*np.linalg.norm(np.dot(y,A),np.inf)
+mu = 0.1*np.linalg.norm(np.dot(y,A),np.inf)
 
 objval_ls,x_ls,err_ls = stela_lasso(A,y,mu,1000,mode="ls")
 objval_hb,x_hb,err_hb = stela_lasso(A,y,mu,1000,mode="huber")
