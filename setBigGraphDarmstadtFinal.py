@@ -1126,6 +1126,43 @@ Dm = np.maximum(DD.todense(),np.zeros((D_g.n_vertices,D_g.n_edges)))
 Dp = -np.minimum(DD.todense(),np.zeros((D_g.n_vertices,D_g.n_edges)))
 Dx = np.row_stack((Dm,Dp,Dp,-Dp,-Dm))
 Ds = np.row_stack((np.zeros((3*D_g.n_vertices,D_g.n_edges)),Dp,-Dm))
+
+def parseDay(Graph,Dx,Ds,measurements,sigIEnde,sigIStart):
+    x = cp.Variable(Graph.n_edges)
+    s = cp.Variable(Graph.n_edges)
+    XX = np.zeros((Graph.n_edges,1440))
+    SS = np.zeros((Graph.n_edges,1440))
+    for k in tqdm.trange(1439):
+        measure_k = measurements[:,k] #/n_max
+        measure_k1 = measurements[:,k+1]#/n_max
+        if np.isnan(measure_k1).any() or np.isnan(measure_k).any():
+            XX[:,k] = np.zeros(Graph.n_edges)
+            SS[:,k] = np.zeros(Graph.n_edges)
+        #    return
+            continue
+        else:
+            ym0 = np.copy(measure_k)
+            ys0 = np.copy(measure_k1) 
+            yd = measure_k1 - measure_k
+
+            ym0[sigIEnde] = 0
+            ys0[sigIStart] = 0
+            y_bar = np.hstack((measure_k1,measure_k,yd,-ym0,-ys0))
+            problem = cp.Minimize(cp.norm1(Dx*x + Ds*s - y_bar) + 0.001*cp.norm1(x) + 0.005*cp.norm1(s))
+            prob = cp.Problem(problem)
+            prob.solve(solver=cp.GUROBI,verbose=False,warmstart=True)
+            XX[:,k] = x.value.copy()
+            SS[:,k] = s.value.copy()
+    return XX, SS
+
+#XX, SS = parseDay(D_g,Dx,Ds,datasigns,sigIEnde,sigIStart)
+XX = np.load("XX.npy")
+SS = np.load("SS.npy")
+
+print("Geladen")
+
+""" Fertig
+"""
 # mse = np.zeros((3,11))
 # mae = np.zeros((3,11))
 # mse_t1, mse_t2, mse_t3 = 0,0,0
@@ -1226,6 +1263,8 @@ Ds = np.row_stack((np.zeros((3*D_g.n_vertices,D_g.n_edges)),Dp,-Dm))
 # ax[1].grid(True)
 # plt.show()
 
+
+
 def find_branches(H_in,expo,debug=False,rc=True):
     if expo == 0:
         return 1,0,0
@@ -1305,20 +1344,20 @@ def find_rounting(D):
 
 #mobility_pattern = ["137_D1113","137_D111","137_E4","170_D111","170_E3","169_D111","147_D112","147_E2","142_D41","142_E3","144_D41",
 #                    "144_E2","146_D42","146_E2","70_D11","70_E4","69_V51","69_E4","90_V51","90_E4"]    
-mobility_pattern = ["97_D121.1","97_E1","97_D81","97_D51"]    
+#mobility_pattern = ["97_D121.1","97_E1","97_D81","97_D51"]    
 
-mob_sig = [k for k,i in enumerate(Darmstadt.nodes().keys()) if i in mobility_pattern]
-ground_truth_mob_vertex = np.zeros(D_g.n_vertices)
-ground_truth_mob_vertex[mob_sig] = 1
-D_g.plot(vertex_color='#a142f5',highlight=mob_sig)
-plt.show()
+#mob_sig = [k for k,i in enumerate(Darmstadt.nodes().keys()) if i in mobility_pattern]
+#ground_truth_mob_vertex = np.zeros(D_g.n_vertices)
+#ground_truth_mob_vertex[mob_sig] = 1
+#D_g.plot(vertex_color='#a142f5',highlight=mob_sig)
+#plt.show()
 #RR = find_rounting(DD)
 #R_diag = np.diag(np.dot(RR.T,RR))
 #RR2 = RR[:,R_diag != 0]
 RR2 = np.load("NonRedundantMatrix2.npy")
-ground_truth_mob_edge=np.squeeze(np.asarray(np.sum(Dp[mob_sig],axis=0).T))
-y_edge = ground_truth_mob_edge + np.random.normal(0,0.01,D_g.n_edges)
-mu = 0.2*np.linalg.norm(np.dot(y_edge,RR2),np.inf)
+#ground_truth_mob_edge=np.squeeze(np.asarray(np.sum(Dp[mob_sig],axis=0).T))
+#y_edge = ground_truth_mob_edge + np.random.normal(0,0.01,D_g.n_edges)
+#mu = 0.2*np.linalg.norm(np.dot(y_edge,RR2),np.inf)
 
 """
 def s_t_graph(Graph,show=False):
@@ -1547,6 +1586,7 @@ ax.grid(True)
 plt.show()
 
 """
+import time
 
 def network_stela(Y, R, rho, maxiter=100):
     NN,II = np.shape(R)
@@ -1554,18 +1594,20 @@ def network_stela(Y, R, rho, maxiter=100):
     np.random.seed(42)
     val = np.zeros(maxiter+1)
     err = np.zeros(maxiter+1)
-    CPU_time = np.zeros(MaxIter + 1)
+    CPU_time = np.zeros(maxiter + 1)
     CPU_time[0] = time.time()
-    lamb = 100 * 0.001 * np.linalg.norm(Y)
-    mu = 2 * 0.1 * np.linalg.norm(np.dot(R.T,Y),np.Inf)
-    initial_P = np.sqrt(100/II) * np.random.normal(0,0,(NN,rho))
-    initial_Q = np.sqrt(100/KK) * np.random.normal(0,0,(rho,KK))
+    lambd = 10 * 0.001 * np.linalg.norm(Y)
+    mu = 5 * 0.01 * np.linalg.norm(np.dot(R.T,Y),np.Inf)
+    initial_P = np.random.randn(NN,rho)#np.sqrt(100/II) * 
+    initial_Q =  np.random.randn(rho,KK)#np.sqrt(100/KK) *
     initial_S = np.zeros((II,KK))
     val[0] = 0.5 * np.linalg.norm(Y - np.dot(initial_P,initial_Q))**2 + 0.5* lambd * (np.linalg.norm(initial_P)**2 + np.linalg.norm(initial_Q)**2)
 
     P = initial_P
     Q = initial_Q
     S = initial_S
+    zeroIK = np.zeros((II,KK))
+    onesIK = np.ones((II,KK))
     r_RtR = np.sum(np.multiply(R, R), axis=0)
     epsilon = np.dot(P,Q) + np.dot(R,S) - Y
     err[0] = np.abs(np.trace(np.dot(P.T, np.dot(epsilon,Q.T) + lambd * P)) + np.trace(np.dot(Q.T, np.dot(P.T,epsilon) + lambd * Q)) 
@@ -1577,14 +1619,16 @@ def network_stela(Y, R, rho, maxiter=100):
 
     for t in range(maxiter):
         Y_DS = Y - np.dot(R,S)
-        P_new = np.dot(np.dot(Y_DS,Q.T) , np.inv(np.dot(Q,Q.T) + lambd * np.identity(rho)))
+        P_new = np.dot(np.dot(Y_DS,Q.T) , np.linalg.inv(np.dot(Q,Q.T) + lambd * np.identity(rho)))
         cp = P_new - P
 
-        Q_new = np.dot(np.inv(np.dot(P.T,P) + lambd * np.identity(rho)) , np.dot(P.T, Y_DS))
+        Q_new = np.dot(np.linalg.inv(np.dot(P.T,P) + lambd * np.identity(rho)) , np.dot(P.T, Y_DS))
         cq = Q_new - Q 
 
-        G = np.dot(np.diag(r_RtR),S) - np.dot(R.T, np.dot(P,Q) - Y_DS)
-        S_new = np.dot(np.inv(np.diag(r_RtR)), np.maximum(G - mu*np.ones((II,KK)),np.zeros(II,KK)) - np.maximum(-G - mu*np.ones((II,KK)),np.zeros(II,KK)))
+        #G = np.dot(np.diag(r_RtR),S) - np.dot(R.T, np.dot(P,Q) - Y_DS)
+        G = S - np.dot(R.T, np.dot(P,Q)-Y_DS) / r_RtR[:,None]
+        #S_new = np.dot(np.linalg.inv(np.diag(r_RtR)), np.maximum(G - mu*onesIK,zeroIK) - np.maximum(-G - mu*onesIK,zeroIK))
+        S_new = np.maximum(G - mu*onesIK,zeroIK) - np.maximum(-G - mu*onesIK,zeroIK)
         cs = S_new - S
 
         A = np.dot(cp, cq)
@@ -1593,11 +1637,11 @@ def network_stela(Y, R, rho, maxiter=100):
 
         a = 2 * np.sum(np.sum(A**2,axis=0))
         b = 3 * np.sum(np.sum(A*B,axis=0))
-        c = np.sum(np.sum(B**2,axis=0)) + 2*np.sum(np.sum(A*C,axis=0)) + lambd*(np.sum(np.sum(cp**2,axis=0)) + np.sum(np.sum(cq**2,axis=0))
+        c = np.sum(np.sum(B**2,axis=0)) + 2*np.sum(np.sum(A*C,axis=0)) + lambd*(np.sum(np.sum(cp**2,axis=0)) + np.sum(np.sum(cq**2,axis=0)))
         d = np.sum(np.sum(B*C,axis=0)) + lambd * (np.sum(np.sum(cp*P, axis=0)) + np.sum(np.sum(cq*Q,axis=0))) + mu * (np.linalg.norm(S_new,1) - np.linalg.norm(S,1))
 
-        sigma1 = (-(b/3/a)**3 + b*c/6/(a**2) - d/2/a);
-        sigma2 = c/3/a - (b/3/a)**2;
+        sigma1 = (-(b/3/a)**3 + b*c/6/(a**2) - d/2/a)
+        sigma2 = c/3/a - (b/3/a)**2
         sigma3 = sigma1**2 + sigma2**3
         sigma3sqrt = np.sqrt(sigma3)
 
@@ -1617,18 +1661,21 @@ def network_stela(Y, R, rho, maxiter=100):
         Q += gamma * cq
         S += gamma * cs 
         CPU_time[t + 1] = time.time() - CPU_time[t + 1] + CPU_time[t]
-        val[t+1] = 0.5 * np.linalg.norm(Y - np.dot(P,Q) - np.dot(R,S))**2 + 0.5* lambd * (np.linalg.norm(P)**2 + np.linalg.norm(Q)**2) + mu * np.linalg(S,1)
+        val[t+1] = 0.5 * np.linalg.norm(Y - np.dot(P,Q) - np.dot(R,S))**2 + 0.5* lambd * (np.linalg.norm(P)**2 + np.linalg.norm(Q)**2) + mu * np.linalg.norm(S,1)
         print(IterationOutput.format(t, gamma, format(val[t+1], '.7f'), format(err[t+1], '.7f'), format(CPU_time[t+1], '.7f')))
-        if err[t+1] <= 1e-4:
+        if err[t+1] <= 1:
             print("Optimum reached")
-            print("check optimality of solution: {} lambda {}".format(np.linalg.norm(Y - np.dot())))
+            print("check optimality of solution: {} lambda {}".format(np.linalg.norm(Y - np.dot(P,Q) - np.dot(R,S)),lambd))
             return P,Q,S,val,err
-        print("check optimality of solution: {} lambda {}".format(np.linalg.norm(Y - np.dot())))
+        
+    print("check optimality of solution: {} lambda {}".format(np.linalg.norm(Y - np.dot(P,Q) - np.dot(R,S)),lambd))
             
-        return P,Q,S,val,err
+    return P,Q,S,val,err
 
 
-
+P,Q,S,val,err = network_stela(XX-SS, RR2, 10, 20)
+im = plt.imshow(S,cmap='purples ')
+np.shape(P)
 
 
 
